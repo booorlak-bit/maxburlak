@@ -76,7 +76,6 @@ function GradeStudioMarkIcon({ className }: { className?: string }) {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 36 36"
       fill="none"
-      role="img"
       aria-label="grade-1.studio"
       shapeRendering="geometricPrecision"
     >
@@ -98,7 +97,6 @@ function FliqMarkIcon({ className }: { className?: string }) {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 35.894 35.894"
       fill="none"
-      role="img"
       aria-label="Fliq"
       shapeRendering="geometricPrecision"
     >
@@ -127,7 +125,6 @@ function PinnboardsMarkIcon({
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 36 36"
       fill="none"
-      role="img"
       aria-label="Pinnboards"
       shapeRendering="geometricPrecision"
     >
@@ -697,7 +694,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                           <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)]" />
                         </div>
                       </div>
-                      <div className={`backdrop-blur-[12px] ${isDark ? "bg-[#2a2a2a] text-[#a8adb5]" : "bg-[#ececf0] text-[#5b616d]"} transition-colors duration-700 relative overflow-hidden rounded-[24px] shrink-0 w-full`}>
+                      <div className={`backdrop-blur-[12px] ${isDark ? "bg-[#2a2a2a] text-[#b8bcc4]" : "bg-[#ececf0] text-[#5b616d]"} transition-colors duration-700 relative overflow-hidden rounded-[24px] shrink-0 w-full`}>
                         <div className="flex flex-col items-center size-full">
                           <div className="content-stretch flex flex-col gap-[12px] items-center p-[12px] relative size-full">
                             <div className={`${isDark ? 'bg-[#1a1a1a]' : 'bg-[#f9f9fa]'} transition-colors duration-700 relative rounded-[16px] shrink-0 w-full`} data-name="Container">
@@ -708,22 +705,22 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                     <div className="bg-clip-padding border-0 border-[transparent] border-solid flex flex-wrap font-['Switzer_Variable:Regular',sans-serif] gap-4 sm:gap-6 md:gap-[24px] items-center justify-center relative w-full text-center">
                                       <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                         <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>+30%</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>Functionality</p>
+                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Functionality</p>
                                       </div>
                                       <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                         <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>+21%</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>Satisfaction</p>
+                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Satisfaction</p>
                                       </div>
                                       <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                         <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>x4</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>ARR Impact</p>
+                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>ARR Impact</p>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[16px] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>Trade-offs: Custom nodes, AI co-pilot functionality, on-platform actions through the workflow builder, recipes / templates.</p>
+                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[16px] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Trade-offs: Custom nodes, AI co-pilot functionality, on-platform actions through the workflow builder, recipes / templates.</p>
                             <p className={`backdrop-blur-[12px] ${isDark ? 'bg-[#2a2a2a]' : 'bg-[#f2f2f4]'} transition-colors duration-700 content-stretch flex gap-[2px] h-[32px] items-center justify-center px-[8px] py-[4px] relative rounded-[1000px] shrink-0 opacity-90`} data-name="Button">
                               <span className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-[#c3c6cc]" : "text-[#5b616d]"} transition-colors duration-700`}>Case study soon</span>
                             </p>
@@ -803,7 +800,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                           <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)]" />
                         </div>
                       </div>
-                      <div className={`backdrop-blur-[12px] ${isDark ? "bg-[#2a2a2a] text-[#a8adb5]" : "bg-[#ececf0] text-[#5b616d]"} transition-colors duration-700 relative overflow-hidden rounded-[24px] shrink-0 w-full`}>
+                      <div className={`backdrop-blur-[12px] ${isDark ? "bg-[#2a2a2a] text-[#b8bcc4]" : "bg-[#ececf0] text-[#5b616d]"} transition-colors duration-700 relative overflow-hidden rounded-[24px] shrink-0 w-full`}>
                         <div className="flex flex-col items-center size-full">
                           <div className="content-stretch flex flex-col gap-[12px] items-center p-[12px] relative size-full">
                             <div className={`${isDark ? 'bg-[#1a1a1a]' : 'bg-[#f9f9fa]'} transition-colors duration-700 relative rounded-[16px] shrink-0 w-full`} data-name="Container">
@@ -814,22 +811,22 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                     <div className="bg-clip-padding border-0 border-[transparent] border-solid flex flex-wrap font-['Switzer_Variable:Regular',sans-serif] gap-4 sm:gap-6 md:gap-[24px] items-center justify-center relative w-full text-center">
                                       <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                         <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>+34%</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>Conversion</p>
+                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Conversion</p>
                                       </div>
                                       <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                         <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>1.8×</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>Dev Velocity</p>
+                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Dev Velocity</p>
                                       </div>
                                       <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                         <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>$2.5M</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>ARR Impact</p>
+                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>ARR Impact</p>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                            <div className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[0] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] whitespace-pre-wrap ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>
+                            <div className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[0] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] whitespace-pre-wrap ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>
                               <p className="font-light leading-[16px] mb-0">{`Trade-offs: Kanban view, calendar view, opportunities. `}</p>
                               <p className="font-light leading-[16px]">Shipped core value first.</p>
                             </div>
@@ -900,7 +897,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                           <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)]" />
                         </div>
                       </div>
-                      <div className={`backdrop-blur-[12px] ${isDark ? "bg-[#2a2a2a] text-[#a8adb5]" : "bg-[#ececf0] text-[#5b616d]"} transition-colors duration-700 relative overflow-hidden rounded-[24px] shrink-0 w-full`}>
+                      <div className={`backdrop-blur-[12px] ${isDark ? "bg-[#2a2a2a] text-[#b8bcc4]" : "bg-[#ececf0] text-[#5b616d]"} transition-colors duration-700 relative overflow-hidden rounded-[24px] shrink-0 w-full`}>
                         <div className="flex flex-col items-center size-full">
                           <div className="content-stretch flex flex-col gap-[12px] items-center p-[12px] relative size-full">
                             <div className={`${isDark ? 'bg-[#1a1a1a]' : 'bg-[#f9f9fa]'} transition-colors duration-700 relative rounded-[16px] shrink-0 w-full`} data-name="Container">
@@ -911,22 +908,22 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                     <div className="bg-clip-padding border-0 border-[transparent] border-solid flex flex-wrap font-['Switzer_Variable:Regular',sans-serif] gap-4 sm:gap-6 md:gap-[24px] items-center justify-center relative w-full text-center">
                                       <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                         <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>+18%</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>Data accuracy</p>
+                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Data accuracy</p>
                                       </div>
                                       <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                         <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>+12%</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>Satisfaction</p>
+                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Satisfaction</p>
                                       </div>
                                       <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                         <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>-16%</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>Bounce rate</p>
+                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Bounce rate</p>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                            <div className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[0] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] whitespace-pre-wrap ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>
+                            <div className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[0] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] whitespace-pre-wrap ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>
                               <p className="font-light leading-[16px] mb-0">{`Trade-offs: Service outside the platform. `}</p>
                               <p className="font-light leading-[16px]">Focused on data quality on platform first.</p>
                             </div>
@@ -997,7 +994,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                           <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)]" />
                         </div>
                       </div>
-                      <div className={`backdrop-blur-[12px] ${isDark ? "bg-[#2a2a2a] text-[#a8adb5]" : "bg-[#ececf0] text-[#5b616d]"} transition-colors duration-700 relative overflow-hidden rounded-[24px] shrink-0 w-full`}>
+                      <div className={`backdrop-blur-[12px] ${isDark ? "bg-[#2a2a2a] text-[#b8bcc4]" : "bg-[#ececf0] text-[#5b616d]"} transition-colors duration-700 relative overflow-hidden rounded-[24px] shrink-0 w-full`}>
                         <div className="flex flex-col items-center size-full">
                           <div className="content-stretch flex flex-col gap-[12px] items-center p-[12px] relative size-full">
                             <div className={`${isDark ? 'bg-[#1a1a1a]' : 'bg-[#f9f9fa]'} transition-colors duration-700 relative rounded-[16px] shrink-0 w-full`} data-name="Container">
@@ -1009,15 +1006,15 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                       <div className="bg-clip-padding border-0 border-[transparent] border-solid flex flex-wrap font-['Switzer_Variable:Regular',sans-serif] items-center justify-center sm:justify-between gap-4 sm:gap-8 px-4 sm:px-8 md:px-12 lg:px-[100px] relative w-full text-center">
                                         <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                           <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>250+</p>
-                                          <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>Screens</p>
+                                          <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Screens</p>
                                         </div>
                                         <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                           <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>4</p>
-                                          <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>Roles</p>
+                                          <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Roles</p>
                                         </div>
                                         <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                           <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>{`>6`}</p>
-                                          <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>Months</p>
+                                          <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Months</p>
                                         </div>
                                       </div>
                                     </div>
@@ -1025,7 +1022,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                 </div>
                               </div>
                             </div>
-                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[16px] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>{`Trade-offs: hypotheses based, sacrified crypto-direction, gamification & achievements.`}</p>
+                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[16px] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>{`Trade-offs: hypotheses based, sacrified crypto-direction, gamification & achievements.`}</p>
                             <p className={`backdrop-blur-[12px] ${isDark ? 'bg-[#2a2a2a]' : 'bg-[#f2f2f4]'} transition-colors duration-700 content-stretch flex gap-[2px] h-[32px] items-center justify-center px-[8px] py-[4px] relative rounded-[1000px] shrink-0 opacity-90`} data-name="Button">
                               <span className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-[#c3c6cc]" : "text-[#5b616d]"} transition-colors duration-700`}>Case study soon</span>
                             </p>
@@ -1791,7 +1788,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                             </div>
                           </div>
                           <div className="content-stretch flex gap-[2px] items-center justify-center px-[2px] relative shrink-0" data-name="Text_wrap_md">
-                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-[#9cda9b]" : "text-[#2d7a2c]"} transition-colors duration-700`}>Available for new projects</p>
+                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-[#c8f0c7]" : "text-[#2d7a2c]"} transition-colors duration-700`}>Available for new projects</p>
                           </div>
                         </div>
                         <p className={`w-full max-w-full font-['Switzer_Variable:Regular',sans-serif] text-[22px] font-medium leading-[30px] tracking-[-0.2px] md:text-[25px] md:leading-[36px] ${isDark ? "text-white" : "text-[#0a0c11]"} transition-colors duration-700`}>Book a discovery call and let’s create valuable digital experience together.</p>

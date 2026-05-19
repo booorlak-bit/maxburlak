@@ -63,8 +63,8 @@ function PersonAvatar({
 }) {
   return (
     <button
+      aria-checked={isActive}
       aria-label={label}
-      aria-pressed={isActive}
       role="radio"
       className={`relative mx-auto flex size-9 min-h-[44px] min-w-[44px] shrink-0 cursor-pointer items-center justify-center rounded-full transition-[filter,opacity,box-shadow] duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
         isDark ? "focus-visible:outline-white/40" : "focus-visible:outline-[#0a0c11]/20"
@@ -78,6 +78,8 @@ function PersonAvatar({
     >
       <img
         alt=""
+        width={36}
+        height={36}
         className={`pointer-events-none size-9 rounded-full object-cover transition-[filter] duration-300 ${
           isActive ? "grayscale-0" : "grayscale hover:grayscale-0"
         }`}
