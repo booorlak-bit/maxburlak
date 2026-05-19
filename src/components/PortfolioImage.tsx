@@ -15,15 +15,26 @@ export function PortfolioImage({
   fetchPriority,
   sizes,
   alt = "",
+  width,
+  height,
+  className,
+  style,
   ...props
 }: PortfolioImageProps) {
+  const aspectStyle =
+    width && height ? ({ aspectRatio: `${width} / ${height}` } as const) : undefined;
+
   return (
     <img
       alt={alt}
+      className={className}
       decoding={decoding}
       fetchPriority={priority ? "high" : fetchPriority}
+      height={height}
       loading={priority ? "eager" : (loading ?? "lazy")}
-      sizes={sizes}
+      sizes={sizes ?? (priority ? undefined : "(max-width: 1024px) 100vw, 800px")}
+      style={aspectStyle ? { ...aspectStyle, ...style } : style}
+      width={width}
       {...props}
     />
   );

@@ -343,7 +343,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                       <div className="overflow-clip relative shrink-0 size-[18px]" data-name="filled=on, stroke=1, radius=0, join=round">
                         <div className="absolute inset-[20.83%_12.5%]" data-name="vector">
                           <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 13.5 10.5">
-                            <path clipRule="evenodd" d={svgPaths.p42a1880} fill={isDark ? "#9CA3AF" : "#8C929C"} className="transition-colors duration-700" fillRule="evenodd" id="vector" />
+                            <path clipRule="evenodd" d={svgPaths.p42a1880} fill={isDark ? "#B8BCC4" : "#6B7280"} className="transition-colors duration-700" fillRule="evenodd" id="vector" />
                           </svg>
                         </div>
                       </div>
@@ -405,7 +405,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
             <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full mt-[24px] mb-[24px] box-content border-0">
               <div className="content-stretch flex flex-col items-start relative shrink-0 w-full">
                 <div className="content-stretch flex flex-col gap-[8px] items-start mt-[24px] mb-0 relative shrink-0 w-full">
-                  <p className="font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 text-[#a8adb5] text-[13px] w-full">Ventures</p>
+                  <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Ventures</p>
                   <div className="content-stretch flex gap-[8px] items-center relative shrink-0 w-full" data-name="Wallet_group">
                     <div className="content-stretch flex isolate items-center pr-[22px] relative shrink-0">
                       <div className="flex items-center justify-center mr-[-22px] relative shrink-0 size-[53.889px] z-[3]" style={{ "--transform-inner-width": "1183", "--transform-inner-height": "19" } as React.CSSProperties}>
@@ -451,7 +451,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                 <div className="overflow-clip relative shrink-0 size-[18px]" data-name="map-pin, location">
                   <div className="absolute inset-[8.33%_16.67%_10.4%_16.67%]" data-name="vector">
                     <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 12 14.6277">
-                      <path clipRule="evenodd" d={svgPaths.p3a68b400} fill={isDark ? "#9CA3AF" : "#8C929C"} className="transition-colors duration-700" fillRule="evenodd" id="vector" />
+                      <path clipRule="evenodd" d={svgPaths.p3a68b400} fill={isDark ? "#B8BCC4" : "#6B7280"} className="transition-colors duration-700" fillRule="evenodd" id="vector" />
                     </svg>
                   </div>
                 </div>
@@ -1635,7 +1635,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                               <div className={`${isDark ? 'bg-[#2a2a2a]' : 'bg-[#ececf0]'} transition-colors duration-700 relative rounded-[16px] shrink-0 w-full`}>
                                 <div className="flex flex-row items-center justify-center overflow-clip rounded-[inherit] size-full">
                                   <div className="content-stretch flex gap-[8px] items-center justify-center px-[12px] py-[4px] relative size-full">
-                                    <div className="bg-[#8c929c] rounded-[12px] shrink-0 size-[8px]" />
+                                    <div className={`${isDark ? "bg-[#b8bcc4]" : "bg-[#6b7280]"} rounded-[12px] shrink-0 size-[8px]`} aria-hidden />
                                     <div className={`flex flex-col font-['Switzer_Variable:Regular',sans-serif] font-normal justify-center leading-[0] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] whitespace-nowrap`}>
                                       <p className="leading-[18px]">Soon</p>
                                     </div>
@@ -1917,7 +1917,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                   <div className="content-stretch flex flex-col items-center justify-end px-[32px] py-[96px] relative size-full">
                     <div className="gap-x-[24px] gap-y-[24px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.50fr)_minmax(0,0.50fr)] grid-rows-[repeat(1,fit-content(100%))] relative shrink-0 w-full" data-name="Grid">
                       <div className="col-1 content-stretch flex flex-col gap-[16px] items-start justify-center justify-self-stretch relative row-1 self-start shrink-0" data-name="Column">
-                        <p className="font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[36px] relative shrink-0 text-[#a8adb5] text-[25px] tracking-[-0.2px] w-full">2026</p>
+                        <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[36px] relative shrink-0 text-[25px] tracking-[-0.2px] w-full ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700`}>2026</p>
                         <p className={`font-['Switzer_Variable:Medium',sans-serif] font-semibold leading-[44px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[42px] tracking-[-0.2px] w-full`}>maxburlak.com</p>
                         <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>AI-driven product designer helping founders design experience, build systems and foundations.</p>
                         <SocialIconButtons isDark={isDark} />
@@ -1967,7 +1967,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
             <div className="content-stretch flex gap-[6px] items-center justify-center relative shrink-0 size-[28px]" data-name="Left_sm">
               <div className="aspect-[24/24] flex-[1_0_0] min-h-px min-w-px relative rounded-[24px]" data-name="image">
                 <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-[24px]">
-                  <PortfolioImage alt="" className="absolute h-[133.23%] left-0 max-w-none top-[-4.18%] w-full" src={imgImage} />
+                  <PortfolioImage alt="" className="absolute h-[133.23%] left-0 max-w-none top-[-4.18%] w-full" height={28} src={imgImage} width={28} />
                 </div>
               </div>
             </div>
@@ -2004,7 +2004,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                   <div className="overflow-clip relative shrink-0 size-[18px]" data-name="filled=on, stroke=1, radius=0, join=round">
                     <div className="absolute inset-[20.83%_12.5%]" data-name="vector">
                       <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 13.5 10.5">
-                        <path clipRule="evenodd" d={svgPaths.p42a1880} fill={isDark ? "#9CA3AF" : "#8C929C"} className="transition-colors duration-700" fillRule="evenodd" id="vector" />
+                        <path clipRule="evenodd" d={svgPaths.p42a1880} fill={isDark ? "#B8BCC4" : "#6B7280"} className="transition-colors duration-700" fillRule="evenodd" id="vector" />
                       </svg>
                     </div>
                   </div>
@@ -2022,7 +2022,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                       </svg>
                     ) : (
                       <svg className="absolute block inset-0 size-full" fill="none" viewBox="0 0 24 24">
-                        <path fill="#8C929C" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z" />
+                        <path fill="#6B7280" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z" />
                       </svg>
                     )}
                   </div>
@@ -2043,7 +2043,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                   </svg>
                 ) : (
                   <svg className="absolute block inset-0 size-full" fill="none" viewBox="0 0 24 24">
-                    <path fill="#8C929C" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z" />
+                    <path fill="#6B7280" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z" />
                   </svg>
                 )}
               </div>

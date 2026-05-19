@@ -9,16 +9,19 @@ function CvPillButton({
   isDark,
   onClick,
   type = "button",
+  ariaLabel,
 }: {
   children: ReactNode;
   className?: string;
   isDark: boolean;
   onClick?: () => void;
   type?: "button" | "submit";
+  ariaLabel?: string;
 }) {
   return (
     <button
       type={type}
+      aria-label={ariaLabel}
       onClick={onClick}
       className={`relative inline-flex h-11 min-h-[44px] shrink-0 cursor-pointer items-center justify-center gap-[8px] rounded-[1000px] px-[10px] py-[4px] border-0 transition-all duration-200 hover:scale-105 ${isDark ? "text-white" : "text-[#0a0c11]"} ${className}`}
       data-name="Button"
@@ -87,7 +90,7 @@ function CvViewerModal({
             <a
               href={CV_HREF}
               download={CV_FILENAME}
-              className={`relative inline-flex h-[36px] items-center justify-center rounded-[1000px] px-3 no-underline transition-colors duration-200 ${isDark ? "bg-white text-[#0a0c11] hover:bg-white/90" : "bg-[#0a0c11] text-white hover:bg-black"}`}
+              className={`relative inline-flex h-11 min-h-[44px] items-center justify-center rounded-[1000px] px-3 no-underline transition-colors duration-200 ${isDark ? "bg-white text-[#0a0c11] hover:bg-white/90" : "bg-[#0a0c11] text-white hover:bg-black"}`}
             >
               <span className={labelClass}>Download</span>
             </a>
@@ -95,7 +98,7 @@ function CvViewerModal({
               type="button"
               aria-label="Close"
               onClick={onClose}
-              className={`inline-flex size-[36px] items-center justify-center rounded-full border-0 transition-colors duration-200 ${isDark ? "bg-white/10 text-white hover:bg-white/15" : "bg-[#f2f2f4] text-[#0a0c11] hover:bg-[#ececf0]"}`}
+              className={`inline-flex size-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full border-0 transition-colors duration-200 ${isDark ? "bg-white/10 text-white hover:bg-white/15" : "bg-[#f2f2f4] text-[#0a0c11] hover:bg-[#ececf0]"}`}
             >
               <svg className="size-4" fill="none" viewBox="0 0 16 16" aria-hidden>
                 <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" />
@@ -119,7 +122,7 @@ export function CvViewerButton({ isDark }: { isDark: boolean }) {
 
   return (
     <>
-      <CvPillButton isDark={isDark} onClick={() => setIsOpen(true)}>
+      <CvPillButton ariaLabel="View CV" isDark={isDark} onClick={() => setIsOpen(true)}>
         <span className="relative flex items-center justify-center gap-[4px] px-[4px]">
           <span className={labelClass}>View CV</span>
         </span>

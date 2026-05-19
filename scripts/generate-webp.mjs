@@ -25,8 +25,8 @@ async function loadSharp() {
 const sharp = await loadSharp();
 const assetsDir = path.resolve(__dirname, "../src/assets");
 
-const MAX_WIDTH = 1920;
-const WEBP_QUALITY = 82;
+const MAX_WIDTH = 1080;
+const WEBP_QUALITY = 74;
 
 async function main() {
   const entries = await readdir(assetsDir);

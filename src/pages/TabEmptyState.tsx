@@ -8,7 +8,7 @@ type TabEmptyStateProps = {
 export function TabEmptyState({ title, isDark }: TabEmptyStateProps) {
   return (
     <div
-      className={`flex min-h-[calc(100svh-140px)] w-full flex-col items-center justify-center px-[24px] pb-[100px] pt-[32px] text-center ${isDark ? "text-white/72" : "text-[#5b616d]"}`}
+      className={`flex min-h-[calc(100svh-140px)] w-full flex-col items-center justify-center px-[24px] pb-[100px] pt-[32px] text-center ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"}`}
     >
       <h1
         className={`mb-3 max-w-[520px] font-['Switzer_Variable:Regular',sans-serif] text-[clamp(22px,3vw,30px)] font-medium tracking-[-0.3px] ${isDark ? "text-white" : "text-[#0a0c11]"}`}
@@ -21,7 +21,7 @@ export function TabEmptyState({ title, isDark }: TabEmptyStateProps) {
       <div
         className={`mx-auto mb-6 flex h-[120px] w-full max-w-[320px] flex-col items-center justify-center rounded-[20px] border border-dashed ${isDark ? "border-white/15 bg-[#141414]" : "border-[#0a0c11]/12 bg-[#f9f9fa]"}`}
       >
-        <span className={`text-[13px] font-['Switzer_Variable:Regular',sans-serif] ${isDark ? "text-white/72" : "text-[#5b616d]"}`}>
+        <span className={`text-[13px] font-['Switzer_Variable:Regular',sans-serif] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"}`}>
           Empty state
         </span>
       </div>

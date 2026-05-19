@@ -28,7 +28,7 @@ function fieldClass(isDark: boolean) {
   return `font-['Switzer_Variable:Regular',sans-serif] w-full min-h-[40px] rounded-[10px] border border-solid px-[14px] py-[8px] text-[13px] font-medium leading-[18px] outline-none transition-colors duration-700 focus-visible:ring-2 ${
     isDark
       ? "border-[rgba(255,255,255,0.06)] bg-[#1a1a1a] text-white placeholder:text-[rgba(255,255,255,0.48)] focus-visible:ring-white/20"
-      : "border-[rgba(0,0,0,0.06)] bg-white text-[#0a0c11] placeholder:text-[#8c929c] focus-visible:ring-[#0a0c11]/10"
+      : "border-[rgba(0,0,0,0.06)] bg-white text-[#0a0c11] placeholder:text-[#5b616d] focus-visible:ring-[#0a0c11]/10"
   }`;
 }
 
