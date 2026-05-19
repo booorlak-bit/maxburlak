@@ -57,7 +57,7 @@ export function WorkedWithSection({ isDark = false }: WorkedWithSectionProps) {
                   </p>
                 </div>
                 <div
-                  className={`content-stretch flex font-['Switzer_Variable:Regular',sans-serif] font-light gap-[8px] items-center justify-center leading-[18px] relative shrink-0 ${isDark ? "text-white/64" : "text-[#5b616d]"} transition-colors duration-700 text-[13px] w-full flex-wrap justify-center whitespace-normal md:whitespace-nowrap`}
+                  className={`content-stretch flex font-['Switzer_Variable:Regular',sans-serif] font-light gap-[8px] items-center justify-center leading-[18px] relative shrink-0 ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700 text-[13px] w-full flex-wrap justify-center whitespace-normal md:whitespace-nowrap`}
                 >
                   <p className="relative shrink-0">{testimonial.name}</p>
                   <p className="relative shrink-0">·</p>

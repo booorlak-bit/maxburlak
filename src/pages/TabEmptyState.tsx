@@ -21,7 +21,7 @@ export function TabEmptyState({ title, isDark }: TabEmptyStateProps) {
       <div
         className={`mx-auto mb-6 flex h-[120px] w-full max-w-[320px] flex-col items-center justify-center rounded-[20px] border border-dashed ${isDark ? "border-white/15 bg-[#141414]" : "border-[#0a0c11]/12 bg-[#f9f9fa]"}`}
       >
-        <span className={`text-[13px] font-['Switzer_Variable:Regular',sans-serif] ${isDark ? "text-gray-500" : "text-[#8c929c]"}`}>
+        <span className={`text-[13px] font-['Switzer_Variable:Regular',sans-serif] ${isDark ? "text-white/72" : "text-[#5b616d]"}`}>
           Empty state
         </span>
       </div>

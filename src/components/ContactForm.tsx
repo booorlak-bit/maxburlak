@@ -101,7 +101,7 @@ function ThankYouState({ isDark }: { isDark: boolean }) {
         </p>
         <p
           className={`max-w-[320px] font-['Switzer_Variable:Regular',sans-serif] text-[15px] leading-[1.5] ${
-            isDark ? "text-white/64" : "text-[#5b616d]"
+            isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"
           } transition-colors duration-700`}
         >
           Thank you — we&apos;ll be in touch soon.
@@ -261,6 +261,7 @@ export function ContactForm({ isDark = false }: ContactFormProps) {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...fadeTransition, delay: fieldStagger * 4 }}
+              aria-label="Send message"
               className="relative h-[48px] w-full cursor-pointer rounded-[1000px] transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
               data-name="Button"
               type="submit"

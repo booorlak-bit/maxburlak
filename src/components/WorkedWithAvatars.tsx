@@ -3,12 +3,14 @@ import {
   WORKED_WITH_GRID_ITEMS,
   type WorkedWithGridItem,
 } from "./workedWithGridItems";
+import { getTestimonialForPhoto } from "./workedWithTestimonials";
 
 const GRID_COLS = 23;
 const GRID_ROWS = 5;
 /** Figma pitch: 36px circle + 10px gap */
 const CELL_PX = 36;
-const GAP_PX = 10;
+/** Spacing between 36px avatars (audit-friendly touch separation) */
+const GAP_PX = 24;
 const GRID_WIDTH_PX = GRID_COLS * CELL_PX + (GRID_COLS - 1) * GAP_PX;
 
 const PLACEHOLDER_CLASS = {
@@ -48,19 +50,23 @@ function PlaceholderDot({
 
 function PersonAvatar({
   src,
+  label,
   isActive,
   isDark,
   onSelect,
 }: {
   src: string;
+  label: string;
   isActive: boolean;
   isDark: boolean;
   onSelect: () => void;
 }) {
   return (
     <button
+      aria-label={label}
       aria-pressed={isActive}
-      className={`relative mx-auto block size-9 shrink-0 cursor-pointer rounded-full transition-[filter,opacity,box-shadow] duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+      role="radio"
+      className={`relative mx-auto flex size-9 min-h-[44px] min-w-[44px] shrink-0 cursor-pointer items-center justify-center rounded-full transition-[filter,opacity,box-shadow] duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
         isDark ? "focus-visible:outline-white/40" : "focus-visible:outline-[#0a0c11]/20"
       } ${
         isActive
@@ -72,7 +78,7 @@ function PersonAvatar({
     >
       <img
         alt=""
-        className={`pointer-events-none size-full rounded-full object-cover transition-[filter] duration-300 ${
+        className={`pointer-events-none size-9 rounded-full object-cover transition-[filter] duration-300 ${
           isActive ? "grayscale-0" : "grayscale hover:grayscale-0"
         }`}
         src={src}
@@ -93,12 +99,14 @@ function renderItem(
   }
 
   const isActive = item.id === activeCellId;
+  const person = getTestimonialForPhoto(item.num);
 
   return (
     <PersonAvatar
       key={item.id}
       isActive={isActive}
       isDark={isDark}
+      label={`${isActive ? "Selected" : "Show"} testimonial from ${person.name}, ${person.company}`}
       src={PHOTO_SRC[item.num]}
       onSelect={() => onPhotoSelect({ cellId: item.id, photoNum: item.num })}
     />
@@ -126,6 +134,8 @@ export function WorkedWithAvatars({
       >
         <div className="flex w-full justify-center">
           <div
+            role="radiogroup"
+            aria-label="Client testimonials"
             className="grid shrink-0 justify-items-center py-2"
             style={{
               width: GRID_WIDTH_PX,

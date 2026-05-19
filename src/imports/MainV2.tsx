@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Stories } from "../components/Stories";
 import { CareerPath } from "../components/CareerPath";
 import { ApolloLogo } from "../components/ApolloLogo";
@@ -13,7 +13,11 @@ import { Link, Navigate, NavLink, useLocation, useSearchParams } from "react-rou
 import { isNavPath, NAV_ROUTES, placeholderTitleForPath } from "../nav/routes";
 import { PlaygroundEmbed, PlaygroundView } from "../pages/PlaygroundPage";
 import { TabEmptyState } from "../pages/TabEmptyState";
-import { PlaygroundCanvas } from "../playground/PlaygroundCanvas";
+import { PortfolioImage } from "../components/PortfolioImage";
+
+const PlaygroundCanvas = lazy(() =>
+  import("../playground/PlaygroundCanvas").then((m) => ({ default: m.PlaygroundCanvas })),
+);
 import imgAreasActivation from "figma:asset/e5b253831f1048009cea5b54ba306988455cb3bd.png";
 import imgAreasConversion from "figma:asset/4ef447fe26db291a36b9b0daa181877720f91e75.png";
 import imgAreasSystem from "figma:asset/94a920b5c4cb9fa810dd38ffe1b29b0e094c7001.png";
@@ -61,6 +65,9 @@ import imgImage from "figma:asset/83232a85e616a4251bc49205de94a06fa427d427.png";
 
 const BOOK_CALL_URL = "https://cal.com/maxburlak/oppchat";
 const CONTACT_EMAIL_URL = "mailto:hey@maxburlak.com";
+const LINKEDIN_URL = "https://www.linkedin.com/in/maxburlak/";
+const DRIBBBLE_URL = "https://dribbble.com/maxburlak";
+const PINNBOARDS_URL = "https://pinnboards.com";
 
 function GradeStudioMarkIcon({ className }: { className?: string }) {
   return (
@@ -156,7 +163,7 @@ type ImagesProps = {
 function Images({ className, areas = "Activation" }: ImagesProps) {
   return (
     <div className={className || "relative size-[100px]"}>
-      <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={areas === "System" ? imgAreasSystem : areas === "Conversion" ? imgAreasConversion : imgAreasActivation} />
+      <PortfolioImage alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={areas === "System" ? imgAreasSystem : areas === "Conversion" ? imgAreasConversion : imgAreasActivation} />
     </div>
   );
 }
@@ -228,16 +235,20 @@ function HeroImage({ className, slide = "1" }: HeroImageProps) {
     return () => window.clearInterval(interval);
   }, []);
 
+  const src = heroSlides[activeSlide];
+
   return (
     <div className={className || "h-[459.576px] relative w-[342.667px]"}>
-      {heroSlides.map((src, index) => (
-        <img
-          key={src}
-          alt=""
-          className={`absolute inset-0 max-w-none object-cover pointer-events-none size-full transition-opacity duration-700 ease-in-out ${index === activeSlide ? 'opacity-100' : 'opacity-0'}`}
-          src={src}
-        />
-      ))}
+      <PortfolioImage
+        priority={activeSlide === 0}
+        alt="Max Burlak"
+        className="absolute inset-0 max-w-none object-cover pointer-events-none size-full"
+        height={1026}
+        key={src}
+        sizes="(max-width: 1024px) 100vw, 400px"
+        src={src}
+        width={765}
+      />
     </div>
   );
 }
@@ -263,6 +274,21 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
     window.scrollTo(0, 0);
   }, [pathname]);
 
+  useEffect(() => {
+    if (pathname !== "/") return;
+    const href = heroSlides[0];
+    const existing = document.querySelector(`link[rel="preload"][href="${href}"]`);
+    if (existing) return;
+    const link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "image";
+    link.href = href;
+    document.head.appendChild(link);
+    return () => {
+      link.remove();
+    };
+  }, [pathname]);
+
   const phTitle = placeholderTitleForPath(pathname);
   if (!isNavPath(pathname)) {
     return <Navigate to="/" replace />;
@@ -274,6 +300,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
 
   return (
     <div className={className || `transition-colors duration-700 ${isDark ? 'bg-[#0a0a0a]' : 'bg-white'} content-stretch flex flex-col gap-[10px] items-start pb-[10px] pt-[60px] px-[12px] md:px-[20px] relative w-full max-w-[2250px] mx-auto overflow-x-clip`} data-name="Main V2">
+      <main id="main-content" tabIndex={-1} className="w-full">
       {phTitle === null ? (
       <div data-route="index" className="content-stretch flex flex-col lg:flex-row gap-4 md:gap-8 lg:gap-[32px] items-start relative rounded-[20px] shrink-0 w-full my-0 md:my-[24px] box-content border-0">
         <div className="w-full lg:w-1/4 2xl:w-[33%] lg:min-w-[280px] shrink-0 lg:sticky lg:top-[84px] lg:overflow-x-hidden">
@@ -288,10 +315,10 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                 </div>
                 <div className="content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] gap-[22px] items-start relative shrink-0 w-full">
                   <h1 className={`font-medium leading-[1.14] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[clamp(26px,7vw,32px)] tracking-[-0.4px] w-full`}>Max, AI-driven product designer who helps founders to design experience, build systems and foundations.</h1>
-                  <p className={`font-normal leading-[1.4] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[clamp(14px,1.2vw,15px)] w-full max-w-[92%]`}>Helped to gain ARR from 0 to 2,5M+ in less then a year for various startups and to prepare for multiple funding rounds for different companies with total amount around $ 150M</p>
+                  <p className={`font-normal leading-[1.4] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[clamp(14px,1.2vw,15px)] w-full max-w-[92%]`}>Helped to gain ARR from 0 to 2,5M+ in less then a year for various startups and to prepare for multiple funding rounds for different companies with total amount around $ 150M</p>
                 </div>
                 <div className="content-stretch flex flex-wrap gap-[10px] items-start mt-[10px] relative shrink-0">
-                  <a href={BOOK_CALL_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[40px] items-center justify-center px-[12px] py-[4px] relative rounded-[28px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg no-underline" data-name="Button">
+                  <a href={BOOK_CALL_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[28px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg no-underline" data-name="Button">
                     <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-white' : 'bg-black'} inset-0 pointer-events-none rounded-[28px] transition-all duration-200`} />
                     <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.09)] border-solid inset-0 pointer-events-none rounded-[28px] shadow-[0px_1px_1px_0px_rgba(0,0,0,0.03)]" />
                     <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
@@ -300,13 +327,13 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                     <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="Right_md">
                       <div className="relative shrink-0 size-[18px]" data-name="icons / google meet">
                         <div className="absolute inset-[10%_0]" data-name="image 37">
-                          <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage37} />
+                          <PortfolioImage alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage37} />
                         </div>
                       </div>
                     </div>
                     <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_3px_3px_0px_rgba(255,255,255,0.12)]" />
                   </a>
-                  <a href={CONTACT_EMAIL_URL} className="content-stretch flex gap-[2px] h-[40px] items-center justify-center px-[10px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
+                  <a href={CONTACT_EMAIL_URL} className="content-stretch flex gap-[2px] h-[44px] min-h-[44px] items-center justify-center px-[10px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
                     <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-[rgba(255,255,255,0.1)]' : 'bg-[rgba(242,242,244,0.8)]'} transition-colors duration-700 inset-0 pointer-events-none rounded-[1000px] transition-all duration-200`} />
                     <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)]" />
                     <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
@@ -325,7 +352,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                   </a>
                 </div>
                 <div className="content-stretch flex flex-col gap-[8px] items-start mt-0 mb-[24px] pt-[32px] relative shrink-0 w-full box-content border-0 transition-colors duration-700">
-                  <p className={`font-['Switzer_Variable:Regular',sans-serif] font-[400] leading-[18px] min-w-full relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[clamp(13px,1.15vw,15px)] w-[min-content]`}>Trusted by many companies for over a decade</p>
+                  <p className={`font-['Switzer_Variable:Regular',sans-serif] font-[400] leading-[18px] min-w-full relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[clamp(13px,1.15vw,15px)] w-[min-content]`}>Trusted by many companies for over a decade</p>
                   <div className="content-stretch flex flex-wrap gap-[8px] items-center relative shrink-0" data-name="Wallet_group">
                     <div className="content-stretch flex items-center overflow-clip p-[3px] relative rounded-[8px] shrink-0">
                       <DefaultLogo size={34} className="rounded-[6.448px]" />
@@ -364,7 +391,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                       <div className={`${isDark ? 'bg-[#2a2a2a]' : 'bg-[#f9f9fa]'} transition-colors duration-700 relative rounded-[8px] shrink-0 w-full`}>
                         <div className="flex flex-row items-center overflow-clip rounded-[inherit] size-full">
                           <div className="content-stretch flex items-center px-[8px] py-[4px] relative size-full">
-                            <div className={`flex flex-col font-['Switzer_Variable:Regular',sans-serif] font-normal justify-center leading-[0] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] whitespace-nowrap`}>
+                            <div className={`flex flex-col font-['Switzer_Variable:Regular',sans-serif] font-normal justify-center leading-[0] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] whitespace-nowrap`}>
                               <p className="leading-[18px]">30+ more</p>
                             </div>
                           </div>
@@ -378,7 +405,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
             <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full mt-[24px] mb-[24px] box-content border-0">
               <div className="content-stretch flex flex-col items-start relative shrink-0 w-full">
                 <div className="content-stretch flex flex-col gap-[8px] items-start mt-[24px] mb-0 relative shrink-0 w-full">
-                  <p className="font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 text-[#8c929c] text-[13px] w-full">Ventures</p>
+                  <p className="font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 text-[#a8adb5] text-[13px] w-full">Ventures</p>
                   <div className="content-stretch flex gap-[8px] items-center relative shrink-0 w-full" data-name="Wallet_group">
                     <div className="content-stretch flex isolate items-center pr-[22px] relative shrink-0">
                       <div className="flex items-center justify-center mr-[-22px] relative shrink-0 size-[53.889px] z-[3]" style={{ "--transform-inner-width": "1183", "--transform-inner-height": "19" } as React.CSSProperties}>
@@ -428,7 +455,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                     </svg>
                   </div>
                 </div>
-                <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-white/32' : 'text-[#0a0c11]'} transition-colors duration-700 text-[13px]`}>Currently in Barcelona, Spain</p>
+                <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b0b4bb]' : 'text-[#0a0c11]'} transition-colors duration-700 text-[13px]`}>Currently in Barcelona, Spain</p>
               </div>
             </div>
           </div>
@@ -438,10 +465,10 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
             <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
               <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_280px] grid-rows-[repeat(1,fit-content(100%))] relative shrink-0 w-full">
                 <HeroImage className="aspect-[765/1026] h-auto w-full max-w-full justify-self-stretch col-1 relative row-1 shrink-0 overflow-hidden lg:w-[min(100%,calc(1000px*765/1026))] lg:max-w-[min(100%,calc(1000px*765/1026))] lg:justify-self-start" />
-                <p className={`hidden lg:block col-2 font-['Switzer_Variable:Regular',sans-serif] font-light leading-[20px] opacity-0 relative row-1 self-start shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[14px] whitespace-pre-wrap`}>{"Outside of my daily routine and outside a father duties, I\u2019m  travelling, skiing, scuba diving,  riding a bike, DJing, taking some cool photos with my pocket Ricoh GR lV and videos with Insta360 X5."}</p>
+                <p className={`hidden lg:block col-2 font-['Switzer_Variable:Regular',sans-serif] font-light leading-[20px] opacity-0 relative row-1 self-start shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[14px] whitespace-pre-wrap`}>{"Outside of my daily routine and outside a father duties, I\u2019m  travelling, skiing, scuba diving,  riding a bike, DJing, taking some cool photos with my pocket Ricoh GR lV and videos with Insta360 X5."}</p>
               </div>
               <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-rows-[repeat(1,fit-content(100%))] relative shrink-0 w-full">
-                <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-light justify-self-stretch leading-[0] relative row-1 self-start shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] whitespace-pre-wrap`}>
+                <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-light justify-self-stretch leading-[0] relative row-1 self-start shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] whitespace-pre-wrap`}>
                   <span className="font-light leading-[20px]">{`Outside his daily routine and outside a father duties, Max is  traveling, skiing, scuba diving,  riding a bike, `}</span>
                   <a href="https://www.youtube.com/@heyhimaxo" target="_blank" rel="noopener noreferrer" className={`text-inherit [text-decoration-skip-ink:none] decoration-solid leading-[20px] underline cursor-pointer transition-colors duration-200 ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>DJing</a>
                   <span className="leading-[20px]">{`, taking some `}</span>
@@ -457,7 +484,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                 <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-medium justify-self-stretch leading-[36px] relative row-1 self-start shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[25px] tracking-[-0.2px]`}>His design philosophy</p>
               </div>
               <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 lg:grid-cols-2 grid-rows-[repeat(1,fit-content(100%))] relative shrink-0 w-full">
-                <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-light justify-self-stretch leading-[18px] relative row-1 self-start shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px]`}>Max believes in empathy-driven design that bridges user needs with business objectives. His approach combines data-driven insights with human-centered design principles to create solutions that are both meaningful and measurable.</p>
+                <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-light justify-self-stretch leading-[18px] relative row-1 self-start shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px]`}>Max believes in empathy-driven design that bridges user needs with business objectives. His approach combines data-driven insights with human-centered design principles to create solutions that are both meaningful and measurable.</p>
               </div>
             </div>
             <div className="content-stretch flex flex-col items-start relative shrink-0 w-full">
@@ -468,7 +495,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                         <p className="leading-[36px] mb-0">{`Focus → Outcomes over outputs: `}</p>
                         <p className="leading-[36px]">from insight to shipped impact.</p>
                       </div>
-                      <a href={BOOK_CALL_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[40px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg no-underline" data-name="Button">
+                      <a href={BOOK_CALL_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg no-underline" data-name="Button">
                         <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-white' : 'bg-black'} inset-0 pointer-events-none rounded-[1000px] transition-all duration-200`} />
                         <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.09)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_1px_1px_0px_rgba(0,0,0,0.03)]" />
                         <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
@@ -477,7 +504,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                         <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="Right_md">
                           <div className="relative shrink-0 size-[18px]" data-name="icons / google meet">
                             <div className="absolute inset-[10%_0]" data-name="image 37">
-                              <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage37} />
+                              <PortfolioImage alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage37} />
                             </div>
                           </div>
                         </div>
@@ -495,7 +522,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                 <div className="content-stretch flex flex-col items-start relative shrink-0 w-full">
                                   <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px] w-full`}>{`Activation & Time-to-Value`}</p>
                                 </div>
-                                <p className={`font-['Open_Sauce_Two:Regular',sans-serif] font-light leading-[18px] not-italic relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Shorten the path to “aha” with role-aware onboarding, opinionated defaults, and guided checklists. Tracked on 7-day activation and median TTV.</p>
+                                <p className={`font-['Open_Sauce_Two:Regular',sans-serif] font-light leading-[18px] not-italic relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Shorten the path to “aha” with role-aware onboarding, opinionated defaults, and guided checklists. Tracked on 7-day activation and median TTV.</p>
                               </div>
                               <Images className="relative shrink-0 size-[100px]" />
                             </div>
@@ -509,7 +536,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                 <div className="content-stretch flex flex-col items-start relative shrink-0 w-full">
                                   <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px] w-full`}>{`Conversion & Monetization`}</p>
                                 </div>
-                                <p className={`font-['Open_Sauce_Two:Regular',sans-serif] font-light leading-[18px] not-italic relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Clarify pricing/packaging, reduce decision friction, and tune paywalls/trials. Measured on trial → paid, ARPA, refund rate.</p>
+                                <p className={`font-['Open_Sauce_Two:Regular',sans-serif] font-light leading-[18px] not-italic relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Clarify pricing/packaging, reduce decision friction, and tune paywalls/trials. Measured on trial → paid, ARPA, refund rate.</p>
                               </div>
                               <Images areas="Conversion" className="relative shrink-0 size-[100px]" />
                             </div>
@@ -525,10 +552,10 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                 <div className="content-stretch flex flex-col items-start relative shrink-0 w-full">
                                   <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px] w-full`}>{`Design System & Delivery Velocity`}</p>
                                 </div>
-                                <p className={`font-['Open_Sauce_Two:Regular',sans-serif] font-light leading-[18px] not-italic relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Systematize UI with tokens, components, and guardrails to ship faster with fewer regressions. Measured on PR cycle time, escaped defects, design-coverage %.</p>
+                                <p className={`font-['Open_Sauce_Two:Regular',sans-serif] font-light leading-[18px] not-italic relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Systematize UI with tokens, components, and guardrails to ship faster with fewer regressions. Measured on PR cycle time, escaped defects, design-coverage %.</p>
                               </div>
                               <div className="relative shrink-0 size-[100px]" data-name="Areas=Activation">
-                                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImages1} />
+                                <PortfolioImage alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImages1} />
                               </div>
                             </div>
                           </div>
@@ -541,10 +568,10 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                 <div className="content-stretch flex flex-col items-start relative shrink-0 w-full">
                                   <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px] w-full`}>{`Retention & Expansion`}</p>
                                 </div>
-                                <p className={`font-['Open_Sauce_Two:Regular',sans-serif] font-light leading-[18px] not-italic relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Identify friction in core loops, improve feature discovery, and design upgrade paths. Measured on NRR, feature adoption, and support ticket reduction.</p>
+                                <p className={`font-['Open_Sauce_Two:Regular',sans-serif] font-light leading-[18px] not-italic relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Identify friction in core loops, improve feature discovery, and design upgrade paths. Measured on NRR, feature adoption, and support ticket reduction.</p>
                               </div>
                               <div className="relative shrink-0 size-[100px]" data-name="Areas=Conversion">
-                                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAreasConversion} />
+                                <PortfolioImage alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAreasConversion} />
                               </div>
                             </div>
                           </div>
@@ -558,28 +585,28 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                               <p className={`font-medium leading-[36px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[32px] tracking-[-0.2px] w-full`}>+34%</p>
                               <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
                                 <p className={`font-medium leading-[24px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[18px] w-full`}>Trial→Paid Conversion</p>
-                                <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Lift after pricing/compare + guided setup (60–90 days)</p>
+                                <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Lift after pricing/compare + guided setup (60–90 days)</p>
                               </div>
                             </div>
                             <div className="flex min-w-0 flex-col gap-4 items-start py-10 sm:py-0">
                               <p className={`font-medium leading-[36px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[32px] tracking-[-0.2px] w-full`}>−35%</p>
                               <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
                                 <p className={`font-medium leading-[24px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[18px] w-full`}>Time-to-Value (median)</p>
-                                <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Faster first success via role-aware onboarding</p>
+                                <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Faster first success via role-aware onboarding</p>
                               </div>
                             </div>
                             <div className="flex min-w-0 flex-col gap-4 items-start py-10 sm:py-0">
                               <p className={`font-medium leading-[36px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[32px] tracking-[-0.2px] w-full`}>1.8×</p>
                               <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
                                 <p className={`font-medium leading-[24px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[18px] w-full`}>Dev Velocity</p>
-                                <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Design-system adoption (tokens + kits) increased throughpu</p>
+                                <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Design-system adoption (tokens + kits) increased throughpu</p>
                               </div>
                             </div>
                             <div className="flex min-w-0 flex-col gap-4 items-start py-10 last:pb-6 sm:py-0">
                               <p className={`font-medium leading-[36px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[32px] tracking-[-0.2px] w-full`}>92%</p>
                               <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
                                 <p className={`font-medium leading-[24px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[18px] w-full`}>Stakeholder Alignment</p>
-                                <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>{`Decision memos & monthly outcome reviews (PM/CS/RevOps)`}</p>
+                                <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>{`Decision memos & monthly outcome reviews (PM/CS/RevOps)`}</p>
                               </div>
                             </div>
                           </div>
@@ -587,7 +614,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                     </div>
                   </div>
                   <div className="content-stretch flex flex-col items-center relative shrink-0 w-full">
-                    <Link to="/approach" className="content-stretch flex gap-[2px] h-[40px] items-center justify-center px-[10px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
+                    <Link to="/approach" className="content-stretch flex gap-[2px] h-[44px] min-h-[44px] items-center justify-center px-[10px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
                       <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-[rgba(255,255,255,0.1)]' : 'bg-[rgba(242,242,244,0.8)]'} transition-colors duration-700 inset-0 pointer-events-none rounded-[1000px] transition-all duration-200`} />
                       <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)]" />
                       <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
@@ -609,24 +636,24 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                     <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-medium justify-self-stretch leading-[36px] relative row-1 self-start shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[25px] tracking-[-0.2px]`}>Selected works</p>
                   </div>
                   <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 lg:grid-cols-2 grid-rows-[repeat(1,fit-content(100%))] relative shrink-0 w-full">
-                    <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-light justify-self-stretch leading-[18px] relative row-1 self-start shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px]`}>Real outcomes from B2B SaaS engagements. Each started with constraints and ended with measurable change.</p>
+                    <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-light justify-self-stretch leading-[18px] relative row-1 self-start shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px]`}>Real outcomes from B2B SaaS engagements. Each started with constraints and ended with measurable change.</p>
                   </div>
                 </div>
               </div>
               <div className="relative flex w-full min-w-0 flex-col items-center overflow-x-hidden" data-name="Default Pipeline">
                 <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
-                  <img alt="" className="absolute max-w-none object-cover size-full" src={imgDefaultPipeline} />
+                  <PortfolioImage alt="" className="absolute max-w-none object-cover size-full" src={imgDefaultPipeline} />
                   <div className="absolute bg-black/6 inset-0" />
                   <div className="absolute bg-[rgba(0,0,0,0.3)] inset-0" />
                 </div>
                 <div className="relative z-10 w-full shrink-0 px-4 pt-8 sm:px-8 sm:pt-10 md:px-12 md:pt-12 lg:px-16 xl:px-[80px]">
                   <div className="relative aspect-[4096/2592] w-full overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-[1.02] md:mx-auto md:max-h-[min(55vh,792px)]" data-name="image 17">
-                    <img alt="" className="pointer-events-none absolute inset-0 size-full object-cover object-top" src={imgImage17} />
+                    <PortfolioImage alt="" className="pointer-events-none absolute inset-0 size-full object-cover object-top" src={imgImage17} />
                   </div>
                 </div>
                 <div className="relative z-10 flex w-full shrink-0 items-center justify-center px-4 pb-10 pt-8 sm:px-6 sm:pb-16 sm:pt-10 md:pb-24 lg:pb-[120px]">
                   <div className="flex flex-col gap-2 sm:gap-[8px] items-center relative shrink-0 w-full max-w-[446px] mx-auto">
-                    <p className="font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 text-[13px] text-[rgba(255,255,255,0.72)] text-center text-balance">Default · B2B SaaS · 2023-2026</p>
+                    <p className="font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 text-[13px] text-[rgba(255,255,255,0.88)] text-center text-balance">Default · B2B SaaS · 2023-2026</p>
                     <div className="content-stretch flex flex-col gap-[20px] items-center relative shrink-0 w-full">
                       <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
                         <div className="content-stretch flex items-center relative shrink-0 w-full">
@@ -670,7 +697,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                           <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)]" />
                         </div>
                       </div>
-                      <div className={`backdrop-blur-[12px] ${isDark ? "bg-[#2a2a2a] text-[#8c929c]" : "bg-[#ececf0] text-[#5b616d]"} transition-colors duration-700 relative overflow-hidden rounded-[24px] shrink-0 w-full`}>
+                      <div className={`backdrop-blur-[12px] ${isDark ? "bg-[#2a2a2a] text-[#a8adb5]" : "bg-[#ececf0] text-[#5b616d]"} transition-colors duration-700 relative overflow-hidden rounded-[24px] shrink-0 w-full`}>
                         <div className="flex flex-col items-center size-full">
                           <div className="content-stretch flex flex-col gap-[12px] items-center p-[12px] relative size-full">
                             <div className={`${isDark ? 'bg-[#1a1a1a]' : 'bg-[#f9f9fa]'} transition-colors duration-700 relative rounded-[16px] shrink-0 w-full`} data-name="Container">
@@ -681,27 +708,25 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                     <div className="bg-clip-padding border-0 border-[transparent] border-solid flex flex-wrap font-['Switzer_Variable:Regular',sans-serif] gap-4 sm:gap-6 md:gap-[24px] items-center justify-center relative w-full text-center">
                                       <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                         <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>+30%</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#8c929c]" : "text-[#5b616d]"} transition-colors duration-700`}>Functionality</p>
+                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>Functionality</p>
                                       </div>
                                       <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                         <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>+21%</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#8c929c]" : "text-[#5b616d]"} transition-colors duration-700`}>Satisfaction</p>
+                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>Satisfaction</p>
                                       </div>
                                       <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                         <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>x4</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#8c929c]" : "text-[#5b616d]"} transition-colors duration-700`}>ARR Impact</p>
+                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>ARR Impact</p>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[16px] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] ${isDark ? "text-[#8c929c]" : "text-[#5b616d]"} transition-colors duration-700`}>Trade-offs: Custom nodes, AI co-pilot functionality, on-platform actions through the workflow builder, recipes / templates.</p>
-                            <div className={`backdrop-blur-[12px] ${isDark ? 'bg-[#2a2a2a]' : 'bg-[#f2f2f4]'} transition-colors duration-700 content-stretch flex gap-[2px] h-[32px] items-center justify-center px-[8px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105`} data-name="Button">
-                              <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_sm">
-                                <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-[#c3c6cc]" : "text-[#5b616d]"} transition-colors duration-700`}>Case study soon</p>
-                              </div>
-                            </div>
+                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[16px] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>Trade-offs: Custom nodes, AI co-pilot functionality, on-platform actions through the workflow builder, recipes / templates.</p>
+                            <p className={`backdrop-blur-[12px] ${isDark ? 'bg-[#2a2a2a]' : 'bg-[#f2f2f4]'} transition-colors duration-700 content-stretch flex gap-[2px] h-[32px] items-center justify-center px-[8px] py-[4px] relative rounded-[1000px] shrink-0 opacity-90`} data-name="Button">
+                              <span className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-[#c3c6cc]" : "text-[#5b616d]"} transition-colors duration-700`}>Case study soon</span>
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -711,7 +736,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                 <div className="absolute content-stretch flex items-center justify-between left-[92.5px] opacity-0 top-[728px] w-[907px]">
                   <p className="font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 text-[13px] text-white whitespace-nowrap">Default — revenue-grade workflow engine that lets you see your revenue machine</p>
                   <div className="content-stretch flex gap-[16px] items-center justify-end relative shrink-0">
-                    <p className="font-['Switzer_Variable:Regular','Noto_Sans:Regular',sans-serif] font-light leading-[18px] relative shrink-0 text-[13px] text-[rgba(255,255,255,0.72)] whitespace-nowrap">Founding Designer → Design Lead</p>
+                    <p className="font-['Switzer_Variable:Regular','Noto_Sans:Regular',sans-serif] font-light leading-[18px] relative shrink-0 text-[13px] text-[rgba(255,255,255,0.88)] whitespace-nowrap">Founding Designer → Design Lead</p>
                     <div className={`${isDark ? 'bg-[rgba(255,255,255,0.1)]' : 'bg-[rgba(242,242,244,0.8)]'} transition-colors duration-700 content-stretch flex h-[24px] items-center justify-center px-[6px] py-[4px] relative rounded-[6px] shrink-0`} data-name="Chip">
                       <div aria-hidden="true" className="absolute border-0 border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none rounded-[6px]" />
                       <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap">
@@ -723,18 +748,18 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
               </div>
               <div className="relative flex w-full min-w-0 flex-col items-center overflow-x-hidden" data-name="Default Pipeline">
                 <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
-                  <img alt="" className="absolute max-w-none object-cover size-full" src={imgDefaultPipeline1} />
+                  <PortfolioImage alt="" className="absolute max-w-none object-cover size-full" src={imgDefaultPipeline1} />
                   <div className="absolute bg-black/6 inset-0" />
                   <div className="absolute bg-[rgba(0,0,0,0.3)] inset-0" />
                 </div>
                 <div className="relative z-10 w-full shrink-0 px-4 pt-8 sm:px-6 sm:pt-10 md:px-10 md:pt-12 lg:px-12 xl:px-[48px]">
                   <div className="relative aspect-[3714/2493] w-full overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-[1.02] md:mx-auto md:max-h-[min(55vh,792px)]" data-name="image 15">
-                    <img alt="" className="pointer-events-none absolute inset-0 size-full object-cover object-top" src={imgImage15} />
+                    <PortfolioImage alt="" className="pointer-events-none absolute inset-0 size-full object-cover object-top" src={imgImage15} />
                   </div>
                 </div>
                 <div className="relative z-10 flex w-full shrink-0 items-center justify-center px-4 pb-10 pt-8 sm:px-6 sm:pb-16 sm:pt-10 md:pb-24 lg:pb-[120px]">
                   <div className="flex flex-col gap-2 sm:gap-[8px] items-center relative shrink-0 w-full max-w-[446px] mx-auto">
-                    <p className="font-['Open_Sauce_Two:Regular',sans-serif] font-light leading-[18px] not-italic relative shrink-0 text-[13px] text-[rgba(255,255,255,0.72)] text-center text-balance">Default · B2B SaaS · 2023-2026</p>
+                    <p className="font-['Open_Sauce_Two:Regular',sans-serif] font-light leading-[18px] not-italic relative shrink-0 text-[13px] text-[rgba(255,255,255,0.88)] text-center text-balance">Default · B2B SaaS · 2023-2026</p>
                     <div className="content-stretch flex flex-col gap-[20px] items-center relative shrink-0 w-full">
                       <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
                         <div className="content-stretch flex items-center relative shrink-0 w-full">
@@ -778,7 +803,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                           <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)]" />
                         </div>
                       </div>
-                      <div className={`backdrop-blur-[12px] ${isDark ? "bg-[#2a2a2a] text-[#8c929c]" : "bg-[#ececf0] text-[#5b616d]"} transition-colors duration-700 relative overflow-hidden rounded-[24px] shrink-0 w-full`}>
+                      <div className={`backdrop-blur-[12px] ${isDark ? "bg-[#2a2a2a] text-[#a8adb5]" : "bg-[#ececf0] text-[#5b616d]"} transition-colors duration-700 relative overflow-hidden rounded-[24px] shrink-0 w-full`}>
                         <div className="flex flex-col items-center size-full">
                           <div className="content-stretch flex flex-col gap-[12px] items-center p-[12px] relative size-full">
                             <div className={`${isDark ? 'bg-[#1a1a1a]' : 'bg-[#f9f9fa]'} transition-colors duration-700 relative rounded-[16px] shrink-0 w-full`} data-name="Container">
@@ -789,30 +814,28 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                     <div className="bg-clip-padding border-0 border-[transparent] border-solid flex flex-wrap font-['Switzer_Variable:Regular',sans-serif] gap-4 sm:gap-6 md:gap-[24px] items-center justify-center relative w-full text-center">
                                       <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                         <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>+34%</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#8c929c]" : "text-[#5b616d]"} transition-colors duration-700`}>Conversion</p>
+                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>Conversion</p>
                                       </div>
                                       <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                         <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>1.8×</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#8c929c]" : "text-[#5b616d]"} transition-colors duration-700`}>Dev Velocity</p>
+                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>Dev Velocity</p>
                                       </div>
                                       <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                         <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>$2.5M</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#8c929c]" : "text-[#5b616d]"} transition-colors duration-700`}>ARR Impact</p>
+                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>ARR Impact</p>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                            <div className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[0] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] whitespace-pre-wrap ${isDark ? "text-[#8c929c]" : "text-[#5b616d]"} transition-colors duration-700`}>
+                            <div className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[0] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] whitespace-pre-wrap ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>
                               <p className="font-light leading-[16px] mb-0">{`Trade-offs: Kanban view, calendar view, opportunities. `}</p>
                               <p className="font-light leading-[16px]">Shipped core value first.</p>
                             </div>
-                            <div className={`backdrop-blur-[12px] ${isDark ? 'bg-[#2a2a2a]' : 'bg-[#f2f2f4]'} transition-colors duration-700 content-stretch flex gap-[2px] h-[32px] items-center justify-center px-[8px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105`} data-name="Button">
-                              <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_sm">
-                                <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-[#c3c6cc]" : "text-[#5b616d]"} transition-colors duration-700`}>Case study soon</p>
-                              </div>
-                            </div>
+                            <p className={`backdrop-blur-[12px] ${isDark ? 'bg-[#2a2a2a]' : 'bg-[#f2f2f4]'} transition-colors duration-700 content-stretch flex gap-[2px] h-[32px] items-center justify-center px-[8px] py-[4px] relative rounded-[1000px] shrink-0 opacity-90`} data-name="Button">
+                              <span className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-[#c3c6cc]" : "text-[#5b616d]"} transition-colors duration-700`}>Case study soon</span>
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -822,18 +845,18 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
               </div>
               <div className="relative flex w-full min-w-0 flex-col items-center overflow-x-hidden" data-name="Default Pipeline">
                 <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
-                  <img alt="" className="absolute max-w-none object-cover size-full" src={imgDefaultPipeline2} />
+                  <PortfolioImage alt="" className="absolute max-w-none object-cover size-full" src={imgDefaultPipeline2} />
                   <div className="absolute bg-black/6 inset-0" />
                   <div className="absolute bg-[rgba(0,0,0,0.4)] inset-0" />
                 </div>
                 <div className="relative z-10 w-full shrink-0 px-4 pt-8 sm:px-8 sm:pt-10 md:px-12 md:pt-12 lg:px-14 xl:px-[72px]">
                   <div className="relative aspect-[4096/2592] w-full overflow-hidden shadow-[0px_16px_52.5px_0px_rgba(0,0,0,0.03),0px_9.432px_30.949px_0px_rgba(0,0,0,0.04)] cursor-pointer transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl md:mx-auto md:max-h-[min(55vh,792px)]" data-name="image 10">
-                    <img alt="" className="pointer-events-none absolute inset-0 size-full object-cover object-top" src={imgImage10} />
+                    <PortfolioImage alt="" className="pointer-events-none absolute inset-0 size-full object-cover object-top" src={imgImage10} />
                   </div>
                 </div>
                 <div className="relative z-10 flex w-full shrink-0 items-center justify-center px-4 pb-10 pt-8 sm:px-6 sm:pb-16 sm:pt-10 md:pb-24 lg:pb-[120px]">
                   <div className="flex flex-col gap-2 sm:gap-[8px] items-center relative shrink-0 w-full max-w-[446px] mx-auto">
-                    <p className="font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 text-[13px] text-[rgba(255,255,255,0.72)] text-center text-balance">Apollo.io· B2B · SaaS · 2020-2022</p>
+                    <p className="font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 text-[13px] text-[rgba(255,255,255,0.88)] text-center text-balance">Apollo.io· B2B · SaaS · 2020-2022</p>
                     <div className="content-stretch flex flex-col gap-[20px] items-center relative shrink-0 w-full">
                       <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
                         <div className="content-stretch flex items-center relative shrink-0 w-full">
@@ -877,7 +900,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                           <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)]" />
                         </div>
                       </div>
-                      <div className={`backdrop-blur-[12px] ${isDark ? "bg-[#2a2a2a] text-[#8c929c]" : "bg-[#ececf0] text-[#5b616d]"} transition-colors duration-700 relative overflow-hidden rounded-[24px] shrink-0 w-full`}>
+                      <div className={`backdrop-blur-[12px] ${isDark ? "bg-[#2a2a2a] text-[#a8adb5]" : "bg-[#ececf0] text-[#5b616d]"} transition-colors duration-700 relative overflow-hidden rounded-[24px] shrink-0 w-full`}>
                         <div className="flex flex-col items-center size-full">
                           <div className="content-stretch flex flex-col gap-[12px] items-center p-[12px] relative size-full">
                             <div className={`${isDark ? 'bg-[#1a1a1a]' : 'bg-[#f9f9fa]'} transition-colors duration-700 relative rounded-[16px] shrink-0 w-full`} data-name="Container">
@@ -888,30 +911,28 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                     <div className="bg-clip-padding border-0 border-[transparent] border-solid flex flex-wrap font-['Switzer_Variable:Regular',sans-serif] gap-4 sm:gap-6 md:gap-[24px] items-center justify-center relative w-full text-center">
                                       <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                         <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>+18%</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#8c929c]" : "text-[#5b616d]"} transition-colors duration-700`}>Data accuracy</p>
+                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>Data accuracy</p>
                                       </div>
                                       <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                         <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>+12%</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#8c929c]" : "text-[#5b616d]"} transition-colors duration-700`}>Satisfaction</p>
+                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>Satisfaction</p>
                                       </div>
                                       <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                         <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>-16%</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#8c929c]" : "text-[#5b616d]"} transition-colors duration-700`}>Bounce rate</p>
+                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>Bounce rate</p>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                            <div className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[0] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] whitespace-pre-wrap ${isDark ? "text-[#8c929c]" : "text-[#5b616d]"} transition-colors duration-700`}>
+                            <div className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[0] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] whitespace-pre-wrap ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>
                               <p className="font-light leading-[16px] mb-0">{`Trade-offs: Service outside the platform. `}</p>
                               <p className="font-light leading-[16px]">Focused on data quality on platform first.</p>
                             </div>
-                            <div className={`backdrop-blur-[12px] ${isDark ? 'bg-[#2a2a2a]' : 'bg-[#f2f2f4]'} transition-colors duration-700 content-stretch flex gap-[2px] h-[32px] items-center justify-center px-[8px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105`} data-name="Button">
-                              <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_sm">
-                                <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-[#c3c6cc]" : "text-[#5b616d]"} transition-colors duration-700`}>Case study soon</p>
-                              </div>
-                            </div>
+                            <p className={`backdrop-blur-[12px] ${isDark ? 'bg-[#2a2a2a]' : 'bg-[#f2f2f4]'} transition-colors duration-700 content-stretch flex gap-[2px] h-[32px] items-center justify-center px-[8px] py-[4px] relative rounded-[1000px] shrink-0 opacity-90`} data-name="Button">
+                              <span className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-[#c3c6cc]" : "text-[#5b616d]"} transition-colors duration-700`}>Case study soon</span>
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -921,18 +942,18 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
               </div>
               <div className="relative flex w-full min-w-0 flex-col items-center overflow-x-hidden" data-name="Default Pipeline">
                 <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
-                  <img alt="" className="absolute max-w-none object-cover size-full" src={imgDefaultPipeline3} />
+                  <PortfolioImage alt="" className="absolute max-w-none object-cover size-full" src={imgDefaultPipeline3} />
                   <div className="absolute bg-black/6 inset-0" />
                   <div className="absolute bg-[rgba(0,0,0,0.4)] inset-0" />
                 </div>
                 <div className="relative z-10 w-full shrink-0 px-4 pt-8 sm:px-8 sm:pt-10 md:px-12 md:pt-12 lg:px-14 xl:px-[72px]">
                   <div className="relative aspect-[4096/2592] w-full overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-[1.02] md:mx-auto md:max-h-[min(55vh,792px)]" data-name="image 349">
-                    <img alt="" className="pointer-events-none absolute inset-0 size-full object-cover object-top" src={imgImage349} />
+                    <PortfolioImage alt="Default.com crowdfunding product screens" className="pointer-events-none absolute inset-0 size-full object-cover object-top" src={imgImage349} width={4096} height={2592} />
                   </div>
                 </div>
                 <div className="relative z-10 flex w-full shrink-0 items-center justify-center px-4 pb-10 pt-8 sm:px-6 sm:pb-16 sm:pt-10 md:pb-24 lg:pb-[120px]">
                   <div className="flex flex-col gap-2 sm:gap-[8px] items-center relative shrink-0 w-full max-w-[446px] mx-auto">
-                    <p className="font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 text-[13px] text-[rgba(255,255,255,0.72)] text-center text-balance">NDA Project · B2C · B2B · SaaS · 2020-2021</p>
+                    <p className="font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 text-[13px] text-[rgba(255,255,255,0.88)] text-center text-balance">NDA Project · B2C · B2B · SaaS · 2020-2021</p>
                     <div className="content-stretch flex flex-col gap-[20px] items-center relative shrink-0 w-full">
                       <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
                         <div className="content-stretch flex items-center relative shrink-0 w-full">
@@ -976,7 +997,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                           <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)]" />
                         </div>
                       </div>
-                      <div className={`backdrop-blur-[12px] ${isDark ? "bg-[#2a2a2a] text-[#8c929c]" : "bg-[#ececf0] text-[#5b616d]"} transition-colors duration-700 relative overflow-hidden rounded-[24px] shrink-0 w-full`}>
+                      <div className={`backdrop-blur-[12px] ${isDark ? "bg-[#2a2a2a] text-[#a8adb5]" : "bg-[#ececf0] text-[#5b616d]"} transition-colors duration-700 relative overflow-hidden rounded-[24px] shrink-0 w-full`}>
                         <div className="flex flex-col items-center size-full">
                           <div className="content-stretch flex flex-col gap-[12px] items-center p-[12px] relative size-full">
                             <div className={`${isDark ? 'bg-[#1a1a1a]' : 'bg-[#f9f9fa]'} transition-colors duration-700 relative rounded-[16px] shrink-0 w-full`} data-name="Container">
@@ -988,15 +1009,15 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                       <div className="bg-clip-padding border-0 border-[transparent] border-solid flex flex-wrap font-['Switzer_Variable:Regular',sans-serif] items-center justify-center sm:justify-between gap-4 sm:gap-8 px-4 sm:px-8 md:px-12 lg:px-[100px] relative w-full text-center">
                                         <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                           <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>250+</p>
-                                          <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#8c929c]" : "text-[#5b616d]"} transition-colors duration-700`}>Screens</p>
+                                          <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>Screens</p>
                                         </div>
                                         <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                           <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>4</p>
-                                          <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#8c929c]" : "text-[#5b616d]"} transition-colors duration-700`}>Roles</p>
+                                          <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>Roles</p>
                                         </div>
                                         <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                           <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>{`>6`}</p>
-                                          <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#8c929c]" : "text-[#5b616d]"} transition-colors duration-700`}>Months</p>
+                                          <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>Months</p>
                                         </div>
                                       </div>
                                     </div>
@@ -1004,12 +1025,10 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                 </div>
                               </div>
                             </div>
-                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[16px] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] ${isDark ? "text-[#8c929c]" : "text-[#5b616d]"} transition-colors duration-700`}>{`Trade-offs: hypotheses based, sacrified crypto-direction, gamification & achievements.`}</p>
-                            <div className={`backdrop-blur-[12px] ${isDark ? 'bg-[#2a2a2a]' : 'bg-[#f2f2f4]'} transition-colors duration-700 content-stretch flex gap-[2px] h-[32px] items-center justify-center px-[8px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105`} data-name="Button">
-                              <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_sm">
-                                <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-[#c3c6cc]" : "text-[#5b616d]"} transition-colors duration-700`}>Case study soon</p>
-                              </div>
-                            </div>
+                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[16px] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] ${isDark ? "text-[#a3a9b2]" : "text-[#5b616d]"} transition-colors duration-700`}>{`Trade-offs: hypotheses based, sacrified crypto-direction, gamification & achievements.`}</p>
+                            <p className={`backdrop-blur-[12px] ${isDark ? 'bg-[#2a2a2a]' : 'bg-[#f2f2f4]'} transition-colors duration-700 content-stretch flex gap-[2px] h-[32px] items-center justify-center px-[8px] py-[4px] relative rounded-[1000px] shrink-0 opacity-90`} data-name="Button">
+                              <span className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-[#c3c6cc]" : "text-[#5b616d]"} transition-colors duration-700`}>Case study soon</span>
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -1018,7 +1037,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                 </div>
               </div>
               <div className="content-stretch flex flex-col items-center relative shrink-0 w-full">
-                <Link to="/works" className="content-stretch flex gap-[2px] h-[40px] items-center justify-center px-[10px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
+                <Link to="/works" className="content-stretch flex gap-[2px] h-[44px] min-h-[44px] items-center justify-center px-[10px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
                   <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-white' : 'bg-black'} inset-0 pointer-events-none rounded-[1000px]`} />
                   <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.09)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_1px_1px_0px_rgba(0,0,0,0.03)]" />
                   <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
@@ -1037,17 +1056,17 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                       <div className="content-stretch flex flex-col gap-[20px] items-start justify-self-stretch relative self-start shrink-0 w-full">
                         <div className="content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] gap-[8px] items-start relative shrink-0 w-full">
                           <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px] w-full`}>There are 40+ projects completed, to see some of them you can visit my Dribbble profile or go to the Playground where you will find unreleased conceptions or ideas visualization</p>
-                          <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>There is an opportunity to make quick concepts by request is you want to validate your idea not only with AI but with real users as well.</p>
+                          <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>There is an opportunity to make quick concepts by request is you want to validate your idea not only with AI but with real users as well.</p>
                         </div>
                         <div className="content-stretch flex items-center relative shrink-0 w-full">
-                          <Link to="/playground" className="content-stretch flex gap-[2px] h-[40px] items-center justify-center px-[10px] py-[4px] relative rounded-[1000px] shrink-0 no-underline" data-name="Button">
+                          <Link to="/playground" className="content-stretch flex gap-[2px] h-[44px] min-h-[44px] items-center justify-center px-[10px] py-[4px] relative rounded-[1000px] shrink-0 no-underline" data-name="Button">
                             <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-[#1a1a1a]' : 'bg-white'} transition-colors duration-700 inset-0 pointer-events-none rounded-[1000px]`} />
                             <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)]" />
                             <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
-                              <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] whitespace-nowrap`}>View playground</p>
+                              <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] whitespace-nowrap`}>View playground</p>
                             </div>
                             <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="Right_md">
-                              <ArrowRightIcon className={isDark ? "text-white/64" : "text-[#5b616d]"} />
+                              <ArrowRightIcon className={isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} />
                             </div>
                             <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)]" />
                           </Link>
@@ -1056,7 +1075,9 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                     </div>
                   </div>
                   <div className={`relative h-[min(70vh,540px)] min-h-[360px] w-full shrink-0 overflow-hidden rounded-[inherit] ${isDark ? "bg-[#151515]" : "bg-[#f9f9fa]"}`}>
-                    <PlaygroundCanvas isDark={isDark} embed />
+                    <Suspense fallback={null}>
+                      <PlaygroundCanvas isDark={isDark} embed />
+                    </Suspense>
                   </div>
                 </div>
                 {!isDark ? (
@@ -1069,7 +1090,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                     <div className="flex flex-col items-center justify-center p-[32px] relative size-full w-full">
                       <div className="flex flex-col items-center gap-[8px] font-['Switzer_Variable:Regular',sans-serif] max-w-[472px] relative shrink-0 w-full">
                         <p className={`font-medium leading-[36px] relative shrink-0 text-center ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[25px] tracking-[-0.2px] w-full`}>What portfolios don’t show</p>
-                        <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] text-center w-full`}>Most portfolios show finals. Few show the constraints, the cuts, and the chaos that got there.</p>
+                        <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] text-center w-full`}>Most portfolios show finals. Few show the constraints, the cuts, and the chaos that got there.</p>
                       </div>
                     </div>
                   </div>
@@ -1081,7 +1102,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                       renderIcon={(slide) =>
                         slide.iconSrc ? (
                           <div className="relative size-[80px] shrink-0" data-name="Images">
-                            <img alt="" className="pointer-events-none absolute inset-0 size-full max-w-none object-cover" src={slide.iconSrc} />
+                            <PortfolioImage alt="" className="pointer-events-none absolute inset-0 size-full max-w-none object-cover" src={slide.iconSrc} />
                           </div>
                         ) : (
                           <Images className="relative size-[60px] shrink-0" />
@@ -1150,7 +1171,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                 <div className="content-stretch box-border mx-auto flex w-full min-w-0 max-w-[530px] flex-col gap-10 md:gap-[64px] items-start px-4 md:px-6 relative shrink-0">
                   <div className="content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] gap-[8px] items-start relative shrink-0 w-full">
                     <p className={`font-medium leading-[36px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[25px] tracking-[-0.2px] w-full`}>{`Companies aren't hiring "designers." They're hiring people who reduce chaos.`}</p>
-                    <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>{`Max’s methodology isn't about perfect artifacts. It's about driving clarity in complex environments and shipping outcomes that matter. From discovery to strategy to execution.`}</p>
+                    <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>{`Max’s methodology isn't about perfect artifacts. It's about driving clarity in complex environments and shipping outcomes that matter. From discovery to strategy to execution.`}</p>
                   </div>
                   <div className="content-stretch flex flex-col gap-[24px] items-start relative shrink-0 w-full" data-name="Container">
                     <div className="relative shrink-0 w-full" data-name="Container">
@@ -1167,7 +1188,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                         <div className="flex-[1_0_0] min-h-px min-w-px relative">
                           <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] gap-[4px] items-center justify-center leading-[18px] relative size-full text-[13px]">
                             <p className={`font-normal text-[15px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 w-full`}>Can Max ship when the brief changes?</p>
-                            <p className={`font-light relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 w-full`}>Yes. Recent project pivoted scope 3 weeks before launch. Shipped anyway.</p>
+                            <p className={`font-light relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 w-full`}>Yes. Recent project pivoted scope 3 weeks before launch. Shipped anyway.</p>
                           </div>
                         </div>
                       </div>
@@ -1186,7 +1207,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                         <div className="flex-[1_0_0] min-h-px min-w-px relative">
                           <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] gap-[4px] items-center justify-center leading-[18px] relative size-full text-[13px]">
                             <p className={`font-normal text-[15px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 w-full`}>Can Max explain tradeoffs without perfect research?</p>
-                            <p className={`font-light relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 w-full`}>Went from 4 syncs/week to 1 at Apollo. Decision memos replaced status updates.</p>
+                            <p className={`font-light relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 w-full`}>Went from 4 syncs/week to 1 at Apollo. Decision memos replaced status updates.</p>
                           </div>
                         </div>
                       </div>
@@ -1205,7 +1226,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                         <div className="flex-[1_0_0] min-h-px min-w-px relative">
                           <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] gap-[4px] items-center justify-center leading-[18px] relative size-full text-[13px]">
                             <p className={`font-normal text-[15px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 w-full`}>Can Max reduce alignment meetings?</p>
-                            <p className={`font-light relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 w-full`}>{`Yes. Here's a decision memo I wrote with 48 hours notice and zero user data.`}</p>
+                            <p className={`font-light relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 w-full`}>{`Yes. Here's a decision memo I wrote with 48 hours notice and zero user data.`}</p>
                           </div>
                         </div>
                       </div>
@@ -1234,13 +1255,13 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                   <div className="content-stretch flex gap-[4px] items-center relative shrink-0 w-full" data-name="Heading_top">
                                     <p className={`flex-[1_0_0] font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[20px] min-h-px min-w-px relative ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[15px]`}>AI handles 40% of what I used to do.</p>
                                   </div>
-                                  <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>{`So now I focus on what it can't: stakeholder alignment, scope protection, and knowing what to cut.`}</p>
+                                  <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>{`So now I focus on what it can't: stakeholder alignment, scope protection, and knowing what to cut.`}</p>
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                        <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-white/48" : "text-[#8c929c]"}`}>MaxI believes in expert multiplication with AI, not replacement</p>
+                        <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-[#b8bcc4]" : "text-[#6b7280]"}`}>MaxI believes in expert multiplication with AI, not replacement</p>
                       </div>
                     </div>
                   </div>
@@ -1252,7 +1273,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                   <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 lg:grid-cols-[342.67px_minmax(0,1fr)] grid-rows-[repeat(1,fit-content(100%))] py-6 md:py-[32px] relative shrink-0 w-full">
                     <div className="col-1 content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] gap-[8px] items-start justify-self-stretch relative row-1 self-start shrink-0">
                       <p className={`font-medium leading-[36px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[25px] tracking-[-0.2px] w-full`}>Focus → Outcomes over outputs: from insight to shipped impact.</p>
-                      <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>{`The old design process—Double Diamond, weeks of research, polished decks—doesn't work in the AI era. I use two models depending on context.`}</p>
+                      <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>{`The old design process—Double Diamond, weeks of research, polished decks—doesn't work in the AI era. I use two models depending on context.`}</p>
                     </div>
                   </div>
                   <div className="content-stretch flex w-full flex-col items-stretch relative">
@@ -1263,13 +1284,13 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                           <div className="relative flex h-full min-h-0 w-full flex-1 flex-col gap-[24px] md:gap-[32px] items-stretch pb-[24px] md:pb-[32px] pt-[32px] md:pt-[48px] px-[16px] md:px-[32px]">
                             <div className="content-stretch flex gap-[16px] items-center relative shrink-0 w-full">
                               <div className="relative shrink-0 size-[56px]" data-name="Images">
-                                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImages2} />
+                                <PortfolioImage alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImages2} />
                               </div>
                               <div className="content-stretch flex flex-[1_0_0] flex-col items-start min-h-px min-w-px relative">
                                 <div className="content-stretch flex flex-col items-start relative shrink-0 w-full">
                                   <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px] w-full`}>Multiplier Model</p>
                                 </div>
-                                <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Human = Strategic Brain, AI = Execution Layer</p>
+                                <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Human = Strategic Brain, AI = Execution Layer</p>
                               </div>
                             </div>
                             <div className="flex min-h-0 flex-1 flex-col gap-[16px] items-stretch relative w-full">
@@ -1277,7 +1298,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                 <div className={`${isDark ? 'bg-[#2a2a2a]' : 'bg-[#f9f9fa]'} transition-colors duration-700 relative flex min-h-0 flex-1 w-full flex-col rounded-tl-[28px] rounded-tr-[28px]`}>
                                   <div className="overflow-clip rounded-[inherit] size-full">
                                     <div className="content-stretch flex flex-col gap-[8px] items-start px-[32px] py-[24px] relative size-full">
-                                      <p className={`font-['Switzer_Variable:Medium',sans-serif] font-medium leading-[18px] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>I DO</p>
+                                      <p className={`font-['Switzer_Variable:Medium',sans-serif] font-medium leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>I DO</p>
                                       <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[20px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[15px] w-full`}>Stakeholder interviews, define bets, scope decisions, quality gates, taste calls</p>
                                     </div>
                                   </div>
@@ -1301,7 +1322,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                           <div className="content-stretch flex items-center relative shrink-0 w-full" data-name="Heading_top">
                                             <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[20px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[15px] whitespace-nowrap`}>Best for:</p>
                                           </div>
-                                          <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Embedded roles, complex stakeholder environments, team leadership</p>
+                                          <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Embedded roles, complex stakeholder environments, team leadership</p>
                                         </div>
                                       </div>
                                     </div>
@@ -1316,13 +1337,13 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                           <div className="relative flex h-full min-h-0 w-full flex-1 flex-col gap-[24px] md:gap-[32px] items-stretch pb-[24px] md:pb-[32px] pt-[32px] md:pt-[48px] px-[16px] md:px-[32px]">
                             <div className="content-stretch flex shrink-0 gap-[16px] items-center relative w-full">
                               <div className="relative shrink-0 size-[56px]" data-name="Images">
-                                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImages3} />
+                                <PortfolioImage alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImages3} />
                               </div>
                               <div className="content-stretch flex flex-[1_0_0] flex-col items-start min-h-px min-w-px relative">
                                 <div className="content-stretch flex flex-col items-start relative shrink-0 w-full">
                                   <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px] w-full`}>Loop Model</p>
                                 </div>
-                                <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Human + AI = Rapid Iteration Partners</p>
+                                <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Human + AI = Rapid Iteration Partners</p>
                               </div>
                             </div>
                             <div className="flex min-h-0 flex-1 flex-col gap-[16px] items-stretch relative w-full">
@@ -1385,7 +1406,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                         </g>
                                       </svg>
                                     </div>
-                                    <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 text-center ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>(repeat in hours, not weeks)</p>
+                                    <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 text-center ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>(repeat in hours, not weeks)</p>
                                   </div>
                                 </div>
                               </div>
@@ -1400,7 +1421,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                           <div className="content-stretch flex items-center relative shrink-0 w-full" data-name="Heading_top">
                                             <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[20px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[15px] whitespace-nowrap`}>Best for:</p>
                                           </div>
-                                          <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Embedded roles, complex stakeholder environments, team leadership</p>
+                                          <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Embedded roles, complex stakeholder environments, team leadership</p>
                                         </div>
                                       </div>
                                     </div>
@@ -1416,7 +1437,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                         data-name="Approach principles bar"
                       >
                         <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none" />
-                        <Link to="/approach" className="relative z-[1] flex h-10 shrink-0 items-center self-start overflow-hidden rounded-[1000px] px-[10px] py-1 no-underline" data-name="Button">
+                        <Link to="/approach" className="relative z-[1] flex h-11 min-h-[44px] shrink-0 items-center self-start overflow-hidden rounded-[1000px] px-[10px] py-1 no-underline" data-name="Button">
                           <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-white' : 'bg-black'} inset-0 pointer-events-none rounded-[1000px]`} />
                           <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.09)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_1px_1px_0px_rgba(0,0,0,0.03)]" />
                           <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
@@ -1430,15 +1451,15 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                         <div className="content-stretch flex flex-wrap gap-2 md:gap-[16px] items-center relative shrink-0 w-full md:w-auto">
                           <div className={`${isDark ? 'bg-[#2a2a2a]' : 'bg-[#f2f2f4]'} transition-colors duration-700 content-stretch flex items-center justify-center px-[16px] py-[8px] relative rounded-[1000px] shrink-0`}>
                             <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.12)] border-dashed inset-0 pointer-events-none rounded-[1000px]" />
-                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[20px] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[15px] text-center whitespace-nowrap`}>Fast feedback over perfect decks</p>
+                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[20px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[15px] text-center whitespace-nowrap`}>Fast feedback over perfect decks</p>
                           </div>
                           <div className={`${isDark ? 'bg-[#2a2a2a]' : 'bg-[#f2f2f4]'} transition-colors duration-700 content-stretch flex items-center justify-center px-[16px] py-[8px] relative rounded-[1000px] shrink-0`}>
                             <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.12)] border-dashed inset-0 pointer-events-none rounded-[1000px]" />
-                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[20px] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[15px] text-center whitespace-nowrap`}>{`Ship > polish`}</p>
+                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[20px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[15px] text-center whitespace-nowrap`}>{`Ship > polish`}</p>
                           </div>
                           <div className={`${isDark ? 'bg-[#2a2a2a]' : 'bg-[#f2f2f4]'} transition-colors duration-700 content-stretch flex items-center justify-center px-[16px] py-[8px] relative rounded-[1000px] shrink-0`}>
                             <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.12)] border-dashed inset-0 pointer-events-none rounded-[1000px]" />
-                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[20px] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[15px] text-center whitespace-nowrap`}>{`Disagree & commit within 48h`}</p>
+                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[20px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[15px] text-center whitespace-nowrap`}>{`Disagree & commit within 48h`}</p>
                           </div>
                         </div>
                       </div>
@@ -1453,7 +1474,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                   <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-medium justify-self-stretch leading-[36px] relative row-1 self-start shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[25px] tracking-[-0.2px]`}>Products Max is building</p>
                 </div>
                 <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 lg:grid-cols-2 grid-rows-[repeat(1,fit-content(100%))] relative shrink-0 w-full">
-                  <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-light justify-self-stretch leading-[18px] relative row-1 self-start shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px]`}>Tools I build to keep my instincts sharp. Each started as a problem I faced.</p>
+                  <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-light justify-self-stretch leading-[18px] relative row-1 self-start shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px]`}>Tools I build to keep my instincts sharp. Each started as a problem I faced.</p>
                 </div>
               </div>
               <div className="content-stretch flex flex-col items-start relative shrink-0 w-full">
@@ -1479,7 +1500,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                 <div className="flex flex-row items-center justify-center overflow-clip rounded-[inherit] size-full">
                                   <div className="content-stretch flex gap-[8px] items-center justify-center px-[12px] py-[4px] relative size-full">
                                     <div className="bg-[#008ece] rounded-[12px] shrink-0 size-[8px]" />
-                                    <div className={`flex flex-col font-['Switzer_Variable:Regular',sans-serif] font-normal justify-center leading-[0] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] whitespace-nowrap`}>
+                                    <div className={`flex flex-col font-['Switzer_Variable:Regular',sans-serif] font-normal justify-center leading-[0] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] whitespace-nowrap`}>
                                       <p className="leading-[18px]">Fundraising</p>
                                     </div>
                                   </div>
@@ -1492,7 +1513,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                               <a href="https://fliq.club" target="_blank" rel="noopener noreferrer" className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px] w-full no-underline hover:underline`}>fliq.club</a>
                             </div>
                             <p className={`font-['Switzer_Variable:Medium',sans-serif] font-medium leading-[18px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[15px] w-full`}>Fliq. Match. Meet. Launch.</p>
-                            <div className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[0] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full whitespace-pre-wrap`}>
+                            <div className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[0] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full whitespace-pre-wrap`}>
                               <p className="leading-[18px] mb-0">{`Start-up market and networking simplification. `}</p>
                               <p className="leading-[18px]">Can it be new Linkedin?</p>
                             </div>
@@ -1504,10 +1525,10 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                     <div className="flex flex-col gap-[12px] items-start p-[16px] relative w-full min-w-0">
                                       <div className="flex flex-col gap-[4px] items-start min-w-0 w-full" data-name="Text_wrap">
                                         <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[20px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[15px] w-full`} data-name="Heading_top">Looking for an investment project?</p>
-                                        <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Let’s chat and define the idea</p>
+                                        <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Let’s chat and define the idea</p>
                                       </div>
                                       <div className="flex flex-col items-start gap-[12px] w-full min-w-0" data-name="CTAs">
-                                        <a href={BOOK_CALL_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[40px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
+                                        <a href={BOOK_CALL_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
                                           <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-[rgba(255,255,255,0.1)]' : 'bg-[rgba(242,242,244,0.8)]'} transition-colors duration-700 inset-0 pointer-events-none rounded-[1000px]`} />
                                           <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)]" />
                                           <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
@@ -1516,7 +1537,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                           <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="Right_md">
                                             <div className="relative shrink-0 size-[18px]" data-name="icons / google meet">
                                               <div className="absolute inset-[10%_0]" data-name="image 37">
-                                                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage37} />
+                                                <PortfolioImage alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage37} />
                                               </div>
                                             </div>
                                           </div>
@@ -1553,7 +1574,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                 <div className="flex flex-row items-center justify-center overflow-clip rounded-[inherit] size-full">
                                   <div className="content-stretch flex gap-[8px] items-center justify-center px-[12px] py-[4px] relative size-full">
                                     <div className="bg-[#e4a000] rounded-[12px] shrink-0 size-[8px]" />
-                                    <div className={`flex flex-col font-['Switzer_Variable:Regular',sans-serif] font-normal justify-center leading-[0] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] whitespace-nowrap`}>
+                                    <div className={`flex flex-col font-['Switzer_Variable:Regular',sans-serif] font-normal justify-center leading-[0] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] whitespace-nowrap`}>
                                       <p className="leading-[18px]">Closed beta</p>
                                     </div>
                                   </div>
@@ -1566,10 +1587,10 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                               <a href="https://pinnboards.com" target="_blank" rel="noopener noreferrer" className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px] w-full no-underline hover:underline`}>pinnboards.com</a>
                             </div>
                             <p className={`font-['Switzer_Variable:Medium',sans-serif] font-medium leading-[18px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[15px] w-full`}>Pinn. Collaborate. Generate.</p>
-                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Figma for PMs with omni-channel AI</p>
+                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Figma for PMs with omni-channel AI</p>
                           </div>
                         </div>
-                        <div className="relative mt-[32px] flex h-[40px] shrink-0 cursor-pointer items-center justify-center gap-[2px] rounded-[1000px] px-[10px] py-[4px] transition-all duration-200 hover:scale-105" data-name="Button">
+                        <a href={PINNBOARDS_URL} target="_blank" rel="noopener noreferrer" className="relative mt-[32px] flex h-[44px] min-h-[44px] shrink-0 cursor-pointer items-center justify-center gap-[2px] rounded-[1000px] px-[10px] py-[4px] transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
                           <div aria-hidden="true" className={`pointer-events-none absolute inset-0 rounded-[1000px] backdrop-blur-[12px] ${isDark ? "bg-[rgba(255,255,255,0.1)]" : "bg-[rgba(242,242,244,0.8)]"} transition-colors duration-700`} />
                           <div aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[1000px] border border-solid border-[rgba(0,0,0,0.06)] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)]" />
                           <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
@@ -1579,7 +1600,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                             <ArrowRightIcon className={isDark ? "text-white" : "text-[#0a0c11]"} />
                           </div>
                           <div className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)]" aria-hidden />
-                        </div>
+                        </a>
                       </div>
                     </div>
                     <div aria-hidden="true" className={`absolute border border-solid inset-0 pointer-events-none ${isDark ? 'border-white/[0.06]' : 'border-[rgba(0,0,0,0.06)]'}`} />
@@ -1615,7 +1636,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                 <div className="flex flex-row items-center justify-center overflow-clip rounded-[inherit] size-full">
                                   <div className="content-stretch flex gap-[8px] items-center justify-center px-[12px] py-[4px] relative size-full">
                                     <div className="bg-[#8c929c] rounded-[12px] shrink-0 size-[8px]" />
-                                    <div className={`flex flex-col font-['Switzer_Variable:Regular',sans-serif] font-normal justify-center leading-[0] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] whitespace-nowrap`}>
+                                    <div className={`flex flex-col font-['Switzer_Variable:Regular',sans-serif] font-normal justify-center leading-[0] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] whitespace-nowrap`}>
                                       <p className="leading-[18px]">Soon</p>
                                     </div>
                                   </div>
@@ -1628,10 +1649,10 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                               <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px] w-full`}>organica.club</p>
                             </div>
                             <p className={`font-['Switzer_Variable:Medium',sans-serif] font-medium leading-[18px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[15px] w-full`}>Be organic. Be yourself.</p>
-                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>People deserve to be real, consume real content and be organic in every moment.</p>
+                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>People deserve to be real, consume real content and be organic in every moment.</p>
                           </div>
                         </div>
-                        <div className="relative mt-[32px] flex h-[40px] shrink-0 cursor-pointer items-center justify-center gap-[2px] rounded-[1000px] px-[10px] py-[4px] transition-all duration-200 hover:scale-105" data-name="Button">
+                        <a href={BOOK_CALL_URL} target="_blank" rel="noopener noreferrer" className="relative mt-[32px] flex h-[44px] min-h-[44px] shrink-0 cursor-pointer items-center justify-center gap-[2px] rounded-[1000px] px-[10px] py-[4px] transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
                           <div aria-hidden="true" className={`pointer-events-none absolute inset-0 rounded-[1000px] backdrop-blur-[12px] ${isDark ? "bg-[rgba(255,255,255,0.1)]" : "bg-[rgba(242,242,244,0.8)]"} transition-colors duration-700`} />
                           <div aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[1000px] border border-solid border-[rgba(0,0,0,0.06)] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)]" />
                           <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
@@ -1641,7 +1662,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                             <ArrowRightIcon className={isDark ? "text-white" : "text-[#0a0c11]"} />
                           </div>
                           <div className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)]" aria-hidden />
-                        </div>
+                        </a>
                       </div>
                     </div>
                     <div aria-hidden="true" className={`absolute border border-solid inset-0 pointer-events-none ${isDark ? 'border-white/[0.06]' : 'border-[rgba(0,0,0,0.06)]'}`} />
@@ -1654,11 +1675,11 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                         <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-medium justify-self-stretch leading-[30px] relative row-1 self-start shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>Want to hear more about what Max is building or have an interest in becoming a partner or investor?</p>
                       </div>
                       <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 lg:grid-cols-2 grid-rows-[repeat(1,fit-content(100%))] relative shrink-0 w-full">
-                        <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-light justify-self-stretch leading-[18px] relative row-1 self-start shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px]`}>He is always open to new partnership ideas or collaboration, do not hesitate to contact if you want to build something together.</p>
+                        <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-light justify-self-stretch leading-[18px] relative row-1 self-start shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px]`}>He is always open to new partnership ideas or collaboration, do not hesitate to contact if you want to build something together.</p>
                       </div>
                     </div>
                     <div className="content-stretch flex items-center relative shrink-0 w-full">
-                      <a href={BOOK_CALL_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[40px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg no-underline" data-name="Button">
+                      <a href={BOOK_CALL_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg no-underline" data-name="Button">
                         <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-white' : 'bg-black'} inset-0 pointer-events-none rounded-[1000px] transition-all duration-200`} />
                         <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.09)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_1px_1px_0px_rgba(0,0,0,0.03)]" />
                         <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
@@ -1667,7 +1688,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                         <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="Right_md">
                           <div className="relative shrink-0 size-[18px]" data-name="icons / google meet">
                             <div className="absolute inset-[10%_0]" data-name="image 37">
-                              <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage37} />
+                              <PortfolioImage alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage37} />
                             </div>
                           </div>
                         </div>
@@ -1684,7 +1705,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                   <div className="col-1 lg:col-2 content-stretch flex flex-col items-center justify-self-stretch relative row-1 self-start shrink-0 w-full min-w-0">
                     <div className="content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] gap-[8px] items-center relative shrink-0 w-full text-center">
                       <p className={`font-medium leading-[36px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[25px] tracking-[-0.2px] w-full`}>{`People I've worked with`}</p>
-                      <div className={`font-light leading-[0] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full whitespace-pre-wrap text-center`}>
+                      <div className={`font-light leading-[0] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full whitespace-pre-wrap text-center`}>
                         <p className="leading-[18px] mb-0">{`Clients, colleagues, managers, and collaborators `}</p>
                         <p className="leading-[18px]">— they had things to say.</p>
                       </div>
@@ -1703,10 +1724,10 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                   <p className={`font-medium leading-[36px] shrink-0 text-[25px] tracking-[-0.2px] ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700`}>
                     Max design products that help revenue teams move faster.
                   </p>
-                  <p className={`font-light text-[13px] leading-[18px] ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700`}>
+                  <p className={`font-light text-[13px] leading-[18px] ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700`}>
                     {`Product designer with 13+ years in B2B SaaS. He has been a founding designer three times, which means he built design from zero: no system, no team, no playbook. Just ambiguity and a deadline.`}
                   </p>
-                  <p className={`font-light text-[13px] leading-[18px] ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700`}>
+                  <p className={`font-light text-[13px] leading-[18px] ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700`}>
                     {`He specializes in the messy middle of product work — the part between "we have an idea" and "it's shipping." He reduces chaos, aligns stakeholders, and makes sure what ships actually moves metrics.`}
                   </p>
                 </div>
@@ -1715,26 +1736,28 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                   className="relative aspect-[2732/4096] w-full min-w-0 self-center overflow-hidden lg:self-auto"
                   data-name="DSC07399 1"
                 >
-                  <img
-                    alt=""
+                  <PortfolioImage
+                    alt="Max Burlak, product designer"
                     className="absolute inset-0 h-full w-full max-w-none object-cover object-center pointer-events-none"
                     src={imgDsc073991}
+                    width={2732}
+                    height={4096}
                   />
                 </div>
 
                 <div className="flex min-w-0 flex-col gap-4 font-['Switzer_Variable:Regular',sans-serif] lg:justify-end lg:gap-[16px]">
-                  <p className={`font-light text-[13px] leading-[18px] ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700`}>
+                  <p className={`font-light text-[13px] leading-[18px] ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700`}>
                     <span>{`Max operates at the intersection of `}</span>
                     <span className={`font-semibold ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700`}>
                       {`Design × Product × Revenue × Systems thinking.`}
                     </span>
                   </p>
-                  <p className={`font-light text-[13px] leading-[18px] ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700`}>
+                  <p className={`font-light text-[13px] leading-[18px] ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700`}>
                     <span className={`font-semibold ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700`}>{`His focus: `}</span>
                     building intuitive tools that people actually want to use, balancing user needs with business outcomes.
                   </p>
                   <div className="flex items-center">
-                    <Link to="/about" className="relative flex h-[40px] shrink-0 cursor-pointer items-center justify-center gap-[2px] rounded-[1000px] px-[10px] py-[4px] transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
+                    <Link to="/about" className="relative flex h-[44px] min-h-[44px] shrink-0 cursor-pointer items-center justify-center gap-[2px] rounded-[1000px] px-[10px] py-[4px] transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
                       <div aria-hidden="true" className={`absolute inset-0 rounded-[1000px] backdrop-blur-[12px] pointer-events-none ${isDark ? 'bg-white' : 'bg-black'}`} />
                       <div aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[1000px] border border-solid border-[rgba(0,0,0,0.09)] shadow-[0px_1px_1px_0px_rgba(0,0,0,0.03)]" />
                       <div className="relative flex items-center justify-center gap-[4px] px-[4px]" data-name="Text_wrap_md">
@@ -1772,7 +1795,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                           </div>
                         </div>
                         <p className={`w-full max-w-full font-['Switzer_Variable:Regular',sans-serif] text-[22px] font-medium leading-[30px] tracking-[-0.2px] md:text-[25px] md:leading-[36px] ${isDark ? "text-white" : "text-[#0a0c11]"} transition-colors duration-700`}>Book a discovery call and let’s create valuable digital experience together.</p>
-                        <p className={`w-full max-w-full font-['Switzer_Variable:Regular',sans-serif] text-[15px] font-light leading-[22px] md:text-[13px] md:leading-[18px] ${isDark ? "text-[rgba(255,255,255,0.72)]" : "text-[#5b616d]"} transition-colors duration-700`}>{`Max works best with founders who value speed, clarity, and outcomes over pixel-perfect decks. If you're building something real, let's figure out how he can help.`}</p>
+                        <p className={`w-full max-w-full font-['Switzer_Variable:Regular',sans-serif] text-[15px] font-light leading-[22px] md:text-[13px] md:leading-[18px] ${isDark ? "text-[rgba(255,255,255,0.88)]" : "text-[#5b616d]"} transition-colors duration-700`}>{`Max works best with founders who value speed, clarity, and outcomes over pixel-perfect decks. If you're building something real, let's figure out how he can help.`}</p>
                       </div>
                       <div className="flex flex-wrap gap-[16px] items-start">
                         <div className="content-stretch flex gap-[2px] h-[28px] items-center justify-center px-[6px] py-[4px] relative rounded-[8px] shrink-0" data-name="Tag_special">
@@ -1825,15 +1848,15 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                   <div className="gap-x-[10px] gap-y-[10px] grid grid-cols-[repeat(1,minmax(0,1fr))] grid-rows-[repeat(1,fit-content(100%))] p-4 md:p-8 relative size-full">
                     <div className="col-1 justify-self-stretch relative row-1 self-stretch shrink-0">
                       <div className="content-stretch flex flex-col gap-[16px] items-start py-[24px] relative size-full">
-                        <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] min-w-full relative shrink-0 ${isDark ? "text-[#5b616d]" : "text-white/64"} transition-colors duration-700 text-[13px] w-[min-content]`}>Skip the form</p>
+                        <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] min-w-full relative shrink-0 ${isDark ? "text-[#5b616d]" : "text-[#d1d5db]"} transition-colors duration-700 text-[13px] w-[min-content]`}>Skip the form</p>
                         <a
                           className={`decoration-[6.5%] decoration-dotted font-['Open_Sauce_Two:Regular',sans-serif] font-medium leading-[36px] min-w-full not-italic relative shrink-0 ${isDark ? "text-[#0a0c11]" : "text-white"} transition-colors duration-700 text-[25px] tracking-[-0.2px] underline w-[min-content] cursor-pointer transition-colors duration-200 ${isDark ? "hover:text-black" : "hover:text-white/80"}`}
                           href="mailto:hey@maxburlak.com"
                         >
                           hey@maxburlak.com
                         </a>
-                        <div className="content-stretch flex gap-[16px] items-start relative shrink-0">
-                          <div className="content-stretch flex gap-[8px] h-[40px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0" data-name="Button">
+                        <div className="content-stretch flex flex-col gap-3 sm:flex-row sm:gap-4 items-stretch sm:items-start relative shrink-0 w-full">
+                          <a href={BOOK_CALL_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
                             <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? "bg-black" : "bg-white"} transition-colors duration-700 inset-0 pointer-events-none rounded-[1000px]`} />
                             <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.09)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_1px_1px_0px_rgba(0,0,0,0.03)]" />
                             <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
@@ -1842,13 +1865,13 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                             <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="Right_md">
                               <div className="relative shrink-0 size-[18px]" data-name="icons / google meet">
                                 <div className="absolute inset-[10%_0]" data-name="image 37">
-                                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage37} />
+                                  <PortfolioImage alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage37} />
                                 </div>
                               </div>
                             </div>
                             <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_3px_3px_0px_rgba(255,255,255,0.12)]" />
-                          </div>
-                          <div className="content-stretch flex gap-[8px] h-[40px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0" data-name="Button">
+                          </a>
+                          <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
                             <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? "bg-[rgba(242,242,244,0.8)]" : "bg-[rgba(255,255,255,0.1)]"} transition-colors duration-700 inset-0 pointer-events-none rounded-[1000px]`} />
                             <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)]" />
                             <div className="content-stretch flex gap-[6px] items-center justify-center relative shrink-0" data-name="Left_md">
@@ -1864,8 +1887,8 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                               <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative shrink-0 text-[13px] whitespace-nowrap ${isDark ? "text-[#0a0c11]" : "text-white"} transition-colors duration-700`}>Linkedin</p>
                             </div>
                             <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)]" />
-                          </div>
-                          <div className="content-stretch flex gap-[8px] h-[40px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0" data-name="Button">
+                          </a>
+                          <a href={DRIBBBLE_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
                             <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? "bg-[rgba(242,242,244,0.8)]" : "bg-[rgba(255,255,255,0.1)]"} transition-colors duration-700 inset-0 pointer-events-none rounded-[1000px]`} />
                             <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)]" />
                             <div className="content-stretch flex gap-[6px] items-center justify-center relative shrink-0" data-name="Left_md">
@@ -1881,7 +1904,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                               <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative shrink-0 text-[13px] whitespace-nowrap ${isDark ? "text-[#0a0c11]" : "text-white"} transition-colors duration-700`}>dribbble.com</p>
                             </div>
                             <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)]" />
-                          </div>
+                          </a>
                         </div>
                       </div>
                     </div>
@@ -1894,29 +1917,29 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                   <div className="content-stretch flex flex-col items-center justify-end px-[32px] py-[96px] relative size-full">
                     <div className="gap-x-[24px] gap-y-[24px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.50fr)_minmax(0,0.50fr)] grid-rows-[repeat(1,fit-content(100%))] relative shrink-0 w-full" data-name="Grid">
                       <div className="col-1 content-stretch flex flex-col gap-[16px] items-start justify-center justify-self-stretch relative row-1 self-start shrink-0" data-name="Column">
-                        <p className="font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[36px] relative shrink-0 text-[#8c929c] text-[25px] tracking-[-0.2px] w-full">2026</p>
+                        <p className="font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[36px] relative shrink-0 text-[#a8adb5] text-[25px] tracking-[-0.2px] w-full">2026</p>
                         <p className={`font-['Switzer_Variable:Medium',sans-serif] font-semibold leading-[44px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[42px] tracking-[-0.2px] w-full`}>maxburlak.com</p>
-                        <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>AI-driven product designer helping founders design experience, build systems and foundations.</p>
+                        <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>AI-driven product designer helping founders design experience, build systems and foundations.</p>
                         <SocialIconButtons isDark={isDark} />
 
                       </div>
                       <div className="col-2 justify-self-stretch relative row-1 self-stretch shrink-0" data-name="Column">
                         <div className="content-stretch flex flex-col gap-[16px] items-start leading-[18px] p-[32px] relative size-full">
                           <p className={`font-['Switzer_Variable:Medium',sans-serif] font-medium relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[15px] w-full`}>Work</p>
-                          <div className={`content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] font-light gap-[12px] items-start relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`} data-name="Flex Vertical">
-                            <Link className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-white/64" : "text-[#5b616d]"}`} to="/works">Works</Link>
-                            <Link className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-white/64" : "text-[#5b616d]"}`} to="/approach">Approach</Link>
-                            <Link className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-white/64" : "text-[#5b616d]"}`} to="/ventures">Ventures</Link>
-                            <Link className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-white/64" : "text-[#5b616d]"}`} to="/feed">Feed</Link>
-                            <Link className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-white/64" : "text-[#5b616d]"}`} to="/playground">Playground</Link>
+                          <div className={`content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] font-light gap-[12px] items-start relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`} data-name="Flex Vertical">
+                            <Link className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"}`} to="/works">Works</Link>
+                            <Link className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"}`} to="/approach">Approach</Link>
+                            <Link className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"}`} to="/ventures">Ventures</Link>
+                            <Link className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"}`} to="/feed">Feed</Link>
+                            <Link className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"}`} to="/playground">Playground</Link>
                           </div>
                         </div>
                       </div>
                       <div className="col-3 justify-self-stretch relative row-1 self-start shrink-0" data-name="Column">
                         <div className="content-stretch flex flex-col gap-[16px] items-start leading-[18px] p-[32px] relative size-full">
                           <p className={`font-['Switzer_Variable:Medium',sans-serif] font-medium relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[15px] w-full`}>Connect</p>
-                          <div className={`content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] font-light gap-[12px] items-start relative shrink-0 ${isDark ? 'text-white/64' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`} data-name="Flex Vertical">
-                            <Link className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-white/64" : "text-[#5b616d]"}`} to="/about">About</Link>
+                          <div className={`content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] font-light gap-[12px] items-start relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`} data-name="Flex Vertical">
+                            <Link className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"}`} to="/about">About</Link>
                             <p className="relative shrink-0 w-full">Contact</p>
                           </div>
                         </div>
@@ -1934,16 +1957,17 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
       ) : (
         <TabEmptyState title={phTitle} isDark={isDark} />
       )}
-      <div className="absolute inset-0 z-50 pointer-events-none">
+      </main>
+      <header className="fixed top-0 left-0 right-0 z-[1000] pointer-events-none">
         <div className="content-stretch flex items-center justify-between pointer-events-auto px-[12px] md:px-[20px] py-[10px] sticky top-0 w-full max-w-[2250px] mx-auto">
           {/* Logo */}
-          <Link to="/" className="content-stretch flex gap-[2px] h-[40px] items-center justify-center px-[8px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
+          <Link to="/" aria-label="Max Burlak home" className="content-stretch flex gap-[2px] h-[44px] min-h-[44px] items-center justify-center px-[8px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
             <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-[rgba(255,255,255,0.1)]' : 'bg-[rgba(242,242,244,0.8)]'} transition-colors duration-700 inset-0 pointer-events-none rounded-[1000px] transition-all duration-200`} />
             <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)]" />
             <div className="content-stretch flex gap-[6px] items-center justify-center relative shrink-0 size-[28px]" data-name="Left_sm">
               <div className="aspect-[24/24] flex-[1_0_0] min-h-px min-w-px relative rounded-[24px]" data-name="image">
                 <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-[24px]">
-                  <img alt="" className="absolute h-[133.23%] left-0 max-w-none top-[-4.18%] w-full" src={imgImage} />
+                  <PortfolioImage alt="" className="absolute h-[133.23%] left-0 max-w-none top-[-4.18%] w-full" src={imgImage} />
                 </div>
               </div>
             </div>
@@ -1955,7 +1979,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
           {/* Desktop action buttons */}
           <div className="hidden xl:flex content-stretch items-center relative shrink-0">
             <div className="content-stretch flex gap-[12px] items-center relative shrink-0">
-              <a href={BOOK_CALL_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[40px] items-center justify-center px-[12px] py-[4px] relative rounded-[28px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg no-underline" data-name="Button">
+              <a href={BOOK_CALL_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[28px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg no-underline" data-name="Button">
                 <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-white' : 'bg-black'} inset-0 pointer-events-none rounded-[28px] transition-all duration-200`} />
                 <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.09)] border-solid inset-0 pointer-events-none rounded-[28px] shadow-[0px_1px_1px_0px_rgba(0,0,0,0.03)]" />
                 <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
@@ -1964,13 +1988,13 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                 <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="Right_md">
                   <div className="relative shrink-0 size-[18px]" data-name="icons / google meet">
                     <div className="absolute inset-[10%_0]" data-name="image 37">
-                      <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage37} />
+                      <PortfolioImage alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage37} />
                     </div>
                   </div>
                 </div>
                 <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_3px_3px_0px_rgba(255,255,255,0.12)]" />
               </a>
-              <a href={CONTACT_EMAIL_URL} className="content-stretch flex gap-[2px] h-[40px] items-center justify-center px-[10px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
+              <a href={CONTACT_EMAIL_URL} className="content-stretch flex gap-[2px] h-[44px] min-h-[44px] items-center justify-center px-[10px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
                 <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-[rgba(255,255,255,0.1)]' : 'bg-[rgba(242,242,244,0.8)]'} transition-colors duration-700 inset-0 pointer-events-none rounded-[1000px] transition-all duration-200`} />
                 <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)]" />
                 <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
@@ -1987,7 +2011,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                 </div>
                 <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)]" />
               </a>
-              <div onClick={onThemeToggle} className="content-stretch flex gap-[2px] items-center justify-center px-[10px] py-[4px] relative rounded-[1000px] shrink-0 size-[40px] cursor-pointer transition-all duration-700 hover:scale-105 hover:rotate-180" data-name="Button">
+              <button type="button" onClick={onThemeToggle} aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"} className="content-stretch flex min-h-[44px] min-w-[44px] size-[44px] gap-[2px] items-center justify-center border-0 bg-transparent px-[10px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-700 hover:scale-105 hover:rotate-180" data-name="Button">
                 <div aria-hidden="true" className={`absolute backdrop-blur-[12px] inset-0 pointer-events-none rounded-[1000px] transition-all duration-700 ${isDark ? 'bg-[rgba(255,255,255,0.1)]' : 'bg-[rgba(242,242,244,0.8)]'}`} />
                 <div aria-hidden="true" className={`absolute border border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)] transition-all duration-700 ${isDark ? 'border-[rgba(255,255,255,0.1)]' : 'border-[rgba(0,0,0,0.06)]'}`} />
                 <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="Right_md">
@@ -2004,12 +2028,12 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                   </div>
                 </div>
                 <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)] transition-all duration-700" />
-              </div>
+              </button>
             </div>
           </div>
           {/* Responsive: theme toggle + burger for tablet/phone */}
           <div className="flex xl:hidden gap-[8px] items-center">
-            <div onClick={onThemeToggle} className="content-stretch flex gap-[2px] items-center justify-center relative rounded-[1000px] shrink-0 size-[40px] cursor-pointer" data-name="Button">
+            <button type="button" onClick={onThemeToggle} aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"} className="content-stretch flex gap-[2px] items-center justify-center relative rounded-[1000px] shrink-0 min-h-[44px] min-w-[44px] size-[44px] border-0 bg-transparent cursor-pointer" data-name="Button">
               <div aria-hidden="true" className={`absolute backdrop-blur-[12px] inset-0 pointer-events-none rounded-[1000px] ${isDark ? 'bg-[rgba(255,255,255,0.1)]' : 'bg-[rgba(242,242,244,0.8)]'}`} />
               <div aria-hidden="true" className={`absolute border border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)] ${isDark ? 'border-[rgba(255,255,255,0.1)]' : 'border-[rgba(0,0,0,0.06)]'}`} />
               <div className="overflow-clip relative shrink-0 size-[18px]">
@@ -2023,8 +2047,8 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                   </svg>
                 )}
               </div>
-            </div>
-            <button onClick={() => setMenuOpen(!menuOpen)} className={`relative flex items-center justify-center size-[40px] rounded-[1000px] cursor-pointer`}>
+            </button>
+            <button type="button" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} aria-controls="mobile-nav" onClick={() => setMenuOpen(!menuOpen)} className={`relative flex items-center justify-center min-h-[44px] min-w-[44px] size-[44px] border-0 bg-transparent rounded-[1000px] cursor-pointer`}>
               <div aria-hidden="true" className={`absolute backdrop-blur-[12px] inset-0 pointer-events-none rounded-[1000px] ${isDark ? 'bg-[rgba(255,255,255,0.1)]' : 'bg-[rgba(242,242,244,0.8)]'}`} />
               <div aria-hidden="true" className={`absolute border border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)] ${isDark ? 'border-[rgba(255,255,255,0.1)]' : 'border-[rgba(0,0,0,0.06)]'}`} />
               <svg className="relative size-[18px]" fill="none" viewBox="0 0 24 24">
@@ -2037,24 +2061,24 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
             </button>
           </div>
           {/* Desktop center nav */}
-          <div className={`hidden xl:-translate-x-1/2 xl:-translate-y-1/2 xl:absolute backdrop-blur-[12px] xl:flex gap-[2px] items-center justify-center xl:left-1/2 p-[4px] rounded-[1000px] border xl:top-1/2 transition-all duration-700 ${isDark ? 'bg-[rgba(0,0,0,0.4)] shadow-[0px_4px_24px_rgba(0,0,0,0.3),inset_0px_1px_0px_rgba(255,255,255,0.1)] border-white/10' : 'bg-[rgba(255,255,255,0.15)] shadow-[0px_4px_24px_rgba(0,0,0,0.08),inset_0px_1px_0px_rgba(255,255,255,0.25)] border-white/20'}`} data-name="menu">
+          <nav aria-label="Primary" className={`hidden xl:-translate-x-1/2 xl:-translate-y-1/2 xl:absolute backdrop-blur-[12px] xl:flex gap-2 items-center justify-center xl:left-1/2 p-[4px] rounded-[1000px] border xl:top-1/2 transition-all duration-700 ${isDark ? 'bg-[rgba(0,0,0,0.4)] shadow-[0px_4px_24px_rgba(0,0,0,0.3),inset_0px_1px_0px_rgba(255,255,255,0.1)] border-white/10' : 'bg-[rgba(255,255,255,0.15)] shadow-[0px_4px_24px_rgba(0,0,0,0.08),inset_0px_1px_0px_rgba(255,255,255,0.25)] border-white/20'}`} data-name="menu">
             {NAV_ROUTES.map((item) => (
               <NavLink
                 key={item.path}
                 to={item.path}
                 end={item.path === "/"}
                 className={({ isActive }) =>
-                  `content-stretch flex h-[40px] items-center justify-center px-[12px] py-[4px] relative rounded-[24px] shrink-0 cursor-pointer transition-all duration-200 no-underline ${isActive ? (isDark ? "bg-[#2a2a2a]" : "bg-[#f9f9fa]") : isDark ? "hover:bg-[#2a2a2a]" : "hover:bg-[#f9f9fa]"}`
+                  `content-stretch flex h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[24px] shrink-0 cursor-pointer transition-all duration-200 no-underline ${isActive ? (isDark ? "bg-[#2a2a2a]" : "bg-[#f9f9fa]") : isDark ? "hover:bg-[#2a2a2a]" : "hover:bg-[#f9f9fa]"}`
                 }
               >
                 <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[20px] relative shrink-0 ${isDark ? "text-white" : "text-[#0a0c11]"} transition-colors duration-700 text-[15px] whitespace-nowrap`}>{item.label}</p>
               </NavLink>
             ))}
-          </div>
+          </nav>
         </div>
         {/* Responsive menu overlay */}
         {menuOpen && (
-          <div className={`xl:hidden pointer-events-auto fixed inset-0 top-[60px] z-50 backdrop-blur-[20px] ${isDark ? 'bg-[rgba(10,12,17,0.95)]' : 'bg-[rgba(255,255,255,0.95)]'}`}>
+          <div id="mobile-nav" role="dialog" aria-modal="true" aria-label="Site menu" className={`xl:hidden pointer-events-auto fixed inset-0 top-[60px] z-50 backdrop-blur-[20px] ${isDark ? 'bg-[rgba(10,12,17,0.95)]' : 'bg-[rgba(255,255,255,0.95)]'}`}>
             <div className="flex flex-col gap-[4px] p-[20px]">
               {NAV_ROUTES.map((item) => (
                 <Link
@@ -2067,13 +2091,13 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                 </Link>
               ))}
               <div className="h-px my-[12px] bg-[rgba(0,0,0,0.06)]" />
-              <div className="flex gap-[10px]">
+              <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
                 <a href={BOOK_CALL_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] items-center justify-center px-[16px] py-[4px] relative rounded-[28px] flex-1 cursor-pointer no-underline" data-name="Button">
                   <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-white' : 'bg-black'} inset-0 pointer-events-none rounded-[28px]`} />
                   <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative text-[14px] ${isDark ? 'text-[#0a0c11]' : 'text-white'} whitespace-nowrap`}>Book a call</p>
                   <div className="relative shrink-0 size-[18px]">
                     <div className="absolute inset-[10%_0]">
-                      <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage37} />
+                      <PortfolioImage alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage37} />
                     </div>
                   </div>
                   <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_3px_3px_0px_rgba(255,255,255,0.12)]" />
@@ -2087,7 +2111,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
             </div>
           </div>
         )}
-      </div>
+      </header>
     </div>
   );
 }

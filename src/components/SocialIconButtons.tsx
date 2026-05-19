@@ -20,7 +20,7 @@ function IconPillLink({
   return (
     <a
       aria-label={label}
-      className="relative flex size-[40px] shrink-0 items-center justify-center rounded-[1000px] transition-all duration-200 hover:scale-105"
+      className="relative flex size-11 min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-[1000px] transition-all duration-200 hover:scale-105"
       href={href}
       rel="noopener noreferrer"
       target={href.startsWith("mailto:") ? undefined : "_blank"}

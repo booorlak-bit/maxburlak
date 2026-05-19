@@ -3,9 +3,34 @@
   <html lang="en">
     <head>
       <meta charset="UTF-8" />
-      <!-- Default.com — form routing for bottom contact form (form 58528) -->
+      <!-- Default.com — deferred until after first paint (form 58528) -->
       <script>
-        !function(e,t){var _=0;e.__default__=e.__default__||{},e.__default__.form_id=58528,e.__default__.team_id=162,e.__default__.listenToIds=[],function e(){var o=t.createElement("script");o.async=!0,o.src="https://import-cdn.default.com",o.onload=function(){!0,console.info("[Default.com] Powered by Default.com")},o.onerror=function(){++_<=3&&setTimeout(e,1e3*_)},t.head.appendChild(o)}()}(window,document);
+        (function () {
+          function loadDefault() {
+            var _ = 0;
+            window.__default__ = window.__default__ || {};
+            window.__default__.form_id = 58528;
+            window.__default__.team_id = 162;
+            window.__default__.listenToIds = [];
+            function inject() {
+              var s = document.createElement("script");
+              s.async = true;
+              s.src = "https://import-cdn.default.com";
+              s.onerror = function () {
+                if (++_ <= 3) setTimeout(inject, 1000 * _);
+              };
+              document.head.appendChild(s);
+            }
+            inject();
+          }
+          if ("requestIdleCallback" in window) {
+            requestIdleCallback(loadDefault, { timeout: 3000 });
+          } else {
+            window.addEventListener("load", function () {
+              setTimeout(loadDefault, 1500);
+            });
+          }
+        })();
       </script>
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <meta name="color-scheme" content="light dark" />

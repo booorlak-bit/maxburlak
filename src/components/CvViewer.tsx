@@ -20,7 +20,7 @@ function CvPillButton({
     <button
       type={type}
       onClick={onClick}
-      className={`relative inline-flex h-[40px] shrink-0 cursor-pointer items-center justify-center gap-[8px] rounded-[1000px] px-[10px] py-[4px] border-0 transition-all duration-200 hover:scale-105 ${isDark ? "text-white" : "text-[#0a0c11]"} ${className}`}
+      className={`relative inline-flex h-11 min-h-[44px] shrink-0 cursor-pointer items-center justify-center gap-[8px] rounded-[1000px] px-[10px] py-[4px] border-0 transition-all duration-200 hover:scale-105 ${isDark ? "text-white" : "text-[#0a0c11]"} ${className}`}
       data-name="Button"
     >
       <span

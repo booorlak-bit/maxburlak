@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import fs from 'node:fs'
 import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
@@ -10,7 +11,14 @@ function figmaAssetResolver() {
     resolveId(id) {
       if (id.startsWith('figma:asset/')) {
         const filename = id.replace('figma:asset/', '')
-        return path.resolve(__dirname, 'src/assets', filename)
+        const pngPath = path.resolve(__dirname, 'src/assets', filename)
+        if (/\.png$/i.test(filename)) {
+          const webpPath = pngPath.replace(/\.png$/i, '.webp')
+          if (fs.existsSync(webpPath)) {
+            return webpPath
+          }
+        }
+        return pngPath
       }
     },
   }

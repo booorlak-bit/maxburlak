@@ -198,12 +198,13 @@ export function Stories({ className, isDark = false, slides, renderIcon }: Stori
         />
       </div>
 
-      <div className="absolute left-[8px] right-[8px] top-[8px] z-50 flex gap-[4px]">
+      <div className="absolute left-[8px] right-[8px] top-[8px] z-50 flex gap-[8px]">
         {slides.map((_, index) => (
           <button
             key={index}
             aria-label={`Story ${index + 1} of ${slides.length}`}
-            className="h-[8px] min-h-px min-w-px flex-[1_0_0] cursor-pointer rounded-[2px] border-0 bg-transparent p-0"
+            aria-current={index === activeIndex ? "step" : undefined}
+            className="flex min-h-[44px] flex-[1_0_0] cursor-pointer items-center border-0 bg-transparent px-0 py-3"
             onClick={(event) => {
               event.stopPropagation();
               goTo(index);

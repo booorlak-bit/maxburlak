@@ -4,7 +4,8 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "build": "vite build",
+    "build": "node scripts/ensure-sharp.mjs && node scripts/generate-webp.mjs && vite build",
+    "images:webp": "node scripts/ensure-sharp.mjs && node scripts/generate-webp.mjs",
     "dev": "vite"
   },
   "dependencies": {
@@ -69,6 +70,7 @@
   "devDependencies": {
     "@tailwindcss/vite": "4.1.12",
     "@vitejs/plugin-react": "4.7.0",
+    "sharp": "^0.34.2",
     "tailwindcss": "4.1.12",
     "vite": "6.3.5"
   },

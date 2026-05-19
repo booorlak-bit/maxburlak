@@ -50,7 +50,7 @@ const CAREER_ENTRIES: CareerEntry[] = [
 
 function CareerEntryBlock({ entry, isDark, isLast }: { entry: CareerEntry; isDark: boolean; isLast: boolean }) {
   const textColor = isDark ? "text-white" : "text-[#0a0c11]";
-  const mutedColor = isDark ? "text-white/64" : "text-[#5b616d]";
+  const mutedColor = isDark ? "text-[#b8bcc4]" : "text-[#5b616d]";
 
   return (
     <li
@@ -102,7 +102,7 @@ export function CareerPath({ isDark = false }: { isDark?: boolean }) {
               <li className="list-none">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <p
-                    className={`min-w-0 font-['Switzer_Variable:Regular',sans-serif] text-[15px] font-light leading-[22px] md:text-[15px] md:leading-[20px] ${isDark ? "text-white/64" : "text-[#5b616d]"} transition-colors duration-700`}
+                    className={`min-w-0 font-['Switzer_Variable:Regular',sans-serif] text-[15px] font-light leading-[22px] md:text-[15px] md:leading-[20px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}
                   >
                     6 More positions since 2012
                   </p>
