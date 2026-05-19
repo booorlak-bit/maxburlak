@@ -1,11 +1,16 @@
+# maxburlak
 
-  # maxburlak
+Portfolio site for [maxburlak.com](https://maxburlak.com).
 
-  This is a code bundle for maxburlak. The original project is available at https://www.figma.com/design/yPOAUfUJl1ICzaFv0G7M21/maxburlak.
+Design source: [Figma — maxburlak](https://www.figma.com/design/yPOAUfUJl1ICzaFv0G7M21/maxburlak)
 
-  ## Running the code
+## Development
 
-  Run `npm i` to install the dependencies.
+```bash
+pnpm install
+pnpm dev
+```
 
-  Run `npm run dev` to start the development server.
-  
+## Deploy
+
+Pushes to `main` deploy to Vercel (production). Manual deploy: `pnpm build && vercel --prod`.
