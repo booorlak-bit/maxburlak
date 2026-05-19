@@ -1,0 +1,167 @@
+// Auto-generated from Figma node 1982:6045 — run scripts/generate-worked-with-grid.py to refresh
+
+import img39359 from "figma:asset/89dc44418c4ea8f9657791af6a1075ffd66791ae.png";
+import img39360 from "figma:asset/52c3cc7f5da1e8362aea713ef34daac263a139c0.png";
+import img39361 from "figma:asset/c3ef8c31e72eb4652c9ca201c01de310aec3e084.png";
+import img39362 from "figma:asset/5a55db7d30becbfd694a2a90c3300e8a38665730.png";
+import img39363 from "figma:asset/fe31475cc3190276af7dc829c0d05637c4081702.png";
+import img39364 from "figma:asset/01d741a7342c223a089fedd9aa4fd42c6402cd26.png";
+import img39365 from "figma:asset/30f88d3358b1007f01dd38105c625f91f76efe52.png";
+import img39366 from "figma:asset/5e680933a052367d2b4cb0c3f5ea1cb9a9b17bbe.png";
+import img39367 from "figma:asset/907b0e579d05f0ae827b0af6413ad3a479029d2c.png";
+import img39368 from "figma:asset/a4847eca6f52842c45f518693985919a36d8f5d6.png";
+import img39369 from "figma:asset/ed02599304c6e7ad0a729492817e1bf8d6e3b8bb.png";
+import img39370 from "figma:asset/95c9a66598e30f3a767d67b3f2bf9637529a6e15.png";
+import img39371 from "figma:asset/9a097003b1d0f959da41f87b6031751f71800388.png";
+import img39372 from "figma:asset/ff2cd59d1183985933f91a818696525cb7bfb563.png";
+import img39373 from "figma:asset/3f69aea170283cc42b73525de37b0e0ab25efc47.png";
+import img39374 from "figma:asset/d563da34a22c98fc54872c688cddb7612f05c795.png";
+import img39375 from "figma:asset/c2efda444cd7a2255eb5d528a9d46c8071a5891f.png";
+import img39376 from "figma:asset/6f00a123e0f50014ff14a3fa32c68a48c1a89912.png";
+import img39377 from "figma:asset/237d9b7a928bb1bbad74c39c503b67c525fb3fa0.png";
+import img39378 from "figma:asset/adeb2e9b9fa1a7e03359ea170d78b0995bf4110a.png";
+
+export const PHOTO_SRC = {
+  "39359": img39359,
+  "39360": img39360,
+  "39361": img39361,
+  "39362": img39362,
+  "39363": img39363,
+  "39364": img39364,
+  "39365": img39365,
+  "39366": img39366,
+  "39367": img39367,
+  "39368": img39368,
+  "39369": img39369,
+  "39370": img39370,
+  "39371": img39371,
+  "39372": img39372,
+  "39373": img39373,
+  "39374": img39374,
+  "39375": img39375,
+  "39376": img39376,
+  "39377": img39377,
+  "39378": img39378,
+} as const;
+
+export type WorkedWithGridItem =
+  | { type: "placeholder"; variant: "s1" | "s2" | "s3" }
+  | { type: "photo"; id: string; num: keyof typeof PHOTO_SRC; featured?: boolean };
+
+export const WORKED_WITH_GRID_ITEMS = [
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s3" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s2" },
+  { type: "placeholder", variant: "s2" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s2" },
+  { type: "placeholder", variant: "s1" },
+  { type: "photo", id: "1985:6649", num: "39359", featured: false },
+  { type: "photo", id: "1985:6625", num: "39360", featured: false },
+  { type: "photo", id: "1985:6700", num: "39361", featured: true },
+  { type: "photo", id: "1985:6655", num: "39362", featured: false },
+  { type: "photo", id: "1985:6703", num: "39363", featured: false },
+  { type: "photo", id: "1985:6652", num: "39364", featured: false },
+  { type: "photo", id: "1985:6622", num: "39360", featured: false },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s3" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s3" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s2" },
+  { type: "placeholder", variant: "s3" },
+  { type: "placeholder", variant: "s2" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s3" },
+  { type: "placeholder", variant: "s2" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s1" },
+  { type: "photo", id: "1985:6679", num: "39365", featured: false },
+  { type: "photo", id: "1985:6685", num: "39366", featured: false },
+  { type: "photo", id: "1985:6640", num: "39367", featured: false },
+  { type: "photo", id: "1985:6715", num: "39368", featured: false },
+  { type: "photo", id: "1985:6634", num: "39365", featured: false },
+  { type: "photo", id: "1985:6709", num: "39369", featured: false },
+  { type: "photo", id: "1985:6694", num: "39370", featured: false },
+  { type: "photo", id: "1985:6661", num: "39371", featured: false },
+  { type: "photo", id: "1985:6631", num: "39364", featured: false },
+  { type: "placeholder", variant: "s2" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s3" },
+  { type: "placeholder", variant: "s2" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s3" },
+  { type: "placeholder", variant: "s2" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s2" },
+  { type: "placeholder", variant: "s2" },
+  { type: "photo", id: "1985:6730", num: "39370", featured: false },
+  { type: "photo", id: "1985:6610", num: "39362", featured: false },
+  { type: "photo", id: "1985:6724", num: "39372", featured: false },
+  { type: "photo", id: "1985:6616", num: "39363", featured: false },
+  { type: "photo", id: "1985:6721", num: "39369", featured: false },
+  { type: "photo", id: "1985:6670", num: "39373", featured: false },
+  { type: "photo", id: "1985:6667", num: "39372", featured: false },
+  { type: "photo", id: "1985:6691", num: "39374", featured: false },
+  { type: "photo", id: "1985:6646", num: "39375", featured: false },
+  { type: "photo", id: "1985:6628", num: "39371", featured: false },
+  { type: "photo", id: "1985:6697", num: "39376", featured: false },
+  { type: "placeholder", variant: "s2" },
+  { type: "placeholder", variant: "s3" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s3" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s2" },
+  { type: "placeholder", variant: "s3" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s3" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s3" },
+  { type: "photo", id: "1985:6607", num: "39377", featured: false },
+  { type: "photo", id: "1985:6676", num: "39378", featured: false },
+  { type: "photo", id: "1985:6682", num: "39359", featured: false },
+  { type: "photo", id: "1985:6643", num: "39360", featured: false },
+  { type: "photo", id: "1985:6712", num: "39365", featured: false },
+  { type: "photo", id: "1985:6637", num: "39366", featured: false },
+  { type: "photo", id: "1985:6706", num: "39367", featured: false },
+  { type: "photo", id: "1985:6733", num: "39368", featured: false },
+  { type: "photo", id: "1985:6658", num: "39364", featured: false },
+  { type: "placeholder", variant: "s3" },
+  { type: "placeholder", variant: "s2" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s3" },
+  { type: "placeholder", variant: "s3" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s2" },
+  { type: "placeholder", variant: "s3" },
+  { type: "placeholder", variant: "s3" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s2" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s2" },
+  { type: "photo", id: "1985:6613", num: "39370", featured: false },
+  { type: "photo", id: "1985:6727", num: "39362", featured: false },
+  { type: "photo", id: "1985:6619", num: "39371", featured: false },
+  { type: "photo", id: "1985:6718", num: "39363", featured: false },
+  { type: "photo", id: "1985:6673", num: "39369", featured: false },
+  { type: "photo", id: "1985:6664", num: "39373", featured: false },
+  { type: "photo", id: "1985:6688", num: "39372", featured: false },
+  { type: "placeholder", variant: "s3" },
+  { type: "placeholder", variant: "s2" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s3" },
+  { type: "placeholder", variant: "s2" },
+  { type: "placeholder", variant: "s3" },
+  { type: "placeholder", variant: "s1" },
+  { type: "placeholder", variant: "s3" },
+] as const satisfies readonly WorkedWithGridItem[];

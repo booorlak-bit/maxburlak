@@ -1,0 +1,25 @@
+{
+  "name": "Max Burlak — Product Designer",
+  "short_name": "Max Burlak",
+  "description": "AI-driven product designer helping B2B SaaS founders with experience design, design systems, and measurable outcomes.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff"
+}

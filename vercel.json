@@ -1,0 +1,18 @@
+{
+  "rewrites": [
+    {
+      "source": "/((?!assets/|max-burlak-resume\\.pdf|robots\\.txt|sitemap\\.xml|llms\\.txt|favicon\\.ico|favicon\\.svg|favicon-96x96\\.png|apple-touch-icon\\.png|og-image\\.jpg|site\\.webmanifest|web-app-manifest-).*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/llms.txt",
+      "headers": [{ "key": "Content-Type", "value": "text/plain; charset=utf-8" }]
+    },
+    {
+      "source": "/robots.txt",
+      "headers": [{ "key": "Content-Type", "value": "text/plain; charset=utf-8" }]
+    }
+  ]
+}
