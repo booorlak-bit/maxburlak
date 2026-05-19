@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router";
+import { Analytics } from "@vercel/analytics/react";
 import { SeoManager } from "../components/SeoManager";
 import MainV from "../imports/MainV2";
 import { useTheme } from "./useTheme";
@@ -14,6 +15,7 @@ export default function App() {
           <Route path="*" element={<MainV isDark={isDark} onThemeToggle={toggleTheme} />} />
         </Routes>
       </BrowserRouter>
+      <Analytics />
       <style>{`
         /* Main content wrapper (index layout only — not playground tab) */
         [data-name="Main V2"] > [data-route="index"] {
