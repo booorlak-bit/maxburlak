@@ -7,13 +7,17 @@ import { CommunLogo } from "../components/CommunLogo";
 import { KinescopeLogo } from "../components/KinescopeLogo";
 import { P2pValidatorLogo } from "../components/P2pValidatorLogo";
 import { WorkedWithSection } from "../components/WorkedWithSection";
-import { ContactForm } from "../components/ContactForm";
-import { SocialIconButtons } from "../components/SocialIconButtons";
+import { SitePageEnd } from "../components/layout/SitePageEnd";
 import { Link, Navigate, NavLink, useLocation, useSearchParams } from "react-router";
 import { isNavPath, NAV_ROUTES, placeholderTitleForPath } from "../nav/routes";
+import { ApproachPage } from "../pages/ApproachPage";
 import { PlaygroundEmbed, PlaygroundView } from "../pages/PlaygroundPage";
 import { TabEmptyState } from "../pages/TabEmptyState";
 import { PortfolioImage } from "../components/PortfolioImage";
+import { useSiteSettings } from "../sanity/CmsProvider";
+import { HomeSection } from "../sanity/HomeSection";
+import { SitePageLayout } from "../components/layout/SitePageLayout";
+import { FliqMarkIcon, GradeStudioMarkIcon, PinnboardsMarkIcon } from "../components/ventureMarkIcons";
 
 const PlaygroundCanvas = lazy(() =>
   import("../playground/PlaygroundCanvas").then((m) => ({ default: m.PlaygroundCanvas })),
@@ -68,89 +72,6 @@ const CONTACT_EMAIL_URL = "mailto:hey@maxburlak.com";
 const LINKEDIN_URL = "https://www.linkedin.com/in/maxburlak/";
 const DRIBBBLE_URL = "https://dribbble.com/maxburlak";
 const PINNBOARDS_URL = "https://pinnboards.com";
-
-function GradeStudioMarkIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 36 36"
-      fill="none"
-      aria-label="grade-1.studio"
-      shapeRendering="geometricPrecision"
-    >
-      <title>grade-1.studio</title>
-      <rect width="36" height="36" rx="24" fill="#252525" />
-      {/* Two parallel pill bars, ~−45°, white (upper-left) + lime (lower-right) */}
-      <g transform="translate(18 18) rotate(-45)">
-        <rect x="-8.75" y="-5.85" width="17.5" height="3.5" rx="1.75" fill="#ffffff" />
-        <rect x="-8.75" y="2.35" width="17.5" height="3.5" rx="1.75" fill="#C8FF3D" />
-      </g>
-    </svg>
-  );
-}
-
-function FliqMarkIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 35.894 35.894"
-      fill="none"
-      aria-label="Fliq"
-      shapeRendering="geometricPrecision"
-    >
-      <title>Fliq</title>
-      <rect fill="#FFE53D" height="35.894" width="35.894" />
-      <circle cx="17.8755" cy="11.4464" fill="#0a0c11" r="2.57143" />
-      <circle cx="12.0893" cy="14.6607" fill="#0a0c11" r="2.57143" />
-      <circle cx="12.0893" cy="21.0893" fill="#0a0c11" r="2.57143" />
-      <circle cx="17.8755" cy="24.3036" fill="#0a0c11" r="2.57143" />
-      <circle cx="23.6607" cy="21.0893" fill="#FFB20D" r="2.57143" />
-      <circle cx="23.6607" cy="14.6607" fill="#FFB20D" r="2.57143" />
-    </svg>
-  );
-}
-
-function PinnboardsMarkIcon({
-  className,
-  glowFilterId = "pinnboardsGlow",
-}: {
-  className?: string;
-  glowFilterId?: string;
-}) {
-  return (
-    <svg
-      className={className}
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 36 36"
-      fill="none"
-      aria-label="Pinnboards"
-      shapeRendering="geometricPrecision"
-    >
-      <title>Pinnboards</title>
-      <rect width="36" height="36" rx="12" fill="#232323" />
-      <rect x="9" y="9" width="18" height="18" rx="4" stroke="#7466FF" strokeWidth="5" />
-      <rect
-        x="9"
-        y="9"
-        width="18"
-        height="18"
-        rx="4"
-        stroke="#7466FF"
-        strokeOpacity="0.65"
-        strokeWidth="5"
-        filter={`url(#${glowFilterId})`}
-      />
-      <rect x="0.5" y="0.5" width="35" height="35" rx="11.5" stroke="white" strokeOpacity="0.08" />
-      <defs>
-        <filter id={glowFilterId} x="-4" y="-4" width="44" height="44" colorInterpolationFilters="sRGB">
-          <feGaussianBlur stdDeviation="3" />
-        </filter>
-      </defs>
-    </svg>
-  );
-}
 
 type ImagesProps = {
   className?: string;
@@ -250,7 +171,20 @@ function HeroImage({ className, slide = "1" }: HeroImageProps) {
   );
 }
 
-export default function MainV({ className, isDark = false, onThemeToggle }: { className?: string; isDark?: boolean; onThemeToggle?: () => void }) {
+export default function MainV({
+  className,
+  isDark = false,
+  onThemeToggle,
+}: {
+  className?: string;
+  isDark?: boolean;
+  onThemeToggle?: () => void;
+}) {
+  const site = useSiteSettings();
+  const bookCallUrl = site?.bookCallUrl || BOOK_CALL_URL;
+  const contactEmailUrl = site?.contactEmail ? `mailto:${site.contactEmail}` : CONTACT_EMAIL_URL;
+  const linkedinUrl = site?.linkedinUrl || LINKEDIN_URL;
+  const dribbbleUrl = site?.dribbbleUrl || DRIBBBLE_URL;
   const [menuOpen, setMenuOpen] = useState(false);
   useEffect(() => {
     const handleResize = () => {
@@ -299,167 +233,14 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
     <div className={className || `transition-colors duration-700 ${isDark ? 'bg-[#0a0a0a]' : 'bg-white'} content-stretch flex flex-col gap-[10px] items-start pb-[10px] pt-[60px] px-[12px] md:px-[20px] relative w-full max-w-[2250px] mx-auto overflow-x-clip`} data-name="Main V2">
       <main id="main-content" tabIndex={-1} className="w-full">
       {phTitle === null ? (
-      <div data-route="index" className="content-stretch flex flex-col lg:flex-row gap-4 md:gap-8 lg:gap-[32px] items-start relative rounded-[20px] shrink-0 w-full my-0 md:my-[24px] box-content border-0">
-        <div className="w-full lg:w-1/4 2xl:w-[33%] lg:min-w-[280px] shrink-0 lg:sticky lg:top-[84px] lg:overflow-x-hidden">
-          <div className="content-stretch flex flex-col items-start justify-between p-4 md:p-[24px] lg:p-[32px] relative w-full lg:min-h-[calc(100svh-84px)] lg:my-0 my-0 box-border border-0">
-            <div className="content-stretch flex flex-col items-start relative shrink-0 w-full">
-              <div className="content-stretch flex flex-col gap-[24px] items-start relative shrink-0 w-full my-0 md:my-[24px] box-content border-0">
-                <div className={`${isDark ? 'bg-[#2a2a2a]' : 'bg-[#ececf0]'} transition-colors duration-700 content-stretch flex gap-[8px] items-center justify-center overflow-clip px-[12px] py-[4px] relative rounded-[16px] shrink-0`}>
-                  <div className="bg-[#54cfa4] rounded-[12px] shrink-0 size-[8px]" />
-                  <div className={`flex flex-col font-['Switzer_Variable:Regular',sans-serif] font-normal justify-center leading-[0] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[clamp(14px,1.15vw,15px)] whitespace-nowrap`}>
-                    <p className="font-normal leading-[18px] text-[13px]">3x times Founding Designer</p>
-                  </div>
-                </div>
-                <div className="content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] gap-[22px] items-start relative shrink-0 w-full">
-                  <h1 className={`font-medium leading-[1.14] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[clamp(26px,7vw,32px)] tracking-[-0.4px] w-full`}>Max, AI-driven product designer who helps founders to design experience, build systems and foundations.</h1>
-                  <p className={`font-normal leading-[1.4] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[clamp(14px,1.2vw,15px)] w-full max-w-[92%]`}>Helped to gain ARR from 0 to 2,5M+ in less then a year for various startups and to prepare for multiple funding rounds for different companies with total amount around $ 150M</p>
-                </div>
-                <div className="content-stretch flex flex-wrap gap-[10px] items-start mt-[10px] relative shrink-0">
-                  <a href={BOOK_CALL_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[28px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg no-underline" data-name="Button">
-                    <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-white' : 'bg-black'} inset-0 pointer-events-none rounded-[28px] transition-all duration-200`} />
-                    <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.09)] border-solid inset-0 pointer-events-none rounded-[28px] shadow-[0px_1px_1px_0px_rgba(0,0,0,0.03)]" />
-                    <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
-                      <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative shrink-0 text-[14px] ${isDark ? 'text-[#0a0c11]' : 'text-white'} whitespace-nowrap`}>Book a call</p>
-                    </div>
-                    <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="Right_md">
-                      <div className="relative shrink-0 size-[18px]" data-name="icons / google meet">
-                        <div className="absolute inset-[10%_0]" data-name="image 37">
-                          <PortfolioImage alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage37} />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_3px_3px_0px_rgba(255,255,255,0.12)]" />
-                  </a>
-                  <a href={CONTACT_EMAIL_URL} className="content-stretch flex gap-[2px] h-[44px] min-h-[44px] items-center justify-center px-[10px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
-                    <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-[rgba(255,255,255,0.1)]' : 'bg-[rgba(242,242,244,0.8)]'} transition-colors duration-700 inset-0 pointer-events-none rounded-[1000px] transition-all duration-200`} />
-                    <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)]" />
-                    <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
-                      <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[14px] whitespace-nowrap`}>Chat with me</p>
-                    </div>
-                    <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="Right_md">
-                      <div className="overflow-clip relative shrink-0 size-[18px]" data-name="filled=on, stroke=1, radius=0, join=round">
-                        <div className="absolute inset-[20.83%_12.5%]" data-name="vector">
-                          <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 13.5 10.5">
-                            <path clipRule="evenodd" d={svgPaths.p42a1880} fill={isDark ? "#B8BCC4" : "#6B7280"} className="transition-colors duration-700" fillRule="evenodd" id="vector" />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)]" />
-                  </a>
-                </div>
-                <div className="content-stretch flex flex-col gap-[8px] items-start mt-0 mb-[24px] pt-[32px] relative shrink-0 w-full box-content border-0 transition-colors duration-700">
-                  <p className={`font-['Switzer_Variable:Regular',sans-serif] font-[400] leading-[18px] min-w-full relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[clamp(13px,1.15vw,15px)] w-[min-content]`}>Trusted by many companies for over a decade</p>
-                  <div className="content-stretch flex flex-wrap gap-[8px] items-center relative shrink-0" data-name="Wallet_group">
-                    <div className="content-stretch flex items-center overflow-clip p-[3px] relative rounded-[8px] shrink-0">
-                      <DefaultLogo size={34} className="rounded-[6.448px]" />
-                    </div>
-                    <div className="content-stretch flex items-center overflow-clip p-[3px] relative rounded-[8px] shrink-0">
-                      <ApolloLogo size={34} className="rounded-[6px]" />
-                    </div>
-                    <div className="content-stretch flex items-center overflow-clip p-[3px] relative rounded-[8px] shrink-0">
-                      <div className="relative shrink-0 size-[34px]">
-                        <div className="absolute inset-[0_-0.85%_-0.84%_0]">
-                          <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 26.2206 26.2196">
-                            <g id="Frame 1000004181">
-                              <rect fill="var(--fill-0, #323D4C)" height="26" rx="6" width="26" />
-                              <rect height="25.4421" rx="5.72107" stroke="var(--stroke-0, black)" strokeOpacity="0.09" strokeWidth="0.557861" width="25.4421" x="0.278931" y="0.278931" />
-                              <g id="Contrast border">
-                                <rect height="25.732" rx="5.75625" stroke="var(--stroke-0, black)" strokeOpacity="0.08" strokeWidth="0.4875" width="25.732" x="0.244845" y="0.243868" />
-                              </g>
-                              <g id="Vector">
-                                <path d={svgPaths.p3c111f20} fill="#0EE471" />
-                              </g>
-                            </g>
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="content-stretch flex items-center overflow-clip p-[3px] relative rounded-[8px] shrink-0">
-                      <KinescopeLogo size={34} className="rounded-[6px]" />
-                    </div>
-                    <div className="content-stretch flex items-center overflow-clip p-[3px] relative rounded-[8px] shrink-0">
-                      <P2pValidatorLogo size={34} className="rounded-[6px]" />
-                    </div>
-                    <div className="content-stretch flex items-center overflow-clip p-[3px] relative rounded-[8px] shrink-0">
-                      <CommunLogo size={34} className="rounded-[6.448px]" />
-                    </div>
-                    <div className="content-stretch flex flex-col items-start p-[3px] relative shrink-0 h-[40px] w-[78px]">
-                      <div className={`${isDark ? 'bg-[#2a2a2a]' : 'bg-[#f9f9fa]'} transition-colors duration-700 relative rounded-[8px] shrink-0 w-full`}>
-                        <div className="flex flex-row items-center overflow-clip rounded-[inherit] size-full">
-                          <div className="content-stretch flex items-center px-[8px] py-[4px] relative size-full">
-                            <div className={`flex flex-col font-['Switzer_Variable:Regular',sans-serif] font-normal justify-center leading-[0] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] whitespace-nowrap`}>
-                              <p className="leading-[18px]">30+ more</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full mt-[24px] mb-[24px] box-content border-0">
-              <div className="content-stretch flex flex-col items-start relative shrink-0 w-full">
-                <div className="content-stretch flex flex-col gap-[8px] items-start mt-[24px] mb-0 relative shrink-0 w-full">
-                  <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Ventures</p>
-                  <div className="content-stretch flex gap-[8px] items-center relative shrink-0 w-full" data-name="Wallet_group">
-                    <div className="content-stretch flex isolate items-center pr-[22px] relative shrink-0">
-                      <div className="flex items-center justify-center mr-[-22px] relative shrink-0 size-[53.889px] z-[3]" style={{ "--transform-inner-width": "1183", "--transform-inner-height": "19" } as React.CSSProperties}>
-                        <div className="flex-none rotate-15">
-                          <div className="content-stretch flex items-center p-[4.125px] relative rounded-[11px] size-[44px]">
-                            <div className="overflow-clip relative rounded-[8px] shadow-[0px_1px_1px_-0.5px_rgba(0,0,0,0.03)] shrink-0 size-[36px]" data-name="icon">
-                              <div className="absolute inset-0 overflow-clip rounded-[9px] border border-[#252525] border-solid bg-[#252525] size-[36px]" data-name=".icon">
-                                <GradeStudioMarkIcon className="block size-full" />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-center mr-[-22px] relative shrink-0 size-[53.889px] z-[2]" style={{ "--transform-inner-width": "1183", "--transform-inner-height": "19" } as React.CSSProperties}>
-                        <div className="flex-none rotate-15">
-                          <div className="content-stretch flex items-center p-[4.125px] relative rounded-[11px] size-[44px]">
-                            <div className="overflow-clip relative rounded-[8px] shadow-[0px_1px_1px_-0.5px_rgba(0,0,0,0.03),0px_3px_3px_-1.5px_rgba(0,0,0,0.03)] shrink-0 size-[36px]" data-name="icon">
-                              <div className="absolute inset-0 overflow-clip rounded-[9px] size-[36px]" data-name=".icon">
-                                <FliqMarkIcon className="block size-full" />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-center mr-[-22px] relative shrink-0 size-[53.889px] z-[1]" style={{ "--transform-inner-width": "1183", "--transform-inner-height": "51" } as React.CSSProperties}>
-                        <div className="flex-none rotate-15">
-                          <div className="content-stretch flex items-center p-[4.125px] relative rounded-[11px] size-[44px]">
-                            <div className="relative rounded-[8px] shadow-[0px_1px_1px_0px_rgba(0,0,0,0.03)] shrink-0 size-[36.089px]" data-name="icon">
-                              <PinnboardsMarkIcon className="block size-full" glowFilterId="pinnboardsGlowSidebar" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <p className={`box-content mb-0 mt-2 flex-[1_0_0] font-['Switzer_Variable:Regular',sans-serif] font-light leading-[0] min-h-px min-w-px relative ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[13px]`}>
-                      <span className="leading-[18px]">{`Building 3 pet-projects and `}</span>
-                      <span className="[text-decoration-skip-ink:none] decoration-solid leading-[18px] underline cursor-pointer transition-colors duration-200 hover:text-black">wrote 1 playbook</span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="content-stretch flex gap-[8px] items-start relative shrink-0 w-full">
-                <div className="overflow-clip relative shrink-0 size-[18px]" data-name="map-pin, location">
-                  <div className="absolute inset-[8.33%_16.67%_10.4%_16.67%]" data-name="vector">
-                    <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 12 14.6277">
-                      <path clipRule="evenodd" d={svgPaths.p3a68b400} fill={isDark ? "#B8BCC4" : "#6B7280"} className="transition-colors duration-700" fillRule="evenodd" id="vector" />
-                    </svg>
-                  </div>
-                </div>
-                <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b0b4bb]' : 'text-[#0a0c11]'} transition-colors duration-700 text-[13px]`}>Currently in Barcelona, Spain</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="content-stretch flex flex-[1_0_0] flex-col items-start min-h-px min-w-0 py-0 md:py-[32px] my-0 md:my-[24px] w-full min-w-0 relative">
-          <div className="content-stretch flex flex-col gap-12 md:gap-16 lg:gap-[104px] items-start justify-end relative shrink-0 w-full">
-            <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
+      <SitePageLayout
+        isDark={isDark}
+        route="index"
+        bookCallUrl={bookCallUrl}
+        contactEmailUrl={contactEmailUrl}
+      >
+          <div className="content-stretch flex flex-col gap-12 md:gap-16 lg:gap-[104px] items-start justify-start relative shrink-0 w-full">
+            <HomeSection id="heroImage" className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
               <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_280px] grid-rows-[repeat(1,fit-content(100%))] relative shrink-0 w-full">
                 <HeroImage className="aspect-[765/1026] h-auto w-full max-w-full justify-self-stretch col-1 relative row-1 shrink-0 overflow-hidden lg:w-[min(100%,calc(1000px*765/1026))] lg:max-w-[min(100%,calc(1000px*765/1026))] lg:justify-self-start" />
                 <p className={`hidden lg:block col-2 font-['Switzer_Variable:Regular',sans-serif] font-light leading-[20px] opacity-0 relative row-1 self-start shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[14px] whitespace-pre-wrap`}>{"Outside of my daily routine and outside a father duties, I\u2019m  travelling, skiing, scuba diving,  riding a bike, DJing, taking some cool photos with my pocket Ricoh GR lV and videos with Insta360 X5."}</p>
@@ -475,16 +256,16 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                   <span className="leading-[20px]">{` with Insta360 X5.`}</span>
                 </p>
               </div>
-            </div>
-            <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
+            </HomeSection>
+            <HomeSection id="designPhilosophy" className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
               <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 lg:grid-cols-2 grid-rows-[repeat(1,fit-content(100%))] relative shrink-0 w-full">
                 <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-medium justify-self-stretch leading-[36px] relative row-1 self-start shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[25px] tracking-[-0.2px]`}>His design philosophy</p>
               </div>
               <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 lg:grid-cols-2 grid-rows-[repeat(1,fit-content(100%))] relative shrink-0 w-full">
                 <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-light justify-self-stretch leading-[18px] relative row-1 self-start shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px]`}>Max believes in empathy-driven design that bridges user needs with business objectives. His approach combines data-driven insights with human-centered design principles to create solutions that are both meaningful and measurable.</p>
               </div>
-            </div>
-            <div className="content-stretch flex flex-col items-start relative shrink-0 w-full">
+            </HomeSection>
+            <HomeSection id="focusOutcomes" className="content-stretch flex flex-col items-start relative shrink-0 w-full">
               <div className="content-stretch flex items-start relative shrink-0 w-full">
                 <div className="content-stretch flex w-full min-w-0 flex-col gap-[32px] items-start justify-start relative">
                   <div className="content-stretch flex w-full min-w-0 flex-col gap-[32px] items-start relative">
@@ -492,7 +273,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                         <p className="leading-[36px] mb-0">{`Focus → Outcomes over outputs: `}</p>
                         <p className="leading-[36px]">from insight to shipped impact.</p>
                       </div>
-                      <a href={BOOK_CALL_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg no-underline" data-name="Button">
+                      <a href={bookCallUrl} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg no-underline" data-name="Button">
                         <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-white' : 'bg-black'} inset-0 pointer-events-none rounded-[1000px] transition-all duration-200`} />
                         <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.09)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_1px_1px_0px_rgba(0,0,0,0.03)]" />
                         <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
@@ -625,8 +406,8 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="flex flex-col gap-12 md:gap-16 lg:gap-[64px] items-start relative shrink-0 w-full min-w-0">
+            </HomeSection>
+            <HomeSection id="selectedWorks" className="flex flex-col gap-12 md:gap-16 lg:gap-[64px] items-start relative shrink-0 w-full min-w-0">
               <div className="content-stretch flex flex-col gap-[20px] items-start relative shrink-0 w-full">
                 <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
                   <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 lg:grid-cols-2 grid-rows-[repeat(1,fit-content(100%))] relative shrink-0 w-full">
@@ -1081,6 +862,8 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                   <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.03)] border-solid inset-0 pointer-events-none" />
                 ) : null}
               </div>
+            </HomeSection>
+            <HomeSection id="stories" className="w-full shrink-0">
               <div className={`${!isDark ? 'bg-white' : ''} transition-colors duration-700 relative shrink-0 w-full`}>
                 <div className="content-stretch flex flex-col items-center overflow-clip relative rounded-[inherit] size-full">
                   <div className={`${!isDark ? 'bg-white' : ''} transition-colors duration-700 relative shrink-0 w-full`}>
@@ -1110,8 +893,8 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                 </div>
                 <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none" />
               </div>
-            </div>
-            <div className="content-stretch flex flex-col items-start py-8 md:py-[32px] relative shrink-0 w-full" data-name="Hiring philosophy">
+            </HomeSection>
+            <HomeSection id="hiringPhilosophy" className="content-stretch flex flex-col items-start py-8 md:py-[32px] relative shrink-0 w-full">
               <div className="content-stretch flex w-full flex-col items-stretch gap-8 md:gap-12 pb-8 md:pb-[32px] relative shrink-0">
                 <div aria-hidden="true" className={`absolute border border-solid inset-0 pointer-events-none ${isDark ? 'border-white/[0.06]' : 'border-[rgba(0,0,0,0.06)]'}`} />
                 <div className="content-stretch flex w-full min-w-0 flex-col items-stretch relative shrink-0">
@@ -1264,8 +1047,8 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="relative z-0 flex w-full min-w-0 flex-col items-start" data-name="Approach section">
+            </HomeSection>
+            <HomeSection id="approach" className="relative z-0 flex w-full min-w-0 flex-col items-start">
                 <div className="content-stretch flex w-full min-w-0 flex-col gap-8 md:gap-[32px] items-start justify-start relative">
                   <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 lg:grid-cols-[342.67px_minmax(0,1fr)] grid-rows-[repeat(1,fit-content(100%))] py-6 md:py-[32px] relative shrink-0 w-full">
                     <div className="col-1 content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] gap-[8px] items-start justify-self-stretch relative row-1 self-start shrink-0">
@@ -1464,8 +1247,8 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                   </div>
                   <div className="h-8 shrink-0 w-full md:h-10" />
                 </div>
-            </div>
-            <div className="relative z-10 mt-6 flex w-full min-w-0 flex-col gap-8 md:mt-10 md:gap-[32px] items-start" data-name="Ventures">
+            </HomeSection>
+            <HomeSection id="ventures" className="relative z-10 mt-6 flex w-full min-w-0 flex-col gap-8 md:mt-10 md:gap-[32px] items-start">
               <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
                 <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 lg:grid-cols-2 grid-rows-[repeat(1,fit-content(100%))] relative shrink-0 w-full">
                   <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-medium justify-self-stretch leading-[36px] relative row-1 self-start shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[25px] tracking-[-0.2px]`}>Products Max is building</p>
@@ -1525,7 +1308,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                                         <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Let’s chat and define the idea</p>
                                       </div>
                                       <div className="flex flex-col items-start gap-[12px] w-full min-w-0" data-name="CTAs">
-                                        <a href={BOOK_CALL_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
+                                        <a href={bookCallUrl} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
                                           <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-[rgba(255,255,255,0.1)]' : 'bg-[rgba(242,242,244,0.8)]'} transition-colors duration-700 inset-0 pointer-events-none rounded-[1000px]`} />
                                           <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)]" />
                                           <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
@@ -1649,7 +1432,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                             <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>People deserve to be real, consume real content and be organic in every moment.</p>
                           </div>
                         </div>
-                        <a href={BOOK_CALL_URL} target="_blank" rel="noopener noreferrer" className="relative mt-[32px] flex h-[44px] min-h-[44px] shrink-0 cursor-pointer items-center justify-center gap-[2px] rounded-[1000px] px-[10px] py-[4px] transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
+                        <a href={bookCallUrl} target="_blank" rel="noopener noreferrer" className="relative mt-[32px] flex h-[44px] min-h-[44px] shrink-0 cursor-pointer items-center justify-center gap-[2px] rounded-[1000px] px-[10px] py-[4px] transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
                           <div aria-hidden="true" className={`pointer-events-none absolute inset-0 rounded-[1000px] backdrop-blur-[12px] ${isDark ? "bg-[rgba(255,255,255,0.1)]" : "bg-[rgba(242,242,244,0.8)]"} transition-colors duration-700`} />
                           <div aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[1000px] border border-solid border-[rgba(0,0,0,0.06)] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)]" />
                           <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
@@ -1676,7 +1459,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                       </div>
                     </div>
                     <div className="content-stretch flex items-center relative shrink-0 w-full">
-                      <a href={BOOK_CALL_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg no-underline" data-name="Button">
+                      <a href={bookCallUrl} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg no-underline" data-name="Button">
                         <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-white' : 'bg-black'} inset-0 pointer-events-none rounded-[1000px] transition-all duration-200`} />
                         <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.09)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_1px_1px_0px_rgba(0,0,0,0.03)]" />
                         <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
@@ -1695,8 +1478,8 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="transition-colors duration-700 content-stretch flex flex-col items-center overflow-clip relative shrink-0 w-full">
+            </HomeSection>
+            <HomeSection id="workedWith" className="transition-colors duration-700 content-stretch flex flex-col items-center overflow-clip relative shrink-0 w-full">
               <div className="transition-colors duration-700 relative shrink-0 w-full">
                 <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 lg:grid-cols-[minmax(0,0.35fr)_minmax(0,1fr)_minmax(0,0.35fr)] grid-rows-[repeat(1,fit-content(100%))] p-[32px] relative size-full">
                   <div className="col-1 lg:col-2 content-stretch flex flex-col items-center justify-self-stretch relative row-1 self-start shrink-0 w-full min-w-0">
@@ -1711,8 +1494,8 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                 </div>
               </div>
               <WorkedWithSection isDark={isDark} />
-            </div>
-            <div className={`${isDark ? "" : "bg-white"} transition-colors duration-700 relative shrink-0 w-full`}>
+            </HomeSection>
+            <HomeSection id="bio" className="transition-colors duration-700 relative shrink-0 w-full">
               <div
                 className="grid grid-cols-1 gap-x-[32px] gap-y-8 px-4 md:px-[32px] lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1fr)_minmax(0,0.75fr)] lg:items-end"
                 data-name="Bio grid"
@@ -1768,191 +1551,31 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                   </div>
                 </div>
               </div>
-            </div>
+            </HomeSection>
+            <HomeSection id="career" className="w-full shrink-0">
             <CareerPath isDark={isDark} />
-            <div className="content-stretch flex flex-col items-start relative shrink-0 w-full">
-              <div className="content-stretch flex flex-col items-start relative shrink-0 w-full">
-                <div className="content-stretch flex flex-col lg:flex-row items-stretch overflow-x-clip relative w-full shrink-0" data-name="Contact CTA">
-                  <div className={`relative w-full min-w-0 flex-[1_0_0] self-stretch ${isDark ? "bg-[#151515]" : "bg-[#f9f9fa]"} transition-colors duration-700`}>
-                    <div className="relative flex h-auto w-full flex-col items-start gap-4 p-[32px] md:p-8">
-                      <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
-                        <div className={`${isDark ? "bg-[rgba(64,155,63,0.2)]" : "bg-[#e3f6e2]"} transition-colors duration-700 content-stretch flex gap-[2px] h-[28px] items-center justify-center pl-[2px] pr-[6px] py-[4px] relative rounded-[9999px] shrink-0`} data-name="Tag_special">
-                          <div aria-hidden="true" className={`absolute border-0 border-solid inset-0 pointer-events-none rounded-[9999px] ${isDark ? "border-[rgba(64,155,63,0.4)]" : "border-[rgba(64,155,63,0.35)]"} transition-colors duration-700`} />
-                          <div className="backdrop-blur-[12px] bg-gradient-to-b from-[rgba(64,155,63,0.56)] relative rounded-[1000px] shrink-0 size-[24px] to-[rgba(64,155,63,0.2)]" data-name="avatar">
-                            <div className="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 overflow-clip size-[14px] top-1/2" data-name="Icon / Tick">
-                              <div className="absolute inset-[4.17%]" data-name="Vector">
-                                <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 12.8333 12.8333">
-                                  <path clipRule="evenodd" d={svgPaths.pa0b69f0} fill="var(--fill-0, #69C068)" fillRule="evenodd" id="Vector" />
-                                </svg>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="content-stretch flex gap-[2px] items-center justify-center px-[2px] relative shrink-0" data-name="Text_wrap_md">
-                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-[#c8f0c7]" : "text-[#2d7a2c]"} transition-colors duration-700`}>Available for new projects</p>
-                          </div>
-                        </div>
-                        <p className={`w-full max-w-full font-['Switzer_Variable:Regular',sans-serif] text-[22px] font-medium leading-[30px] tracking-[-0.2px] md:text-[25px] md:leading-[36px] ${isDark ? "text-white" : "text-[#0a0c11]"} transition-colors duration-700`}>Book a discovery call and let’s create valuable digital experience together.</p>
-                        <p className={`w-full max-w-full font-['Switzer_Variable:Regular',sans-serif] text-[15px] font-light leading-[22px] md:text-[13px] md:leading-[18px] ${isDark ? "text-[rgba(255,255,255,0.88)]" : "text-[#5b616d]"} transition-colors duration-700`}>{`Max works best with founders who value speed, clarity, and outcomes over pixel-perfect decks. If you're building something real, let's figure out how he can help.`}</p>
-                      </div>
-                      <div className="flex flex-wrap gap-[16px] items-start">
-                        <div className="content-stretch flex gap-[2px] h-[28px] items-center justify-center px-[6px] py-[4px] relative rounded-[8px] shrink-0" data-name="Tag_special">
-                          <div aria-hidden="true" className={`absolute backdrop-blur-[12px] inset-0 pointer-events-none rounded-[8px] ${isDark ? "bg-[rgba(46,46,46,0.8)]" : "bg-[#ececf0]"} transition-colors duration-700`} />
-                          <div aria-hidden="true" className={`absolute border border-solid inset-0 pointer-events-none rounded-[8px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.09)] ${isDark ? "border-[rgba(255,255,255,0.03)]" : "border-[rgba(0,0,0,0.06)]"} transition-colors duration-700`} />
-                          <div className="content-stretch flex gap-[2px] items-center justify-center px-[2px] relative shrink-0" data-name="Text_wrap_md">
-                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-white" : "text-[#0a0c11]"} transition-colors duration-700`}>Founding Designer</p>
-                          </div>
-                          <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)]" />
-                        </div>
-                        <div className="content-stretch flex gap-[2px] h-[28px] items-center justify-center px-[6px] py-[4px] relative rounded-[8px] shrink-0" data-name="Tag_special">
-                          <div aria-hidden="true" className={`absolute backdrop-blur-[12px] inset-0 pointer-events-none rounded-[8px] ${isDark ? "bg-[rgba(46,46,46,0.8)]" : "bg-[#ececf0]"} transition-colors duration-700`} />
-                          <div aria-hidden="true" className={`absolute border border-solid inset-0 pointer-events-none rounded-[8px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.09)] ${isDark ? "border-[rgba(255,255,255,0.03)]" : "border-[rgba(0,0,0,0.06)]"} transition-colors duration-700`} />
-                          <div className="content-stretch flex gap-[2px] items-center justify-center px-[2px] relative shrink-0" data-name="Text_wrap_md">
-                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-white" : "text-[#0a0c11]"} transition-colors duration-700`}>Design systems</p>
-                          </div>
-                          <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)]" />
-                        </div>
-                        <div className="content-stretch flex gap-[2px] h-[28px] items-center justify-center px-[6px] py-[4px] relative rounded-[8px] shrink-0" data-name="Tag_special">
-                          <div aria-hidden="true" className={`absolute backdrop-blur-[12px] inset-0 pointer-events-none rounded-[8px] ${isDark ? "bg-[rgba(46,46,46,0.8)]" : "bg-[#ececf0]"} transition-colors duration-700`} />
-                          <div aria-hidden="true" className={`absolute border border-solid inset-0 pointer-events-none rounded-[8px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.09)] ${isDark ? "border-[rgba(255,255,255,0.03)]" : "border-[rgba(0,0,0,0.06)]"} transition-colors duration-700`} />
-                          <div className="content-stretch flex gap-[2px] items-center justify-center px-[2px] relative shrink-0" data-name="Text_wrap_md">
-                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-white" : "text-[#0a0c11]"} transition-colors duration-700`}>Product Strategy</p>
-                          </div>
-                          <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)]" />
-                        </div>
-                        <div className="content-stretch flex gap-[2px] h-[28px] items-center justify-center px-[6px] py-[4px] relative rounded-[8px] shrink-0" data-name="Tag_special">
-                          <div aria-hidden="true" className={`absolute backdrop-blur-[12px] inset-0 pointer-events-none rounded-[8px] ${isDark ? "bg-[rgba(46,46,46,0.8)]" : "bg-[#ececf0]"} transition-colors duration-700`} />
-                          <div aria-hidden="true" className={`absolute border border-solid inset-0 pointer-events-none rounded-[8px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.09)] ${isDark ? "border-[rgba(255,255,255,0.03)]" : "border-[rgba(0,0,0,0.06)]"} transition-colors duration-700`} />
-                          <div className="content-stretch flex gap-[2px] items-center justify-center px-[2px] relative shrink-0" data-name="Text_wrap_md">
-                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-white" : "text-[#0a0c11]"} transition-colors duration-700`}>AI Integration</p>
-                          </div>
-                          <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)]" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className={`relative w-full min-w-0 flex-[1_0_0] ${isDark ? "bg-[#151515]" : "bg-[#f9f9fa]"} transition-colors duration-700`}>
-                    <div aria-hidden="true" className={`pointer-events-none absolute inset-0 border-l border-solid ${isDark ? "border-[rgba(255,255,255,0.12)]" : "border-[#0a0c11]/[0.08]"} transition-colors duration-700 max-lg:border-l-0`} />
-                    <div className="flex h-auto w-full flex-col items-end">
-                      <div className="relative flex h-auto w-full flex-col items-end p-[32px] md:p-8">
-                        <ContactForm isDark={isDark} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className={`${isDark ? "bg-[#f9f9fa]" : "bg-[#151515]"} transition-colors duration-700 h-[238px] relative shrink-0 w-full`}>
-                <div className="overflow-clip rounded-[inherit] size-full">
-                  <div className="gap-x-[10px] gap-y-[10px] grid grid-cols-[repeat(1,minmax(0,1fr))] grid-rows-[repeat(1,fit-content(100%))] p-4 md:p-8 relative size-full">
-                    <div className="col-1 justify-self-stretch relative row-1 self-stretch shrink-0">
-                      <div className="content-stretch flex flex-col gap-[16px] items-start py-[24px] relative size-full">
-                        <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] min-w-full relative shrink-0 ${isDark ? "text-[#5b616d]" : "text-[#d1d5db]"} transition-colors duration-700 text-[13px] w-[min-content]`}>Skip the form</p>
-                        <a
-                          className={`decoration-[6.5%] decoration-dotted font-['Open_Sauce_Two:Regular',sans-serif] font-medium leading-[36px] min-w-full not-italic relative shrink-0 ${isDark ? "text-[#0a0c11]" : "text-white"} transition-colors duration-700 text-[25px] tracking-[-0.2px] underline w-[min-content] cursor-pointer transition-colors duration-200 ${isDark ? "hover:text-black" : "hover:text-white/80"}`}
-                          href="mailto:hey@maxburlak.com"
-                        >
-                          hey@maxburlak.com
-                        </a>
-                        <div className="content-stretch flex flex-col gap-3 sm:flex-row sm:gap-4 items-stretch sm:items-start relative shrink-0 w-full">
-                          <a href={BOOK_CALL_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
-                            <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? "bg-black" : "bg-white"} transition-colors duration-700 inset-0 pointer-events-none rounded-[1000px]`} />
-                            <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.09)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_1px_1px_0px_rgba(0,0,0,0.03)]" />
-                            <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
-                              <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative shrink-0 text-[13px] whitespace-nowrap ${isDark ? "text-white" : "text-[#0a0c11]"} transition-colors duration-700`}>Grab 15 mins</p>
-                            </div>
-                            <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="Right_md">
-                              <div className="relative shrink-0 size-[18px]" data-name="icons / google meet">
-                                <div className="absolute inset-[10%_0]" data-name="image 37">
-                                  <PortfolioImage alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage37} />
-                                </div>
-                              </div>
-                            </div>
-                            <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_3px_3px_0px_rgba(255,255,255,0.12)]" />
-                          </a>
-                          <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
-                            <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? "bg-[rgba(242,242,244,0.8)]" : "bg-[rgba(255,255,255,0.1)]"} transition-colors duration-700 inset-0 pointer-events-none rounded-[1000px]`} />
-                            <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)]" />
-                            <div className="content-stretch flex gap-[6px] items-center justify-center relative shrink-0" data-name="Left_md">
-                              <div className={`relative shrink-0 size-[18px] ${isDark ? "text-[#0a0c11]" : "text-white"} transition-colors duration-700`} data-name="linkedin">
-                                <div className="absolute inset-[12.5%]" data-name="vector">
-                                  <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 13.5 13.5">
-                                    <path d={svgPaths.pbc58000} fill="currentColor" id="vector" />
-                                  </svg>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
-                              <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative shrink-0 text-[13px] whitespace-nowrap ${isDark ? "text-[#0a0c11]" : "text-white"} transition-colors duration-700`}>Linkedin</p>
-                            </div>
-                            <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)]" />
-                          </a>
-                          <a href={DRIBBBLE_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
-                            <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? "bg-[rgba(242,242,244,0.8)]" : "bg-[rgba(255,255,255,0.1)]"} transition-colors duration-700 inset-0 pointer-events-none rounded-[1000px]`} />
-                            <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)]" />
-                            <div className="content-stretch flex gap-[6px] items-center justify-center relative shrink-0" data-name="Left_md">
-                              <div className={`overflow-clip relative shrink-0 size-[18px] ${isDark ? "text-[#0a0c11]" : "text-white"} transition-colors duration-700`} data-name="dribbble">
-                                <div className="absolute inset-[8.33%]" data-name="vector">
-                                  <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 15 15">
-                                    <path d={svgPaths.p1980ea00} fill="currentColor" id="vector" />
-                                  </svg>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
-                              <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative shrink-0 text-[13px] whitespace-nowrap ${isDark ? "text-[#0a0c11]" : "text-white"} transition-colors duration-700`}>dribbble.com</p>
-                            </div>
-                            <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)]" />
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className={`${isDark ? 'bg-[#1a1a1a]' : 'bg-[#f9f9fa]'} transition-colors duration-700 relative shrink-0 w-full`} data-name="Pro Blocks / Footer / 7.">
-                <div aria-hidden="true" className={`absolute border-solid border-t inset-0 pointer-events-none transition-colors duration-700 ${isDark ? 'border-[rgba(255,255,255,0.08)]' : 'border-[rgba(0,0,0,0.12)]'}`} />
-                <div className="flex flex-col items-center justify-end size-full">
-                  <div className="content-stretch flex flex-col items-center justify-end px-[32px] py-[96px] relative size-full">
-                    <div className="gap-x-[24px] gap-y-[24px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.50fr)_minmax(0,0.50fr)] grid-rows-[repeat(1,fit-content(100%))] relative shrink-0 w-full" data-name="Grid">
-                      <div className="col-1 content-stretch flex flex-col gap-[16px] items-start justify-center justify-self-stretch relative row-1 self-start shrink-0" data-name="Column">
-                        <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[36px] relative shrink-0 text-[25px] tracking-[-0.2px] w-full ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700`}>2026</p>
-                        <p className={`font-['Switzer_Variable:Medium',sans-serif] font-semibold leading-[44px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[42px] tracking-[-0.2px] w-full`}>maxburlak.com</p>
-                        <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>AI-driven product designer helping founders design experience, build systems and foundations.</p>
-                        <SocialIconButtons isDark={isDark} />
-
-                      </div>
-                      <div className="col-2 justify-self-stretch relative row-1 self-stretch shrink-0" data-name="Column">
-                        <div className="content-stretch flex flex-col gap-[16px] items-start leading-[18px] p-[32px] relative size-full">
-                          <p className={`font-['Switzer_Variable:Medium',sans-serif] font-medium relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[15px] w-full`}>Work</p>
-                          <div className={`content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] font-light gap-[12px] items-start relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`} data-name="Flex Vertical">
-                            <Link className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"}`} to="/works">Works</Link>
-                            <Link className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"}`} to="/approach">Approach</Link>
-                            <Link className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"}`} to="/ventures">Ventures</Link>
-                            <Link className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"}`} to="/feed">Feed</Link>
-                            <Link className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"}`} to="/playground">Playground</Link>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-3 justify-self-stretch relative row-1 self-start shrink-0" data-name="Column">
-                        <div className="content-stretch flex flex-col gap-[16px] items-start leading-[18px] p-[32px] relative size-full">
-                          <p className={`font-['Switzer_Variable:Medium',sans-serif] font-medium relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[15px] w-full`}>Connect</p>
-                          <div className={`content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] font-light gap-[12px] items-start relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`} data-name="Flex Vertical">
-                            <Link className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"}`} to="/about">About</Link>
-                            <p className="relative shrink-0 w-full">Contact</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            </HomeSection>
           </div>
+      </SitePageLayout>
+      ) : pathname === "/approach" ? (
+        <div className="flex w-full flex-col items-start">
+          <ApproachPage isDark={isDark} />
+          <SitePageEnd isDark={isDark} className="mt-12 w-full md:mt-16 lg:mt-[104px]" />
         </div>
-      </div>
-      ) : pathname === "/playground" ? (
-        <PlaygroundView isDark={isDark} />
       ) : (
-        <TabEmptyState title={phTitle} isDark={isDark} />
+        <SitePageLayout
+          isDark={isDark}
+          route={pathname.replace(/^\//, "") || "page"}
+          bookCallUrl={bookCallUrl}
+          contactEmailUrl={contactEmailUrl}
+          mainClassName={pathname === "/playground" ? "relative my-0 flex min-h-0 w-full min-w-0 flex-1 flex-col py-0" : undefined}
+        >
+          {pathname === "/playground" ? (
+            <PlaygroundView isDark={isDark} />
+          ) : (
+            <TabEmptyState title={phTitle} isDark={isDark} />
+          )}
+        </SitePageLayout>
       )}
       </main>
       <header className="fixed top-0 left-0 right-0 z-[1000] pointer-events-none">
@@ -1976,7 +1599,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
           {/* Desktop action buttons */}
           <div className="hidden xl:flex content-stretch items-center relative shrink-0">
             <div className="content-stretch flex gap-[12px] items-center relative shrink-0">
-              <a href={BOOK_CALL_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[28px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg no-underline" data-name="Button">
+              <a href={bookCallUrl} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[28px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg no-underline" data-name="Button">
                 <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-white' : 'bg-black'} inset-0 pointer-events-none rounded-[28px] transition-all duration-200`} />
                 <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.09)] border-solid inset-0 pointer-events-none rounded-[28px] shadow-[0px_1px_1px_0px_rgba(0,0,0,0.03)]" />
                 <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
@@ -1991,7 +1614,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                 </div>
                 <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_3px_3px_0px_rgba(255,255,255,0.12)]" />
               </a>
-              <a href={CONTACT_EMAIL_URL} className="content-stretch flex gap-[2px] h-[44px] min-h-[44px] items-center justify-center px-[10px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
+              <a href={contactEmailUrl} className="content-stretch flex gap-[2px] h-[44px] min-h-[44px] items-center justify-center px-[10px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
                 <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-[rgba(255,255,255,0.1)]' : 'bg-[rgba(242,242,244,0.8)]'} transition-colors duration-700 inset-0 pointer-events-none rounded-[1000px] transition-all duration-200`} />
                 <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)]" />
                 <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
@@ -2089,7 +1712,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
               ))}
               <div className="h-px my-[12px] bg-[rgba(0,0,0,0.06)]" />
               <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-                <a href={BOOK_CALL_URL} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] items-center justify-center px-[16px] py-[4px] relative rounded-[28px] flex-1 cursor-pointer no-underline" data-name="Button">
+                <a href={bookCallUrl} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] items-center justify-center px-[16px] py-[4px] relative rounded-[28px] flex-1 cursor-pointer no-underline" data-name="Button">
                   <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-white' : 'bg-black'} inset-0 pointer-events-none rounded-[28px]`} />
                   <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative text-[14px] ${isDark ? 'text-[#0a0c11]' : 'text-white'} whitespace-nowrap`}>Book a call</p>
                   <div className="relative shrink-0 size-[18px]">
@@ -2099,7 +1722,7 @@ export default function MainV({ className, isDark = false, onThemeToggle }: { cl
                   </div>
                   <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_3px_3px_0px_rgba(255,255,255,0.12)]" />
                 </a>
-                <a href={CONTACT_EMAIL_URL} className="content-stretch flex gap-[4px] h-[44px] items-center justify-center px-[16px] py-[4px] relative rounded-[1000px] flex-1 cursor-pointer no-underline">
+                <a href={contactEmailUrl} className="content-stretch flex gap-[4px] h-[44px] items-center justify-center px-[16px] py-[4px] relative rounded-[1000px] flex-1 cursor-pointer no-underline">
                   <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-[rgba(255,255,255,0.1)]' : 'bg-[rgba(242,242,244,0.8)]'} inset-0 pointer-events-none rounded-[1000px]`} />
                   <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none rounded-[1000px]" />
                   <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative ${isDark ? 'text-white' : 'text-[#0a0c11]'} text-[14px] whitespace-nowrap`}>Chat with me</p>

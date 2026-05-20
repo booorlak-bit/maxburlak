@@ -31,7 +31,7 @@ export function PlaygroundView({ isDark }: PlaygroundPageProps) {
   return (
     <div
       data-route="playground"
-      className="relative h-[calc(100svh-70px)] min-h-[calc(100svh-70px)] w-full supports-[height:100dvh]:h-[calc(100dvh-70px)] supports-[height:100dvh]:min-h-[calc(100dvh-70px)]"
+      className="relative h-full min-h-[min(100%,calc(100svh-70px))] w-full min-w-0 supports-[height:100dvh]:min-h-[min(100%,calc(100dvh-70px))]"
     >
       <div
         className={`relative h-full min-h-0 overflow-hidden rounded-[20px] border ${isDark ? "border-white/[0.06] bg-[#151515]" : "border-black/[0.06] bg-[#f9f9fa]"}`}

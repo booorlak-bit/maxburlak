@@ -38,7 +38,13 @@ export function getPageMeta(pathname: string): PageMeta {
     case "/works":
       return placeholderMeta("Selected works");
     case "/approach":
-      return placeholderMeta("Approach");
+      return {
+        title: `Approach — AI-native product design — ${SITE_NAME}`,
+        description:
+          "How Max Burlak works: Multiplier and Loop models for AI-native design — from ambiguity to shipped impact in days, not weeks. Engagement models for founders and product teams.",
+        canonicalPath: "/approach",
+        robots: "index, follow",
+      };
     case "/ventures":
       return placeholderMeta("Ventures");
     case "/feed":

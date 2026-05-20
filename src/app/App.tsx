@@ -1,6 +1,7 @@
-import { BrowserRouter, Routes, Route } from "react-router";
+import { BrowserRouter } from "react-router";
 import { SeoManager } from "../components/SeoManager";
 import MainV from "../imports/MainV2";
+import { CmsProvider } from "../sanity/CmsProvider";
 import { useTheme } from "./useTheme";
 
 export default function App() {
@@ -9,26 +10,27 @@ export default function App() {
   return (
     <div className={`min-h-[100dvh] min-h-screen overflow-x-clip transition-colors duration-700 ${isDark ? "bg-[#0a0a0a]" : "bg-white"}`}>
       <BrowserRouter>
-        <SeoManager />
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[2000] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-[#0a0c11] focus:shadow-lg"
-        >
-          Skip to main content
-        </a>
-        <MainV isDark={isDark} onThemeToggle={toggleTheme} />
+        <CmsProvider>
+          <SeoManager />
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[2000] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-[#0a0c11] focus:shadow-lg"
+          >
+            Skip to main content
+          </a>
+          <MainV isDark={isDark} onThemeToggle={toggleTheme} />
+        </CmsProvider>
       </BrowserRouter>
       <style>{`
-        /* Main content wrapper (index layout only — not playground tab) */
-        [data-name="Main V2"] > main > [data-route="index"] {
+        /* Two-column layout (sidebar + main) on all nav pages */
+        [data-name="Main V2"] > main > [data-layout="with-sidebar"] {
           height: auto !important;
           min-height: calc(100vh - 60px) !important;
           position: relative !important;
         }
 
-        /* Left sidebar: desktop — sticky rail, no nested scroll (page scroll only) */
         @media (min-width: 1024px) {
-          [data-name="Main V2"] > main > [data-route="index"] > div:first-child > div {
+          [data-name="Main V2"] > main > [data-layout="with-sidebar"] > aside > div {
             display: flex !important;
             flex-direction: column !important;
             justify-content: space-between !important;
@@ -36,7 +38,7 @@ export default function App() {
             min-height: calc(100svh - 84px) !important;
           }
 
-          [data-name="Main V2"] > main > [data-route="index"] > div:first-child {
+          [data-name="Main V2"] > main > [data-layout="with-sidebar"] > aside {
             position: sticky !important;
             top: 84px !important;
             overflow-x: hidden !important;
@@ -45,27 +47,31 @@ export default function App() {
           }
         }
 
-        /* Right content area */
-        [data-name="Main V2"] > main > [data-route="index"] > div:nth-child(2) {
+        [data-name="Main V2"] > main > [data-layout="with-sidebar"] > div:last-child {
           height: auto !important;
           flex: 1 !important;
           min-width: 0 !important;
         }
 
-        /* Playground tab — fill viewport below fixed header + page padding */
-        [data-name="Main V2"] > main > [data-route="playground"] {
+        /* CMS section order (homepage main column only) */
+        [data-name="Main V2"] > main > [data-layout="with-sidebar"][data-route="index"] > div:last-child > div {
+          display: flex !important;
+          flex-direction: column !important;
+        }
+
+        /* Playground fills main column */
+        [data-name="Main V2"] > main > [data-layout="with-sidebar"] > div:last-child > [data-route="playground"] {
           height: calc(100svh - 70px) !important;
           min-height: calc(100svh - 70px) !important;
         }
 
         @supports (height: 100dvh) {
-          [data-name="Main V2"] > main > [data-route="playground"] {
+          [data-name="Main V2"] > main > [data-layout="with-sidebar"] > div:last-child > [data-route="playground"] {
             height: calc(100dvh - 70px) !important;
             min-height: calc(100dvh - 70px) !important;
           }
         }
 
-        /* Fixed header spanning full width */
         [data-name="Main V2"] > header {
           position: fixed !important;
           top: 0 !important;
