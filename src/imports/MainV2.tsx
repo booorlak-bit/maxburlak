@@ -256,6 +256,9 @@ export default function MainV({
       <SitePageLayout
         isDark={isDark}
         route="index"
+        withSidebar
+        bookCallUrl={bookCallUrl}
+        contactEmailUrl={contactEmailUrl}
       >
           <div className="content-stretch flex flex-col gap-12 md:gap-16 lg:gap-[104px] items-start justify-start relative shrink-0 w-full">
             <HomeSection id="heroImage" className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
