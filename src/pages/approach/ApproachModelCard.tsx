@@ -1,25 +1,15 @@
 import type { SiteTheme } from "../../components/site/siteTheme";
+import type { ApproachModel } from "../../content/approachPage";
 import { PortfolioImage } from "../../components/PortfolioImage";
 import imgMultiplier from "figma:asset/83d8f2d82852167ec9d5f01b0cc4aa0cebcde4b0.png";
 import imgLoop from "figma:asset/495108f5bf905037df5607db7bc5638b69f1dc84.png";
-
-type Model = {
-  id: string;
-  title: string;
-  tagline: string;
-  description: string;
-  iDo: string[];
-  aiDoes: string[];
-  bestFor: string;
-  accent: "yellow" | "blue";
-};
 
 const ICONS: Record<string, string> = {
   multiplier: imgMultiplier,
   loop: imgLoop,
 };
 
-export function ApproachModelCard({ model, theme: t }: { model: Model; theme: SiteTheme }) {
+export function ApproachModelCard({ model, theme: t }: { model: ApproachModel; theme: SiteTheme }) {
   const alertBg = model.accent === "yellow" ? t.alertGreen : t.alertBlue;
   const iconSrc = ICONS[model.id] ?? imgMultiplier;
 

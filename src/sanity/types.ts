@@ -1,4 +1,5 @@
 import type { HomeSectionId } from "./sectionIds";
+import type { WorksProjectCategory } from "../content/worksPage";
 
 export type SanityImage = {
   asset?: { _ref?: string; _type?: string };
@@ -59,15 +60,51 @@ export type CaseStudy = {
   title?: string;
   slug?: { current?: string };
   client?: string;
+  role?: string;
+  years?: string;
+  pageTitle?: string;
   metaLine?: string;
   headline?: string;
   summary?: string;
+  description?: string;
   tags?: string[];
+  engagementCategories?: WorksProjectCategory[];
   tradeoffs?: string;
   metrics?: { value?: string; label?: string }[];
+  logoKey?: string;
   heroImage?: SanityImage;
   coverImage?: SanityImage;
   status?: string;
+  sortOrder?: number;
+  showCaseStudyPage?: boolean;
+  lede?: string;
+  publishedLabel?: string;
+  visitUrl?: string;
+  visitLabel?: string;
+  teamMeta?: string;
+  stageMeta?: string;
+  nav?: { _key?: string; id?: string; label?: string }[];
+  sections?: {
+    _key?: string;
+    id?: string;
+    title?: string;
+    paragraphs?: unknown[];
+    table?: { _key?: string; title?: string; description?: string }[];
+    phases?: { _key?: string; phase?: string; title?: string; description?: string }[];
+    features?: { _key?: string; title?: string; body?: string }[];
+    metrics?: { _key?: string; value?: string; label?: string; detail?: string }[];
+    numberedList?: string[];
+  }[];
+};
+
+export type WorksPageCms = {
+  heroLabel?: string;
+  heroTitle?: string;
+  heroSubtitle?: string;
+  loadMoreBatch?: number;
+  moreWorksTitle?: string;
+  featuredProjects?: CaseStudy[];
+  moreProjects?: CaseStudy[];
 };
 
 export type Venture = {
@@ -122,4 +159,7 @@ export type FocusArea = {
 export type CmsPayload = {
   siteSettings: SiteSettings | null;
   homePage: HomePage | null;
+  worksPage: WorksPageCms | null;
+  caseStudies: CaseStudy[];
+  playgroundPage: import("../playground/playgroundTypes").PlaygroundPageCms | null;
 };

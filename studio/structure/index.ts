@@ -1,6 +1,6 @@
 import type { StructureResolver } from "sanity/structure";
 
-const SINGLETONS = ["siteSettings", "homePage"] as const;
+const SINGLETONS = ["siteSettings", "homePage", "worksPage", "playgroundPage"] as const;
 
 export const structure: StructureResolver = (S) =>
   S.list()
@@ -14,6 +14,14 @@ export const structure: StructureResolver = (S) =>
         .title("Homepage")
         .id("homePage")
         .child(S.document().schemaType("homePage").documentId("homePage")),
+      S.listItem()
+        .title("Works page")
+        .id("worksPage")
+        .child(S.document().schemaType("worksPage").documentId("worksPage")),
+      S.listItem()
+        .title("Playground page")
+        .id("playgroundPage")
+        .child(S.document().schemaType("playgroundPage").documentId("playgroundPage")),
       S.divider(),
       S.documentTypeListItem("caseStudy").title("Case studies"),
       S.documentTypeListItem("venture").title("Ventures"),
@@ -26,7 +34,7 @@ export const structure: StructureResolver = (S) =>
       ...S.documentTypeListItems().filter(
         (item) =>
           !SINGLETONS.includes(item.getId() as (typeof SINGLETONS)[number]) &&
-          !["caseStudy", "venture", "story", "experience", "testimonial", "focusArea", "page"].includes(
+          !["caseStudy", "venture", "story", "experience", "testimonial", "focusArea", "page", "worksPage", "playgroundPage"].includes(
             item.getId() ?? "",
           ),
       ),

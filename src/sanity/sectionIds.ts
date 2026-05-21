@@ -11,6 +11,7 @@ export const HOME_SECTION_IDS = [
   "workedWith",
   "bio",
   "career",
+  "focusAndServices",
   "contact",
 ] as const;
 
@@ -28,6 +29,7 @@ export const HOME_SECTION_LABELS: Record<HomeSectionId, string> = {
   workedWith: "People I've worked with",
   bio: "Bio",
   career: "Career path",
+  focusAndServices: "Focus areas & services",
   contact: "Contact",
 };
 

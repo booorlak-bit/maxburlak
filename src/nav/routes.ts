@@ -19,3 +19,15 @@ export function placeholderTitleForPath(pathname: string): string | null {
   const hit = NAV_ROUTES.find((r) => r.path === pathname);
   return hit ? hit.label : null;
 }
+
+const WORKS_CASE_STUDY_RE = /^\/works\/([a-z0-9-]+)$/;
+
+export function parseWorksCaseStudySlug(pathname: string): string | null {
+  const match = pathname.match(WORKS_CASE_STUDY_RE);
+  return match?.[1] ?? null;
+}
+
+export function isAllowedPath(pathname: string): boolean {
+  if (isNavPath(pathname)) return true;
+  return parseWorksCaseStudySlug(pathname) !== null;
+}

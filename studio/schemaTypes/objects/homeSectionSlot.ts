@@ -12,6 +12,7 @@ const SECTION_OPTIONS = [
   { title: "People I've worked with", value: "workedWith" },
   { title: "Bio", value: "bio" },
   { title: "Career path", value: "career" },
+  { title: "Focus areas & services", value: "focusAndServices" },
   { title: "Contact", value: "contact" },
 ] as const;
 

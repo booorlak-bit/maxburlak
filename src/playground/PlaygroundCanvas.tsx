@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { usePlaygroundContent } from "../sanity/usePlaygroundContent";
 import { PlaygroundFrame } from "./PlaygroundFrame";
 
 type Transform = { x: number; y: number; scale: number };
@@ -18,6 +19,7 @@ type PlaygroundCanvasProps = {
 };
 
 export function PlaygroundCanvas({ isDark, embed = false }: PlaygroundCanvasProps) {
+  const { items } = usePlaygroundContent();
   const viewportRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [transform, setTransform] = useState<Transform>({ x: 0, y: 0, scale: 1 });
@@ -90,7 +92,7 @@ export function PlaygroundCanvas({ isDark, embed = false }: PlaygroundCanvasProp
       ro.disconnect();
       images.forEach((img) => img.removeEventListener("load", onImageLoad));
     };
-  }, [fitToView, isDark]);
+  }, [fitToView, isDark, items]);
 
   useEffect(() => {
     if (!isPanning) return;
@@ -104,26 +106,59 @@ export function PlaygroundCanvas({ isDark, embed = false }: PlaygroundCanvasProp
     };
   }, [isPanning]);
 
-  const setScaleAtCenter = useCallback((nextScale: number) => {
-    const viewport = viewportRef.current;
-    if (!viewport) return;
-    const rect = viewport.getBoundingClientRect();
-    const mx = rect.width / 2;
-    const my = rect.height / 2;
+  const setScaleAtPoint = useCallback((nextScale: number, px: number, py: number) => {
     const clamped = Math.min(MAX_SCALE, Math.max(MIN_SCALE, nextScale));
     setTransform((t) => {
       if (t.scale === clamped) return t;
       const ratio = clamped / t.scale;
       return {
         scale: clamped,
-        x: mx - (mx - t.x) * ratio,
-        y: my - (my - t.y) * ratio,
+        x: px - (px - t.x) * ratio,
+        y: py - (py - t.y) * ratio,
       };
     });
   }, []);
 
+  const setScaleAtCenter = useCallback(
+    (nextScale: number) => {
+      const viewport = viewportRef.current;
+      if (!viewport) return;
+      const rect = viewport.getBoundingClientRect();
+      setScaleAtPoint(nextScale, rect.width / 2, rect.height / 2);
+    },
+    [setScaleAtPoint],
+  );
+
+  useEffect(() => {
+    if (embed) return;
+
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const rect = viewport.getBoundingClientRect();
+      const px = e.clientX - rect.left;
+      const py = e.clientY - rect.top;
+      const delta = e.deltaY;
+      const factor = Math.exp(-delta * 0.002);
+      setTransform((t) => {
+        const nextScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, t.scale * factor));
+        const ratio = nextScale / t.scale;
+        return {
+          scale: nextScale,
+          x: px - (px - t.x) * ratio,
+          y: py - (py - t.y) * ratio,
+        };
+      });
+    };
+
+    viewport.addEventListener("wheel", onWheel, { passive: false });
+    return () => viewport.removeEventListener("wheel", onWheel);
+  }, [embed]);
+
   const onPointerDown = (e: React.PointerEvent) => {
-    if (e.button !== 0) return;
+    if (e.button !== 0 && e.button !== 1) return;
     e.preventDefault();
     setIsPanning(true);
     viewportRef.current?.setPointerCapture(e.pointerId);
@@ -161,8 +196,11 @@ export function PlaygroundCanvas({ isDark, embed = false }: PlaygroundCanvasProp
     <div className="relative h-full min-h-0 w-full overflow-hidden bg-transparent select-none" data-name="playground-canvas">
       <div
         ref={viewportRef}
-        className="absolute inset-0 cursor-grab touch-none select-none active:cursor-grabbing"
+        className={`absolute inset-x-0 top-0 cursor-grab touch-none select-none active:cursor-grabbing ${embed ? "bottom-0" : "bottom-16"}`}
         onDragStart={(e) => e.preventDefault()}
+        onAuxClick={(e) => {
+          if (e.button === 1) e.preventDefault();
+        }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -186,13 +224,13 @@ export function PlaygroundCanvas({ isDark, embed = false }: PlaygroundCanvasProp
             transformOrigin: "0 0",
           }}
         >
-          <PlaygroundFrame />
+          <PlaygroundFrame items={items} isDark={isDark} />
         </div>
       </div>
 
       <div
         data-playground-controls
-        className={`pointer-events-none absolute bottom-3 right-3 z-[1100] flex ${embed ? "scale-90" : ""}`}
+        className={`pointer-events-none absolute z-[1100] flex ${embed ? "bottom-3 right-3 scale-90" : "bottom-8 right-6"}`}
       >
         <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-black/6 bg-white/90 px-2 py-1.5 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-[#242831]/90">
           <button
@@ -236,8 +274,10 @@ export function PlaygroundCanvas({ isDark, embed = false }: PlaygroundCanvasProp
         </div>
       </div>
 
-      <p className="pointer-events-none absolute bottom-3 left-3 z-[1100] font-['Switzer_Variable:Regular',sans-serif] text-[12px] text-[#8c929c]">
-        Drag to pan · Zoom with slider
+      <p
+        className={`pointer-events-none absolute z-[1100] font-['Switzer_Variable:Regular',sans-serif] text-[12px] text-[#8c929c] ${embed ? "bottom-3 left-3" : "bottom-8 left-6"}`}
+      >
+        {embed ? "Drag to pan · Zoom with slider" : "Drag or middle-click to pan · Scroll to zoom"}
       </p>
     </div>
   );

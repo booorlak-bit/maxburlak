@@ -22,54 +22,58 @@ export default function App() {
         </CmsProvider>
       </BrowserRouter>
       <style>{`
-        /* Two-column layout (sidebar + main) on all nav pages */
-        [data-name="Main V2"] > main > [data-layout="with-sidebar"] {
+        /* Full-width page shell */
+        [data-name="Main V2"] > main > [data-layout="full-width"] {
           height: auto !important;
           min-height: calc(100vh - 60px) !important;
           position: relative !important;
+          width: 100% !important;
         }
 
-        @media (min-width: 1024px) {
-          [data-name="Main V2"] > main > [data-layout="with-sidebar"] > aside > div {
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: space-between !important;
-            box-sizing: border-box !important;
-            min-height: calc(100svh - 84px) !important;
-          }
-
-          [data-name="Main V2"] > main > [data-layout="with-sidebar"] > aside {
-            position: sticky !important;
-            top: 84px !important;
-            overflow-x: hidden !important;
-            z-index: 10 !important;
-            align-self: flex-start !important;
-          }
-        }
-
-        [data-name="Main V2"] > main > [data-layout="with-sidebar"] > div:last-child {
+        [data-name="Main V2"] > main > [data-layout="full-width"] > div {
           height: auto !important;
           flex: 1 !important;
           min-width: 0 !important;
+          width: 100% !important;
         }
 
         /* CMS section order (homepage main column only) */
-        [data-name="Main V2"] > main > [data-layout="with-sidebar"][data-route="index"] > div:last-child > div {
+        [data-name="Main V2"] > main > [data-layout="full-width"][data-route="index"] > div > div {
           display: flex !important;
           flex-direction: column !important;
         }
 
-        /* Playground fills main column */
-        [data-name="Main V2"] > main > [data-layout="with-sidebar"] > div:last-child > [data-route="playground"] {
-          height: calc(100svh - 70px) !important;
-          min-height: calc(100svh - 70px) !important;
+        /* Playground — lock to viewport, no page scroll */
+        [data-name="Main V2"][data-playground-shell="true"] {
+          height: 100vh !important;
+          max-height: 100vh !important;
+          overflow: hidden !important;
         }
 
         @supports (height: 100dvh) {
-          [data-name="Main V2"] > main > [data-layout="with-sidebar"] > div:last-child > [data-route="playground"] {
-            height: calc(100dvh - 70px) !important;
-            min-height: calc(100dvh - 70px) !important;
+          [data-name="Main V2"][data-playground-shell="true"] {
+            height: 100dvh !important;
+            max-height: 100dvh !important;
           }
+        }
+
+        [data-name="Main V2"][data-playground-shell="true"] > main {
+          flex: 1 1 auto !important;
+          min-height: 0 !important;
+          overflow: hidden !important;
+        }
+
+        [data-name="Main V2"] > main > [data-route="playground"] {
+          height: 100% !important;
+          min-height: 0 !important;
+          flex: 1 1 auto !important;
+          overflow: hidden !important;
+        }
+
+        html:has([data-playground-shell="true"]),
+        body:has([data-playground-shell="true"]) {
+          overflow: hidden !important;
+          height: 100% !important;
         }
 
         [data-name="Main V2"] > header {

@@ -20,7 +20,19 @@ export const OBSOLETE = {
   ],
 };
 
-export const MODEL_OVERVIEW = [
+export type ApproachModel = {
+  id: string;
+  icon: string;
+  title: string;
+  tagline: string;
+  description: string;
+  iDo: string[];
+  aiDoes: string[];
+  bestFor: string;
+  accent: "yellow" | "blue";
+};
+
+export const MODEL_OVERVIEW: ApproachModel[] = [
   {
     id: "multiplier",
     icon: "⚡",
@@ -31,6 +43,7 @@ export const MODEL_OVERVIEW = [
     iDo: ["Strategy", "Judgment", "Stakeholder alignment"],
     aiDoes: ["Research synthesis", "Ideation velocity", "Production output"],
     bestFor: "Teams with clear direction needing faster execution",
+    accent: "yellow",
   },
   {
     id: "loop",
@@ -42,6 +55,7 @@ export const MODEL_OVERVIEW = [
     iDo: ["Problem framing", "Pattern recognition", "Decision points"],
     aiDoes: ["Prototype generation", "Data synthesis", "Option exploration"],
     bestFor: "0→1 products, unclear problem spaces, rapid validation",
+    accent: "blue",
   },
 ];
 
@@ -93,9 +107,6 @@ export const TIME_ALLOCATION = {
   ],
 };
 
-export const LOOP_FLOW =
-  "Problem → AI: Options → Select → AI: Prototype → Test → Learn → (repeat or ship)";
-
 export const LOOP_CYCLE_NOTE = "~8 hours (vs. 2-3 weeks traditional)";
 
 export const LOOP_STEPS = [
@@ -134,6 +145,7 @@ export const REQUIREMENTS = [
 
 export const ENGAGEMENT_MODELS = [
   {
+    id: "embedded",
     title: "Embedded",
     duration: "3-6 months",
     description:
@@ -141,6 +153,7 @@ export const ENGAGEMENT_MODELS = [
     bestFor: "Companies without senior design capacity",
   },
   {
+    id: "fractional",
     title: "Fractional",
     duration: "2-3 days/week",
     description:
@@ -148,6 +161,7 @@ export const ENGAGEMENT_MODELS = [
     bestFor: "Teams with designers who need senior guidance",
   },
   {
+    id: "project",
     title: "Project-based",
     duration: "2-8 weeks",
     description:

@@ -40,12 +40,17 @@ export const homePageQuery = `*[_type == "homePage"][0]{
     title,
     slug,
     client,
+    role,
+    years,
+    pageTitle,
     metaLine,
     headline,
     summary,
+    description,
     tags,
     tradeoffs,
     metrics,
+    logoKey,
     heroImage,
     coverImage,
     status
@@ -89,5 +94,107 @@ export const homePageQuery = `*[_type == "homePage"][0]{
     heading,
     body,
     availabilityLabel
+  }
+}`;
+
+export const caseStudyFields = `
+  _id,
+  title,
+  slug,
+  client,
+  role,
+  years,
+  pageTitle,
+  metaLine,
+  headline,
+  summary,
+  description,
+  tags,
+  engagementCategories,
+  tradeoffs,
+  metrics,
+  logoKey,
+  heroImage,
+  coverImage,
+  status,
+  sortOrder,
+  showCaseStudyPage,
+  lede,
+  publishedLabel,
+  visitUrl,
+  visitLabel,
+  teamMeta,
+  stageMeta,
+  nav[]{
+    _key,
+    id,
+    label
+  },
+  sections[]{
+    _key,
+    id,
+    title,
+    paragraphs,
+    table[]{
+      _key,
+      title,
+      description
+    },
+    phases[]{
+      _key,
+      phase,
+      title,
+      description
+    },
+    features[]{
+      _key,
+      title,
+      body
+    },
+    metrics[]{
+      _key,
+      value,
+      label,
+      detail
+    },
+    numberedList
+  }
+`;
+
+export const worksPageQuery = `*[_type == "worksPage"][0]{
+  heroLabel,
+  heroTitle,
+  heroSubtitle,
+  loadMoreBatch,
+  moreWorksTitle,
+  featuredProjects[]->{${caseStudyFields}},
+  moreProjects[]->{${caseStudyFields}}
+}`;
+
+export const allCaseStudiesQuery = `*[_type == "caseStudy" && status != "draft"] | order(sortOrder asc){
+  ${caseStudyFields}
+}`;
+
+export const playgroundPageQuery = `*[_type == "playgroundPage"][0]{
+  items[]{
+    _key,
+    itemType,
+    enabled,
+    x,
+    y,
+    width,
+    zIndex,
+    image,
+    alt,
+    videoUrl,
+    poster,
+    comment,
+    noteTitle,
+    noteBody,
+    noteColor,
+    linkUrl,
+    linkTitle,
+    linkDescription,
+    linkPreviewImage
   }
 }`;

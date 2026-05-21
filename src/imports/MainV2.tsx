@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Stories } from "../components/Stories";
 import { CareerPath } from "../components/CareerPath";
+import { FocusAreasServices } from "../components/FocusAreasServices";
 import { ApolloLogo } from "../components/ApolloLogo";
 import { DefaultLogo } from "../components/DefaultLogo";
 import { CommunLogo } from "../components/CommunLogo";
@@ -9,10 +10,12 @@ import { P2pValidatorLogo } from "../components/P2pValidatorLogo";
 import { WorkedWithSection } from "../components/WorkedWithSection";
 import { SitePageEnd } from "../components/layout/SitePageEnd";
 import { Link, Navigate, NavLink, useLocation, useSearchParams } from "react-router";
-import { isNavPath, NAV_ROUTES, placeholderTitleForPath } from "../nav/routes";
+import { isAllowedPath, NAV_ROUTES, parseWorksCaseStudySlug, placeholderTitleForPath } from "../nav/routes";
 import { ApproachPage } from "../pages/ApproachPage";
+import { ProjectCaseStudyPage, WorksPage } from "../pages/WorksPage";
 import { PlaygroundEmbed, PlaygroundView } from "../pages/PlaygroundPage";
 import { TabEmptyState } from "../pages/TabEmptyState";
+import { LoopFlowDiagram } from "../components/LoopFlowDiagram";
 import { PortfolioImage } from "../components/PortfolioImage";
 import { useSiteSettings } from "../sanity/CmsProvider";
 import { HomeSection } from "../sanity/HomeSection";
@@ -200,6 +203,7 @@ export default function MainV({
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const pathname = location.pathname.replace(/\/+$/, "") || "/";
+  const isPlaygroundPage = pathname === "/playground";
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -221,7 +225,8 @@ export default function MainV({
   }, [pathname]);
 
   const phTitle = placeholderTitleForPath(pathname);
-  if (!isNavPath(pathname)) {
+  const worksCaseStudySlug = parseWorksCaseStudySlug(pathname);
+  if (!isAllowedPath(pathname)) {
     return <Navigate to="/" replace />;
   }
 
@@ -230,14 +235,27 @@ export default function MainV({
   }
 
   return (
-    <div className={className || `transition-colors duration-700 ${isDark ? 'bg-[#0a0a0a]' : 'bg-white'} content-stretch flex flex-col gap-[10px] items-start pb-[10px] pt-[60px] px-[12px] md:px-[20px] relative w-full max-w-[2250px] mx-auto overflow-x-clip`} data-name="Main V2">
-      <main id="main-content" tabIndex={-1} className="w-full">
-      {phTitle === null ? (
+    <div
+      className={
+        className ||
+        `transition-colors duration-700 ${isDark ? "bg-[#0a0a0a]" : "bg-white"} content-stretch flex flex-col items-start px-[12px] md:px-[20px] relative w-full max-w-[2250px] mx-auto ${
+          isPlaygroundPage
+            ? "box-border h-[100vh] min-h-[100vh] overflow-hidden pt-[60px] pb-[60px] gap-0 supports-[height:100dvh]:h-[100dvh] supports-[height:100dvh]:min-h-[100dvh]"
+            : "h-full gap-[10px] overflow-x-clip pb-[60px] pt-[60px]"
+        }`
+      }
+      data-name="Main V2"
+      data-playground-shell={isPlaygroundPage ? "true" : undefined}
+    >
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className={isPlaygroundPage ? "flex min-h-0 w-full flex-1 flex-col" : "w-full"}
+      >
+      {pathname === "/" ? (
       <SitePageLayout
         isDark={isDark}
         route="index"
-        bookCallUrl={bookCallUrl}
-        contactEmailUrl={contactEmailUrl}
       >
           <div className="content-stretch flex flex-col gap-12 md:gap-16 lg:gap-[104px] items-start justify-start relative shrink-0 w-full">
             <HomeSection id="heroImage" className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
@@ -1131,65 +1149,10 @@ export default function MainV({
                                 <div className={`${isDark ? 'bg-[#2a2a2a]' : 'bg-[#f9f9fa]'} transition-colors duration-700 relative flex min-h-0 flex-1 w-full flex-col rounded-[28px]`}>
                                   <div className="flex min-h-0 flex-1 flex-col overflow-clip rounded-[inherit]">
                                     <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-[24px] px-[32px] py-[24px] relative w-full min-h-full">
-                                    <div
-                                      className="flex w-full flex-nowrap items-center justify-between gap-1 sm:gap-1.5"
-                                      data-name="Loop flow"
-                                    >
-                                      <div className={`${isDark ? "bg-[#1a1a1a]" : "bg-white"} transition-colors duration-700 flex min-w-0 shrink items-center justify-center overflow-clip px-2 py-3 sm:px-3 sm:py-[14px] md:px-[12px] relative rounded-[14px] shadow-[0px_1px_1px_-0.5px_rgba(0,0,0,0.03),0px_3px_3px_-1.5px_rgba(0,0,0,0.03),0px_20px_20px_-12px_rgba(0,0,0,0.03)]`}>
-                                        <p className={`font-['Switzer_Variable:Medium',sans-serif] font-medium leading-[18px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[11px] sm:text-[13px] whitespace-nowrap`}>Prompt</p>
-                                      </div>
-                                      <div className="overflow-clip relative shrink-0 size-[16px]" data-name="arrow-right">
-                                        <div className="absolute inset-[20.83%_12.5%]" data-name="vector">
-                                          <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 12 9.33333">
-                                            <path clipRule="evenodd" d={svgPaths.p7be9470} fill="var(--fill-0, #C3C6CC)" fillRule="evenodd" id="vector" />
-                                          </svg>
-                                        </div>
-                                      </div>
-                                      <div className={`${isDark ? "bg-[#1a1a1a]" : "bg-white"} transition-colors duration-700 flex min-w-0 shrink items-center justify-center overflow-clip px-2 py-3 sm:px-3 sm:py-[14px] md:px-[12px] relative rounded-[14px] shadow-[0px_1px_1px_-0.5px_rgba(0,0,0,0.03),0px_3px_3px_-1.5px_rgba(0,0,0,0.03),0px_20px_20px_-12px_rgba(0,0,0,0.03)]`}>
-                                        <p className={`font-['Switzer_Variable:Medium',sans-serif] font-medium leading-[18px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[11px] sm:text-[13px] whitespace-nowrap`}>Generate</p>
-                                      </div>
-                                      <div className="overflow-clip relative shrink-0 size-[16px]" data-name="arrow-right">
-                                        <div className="absolute inset-[20.83%_12.5%]" data-name="vector">
-                                          <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 12 9.33333">
-                                            <path clipRule="evenodd" d={svgPaths.p7be9470} fill="var(--fill-0, #C3C6CC)" fillRule="evenodd" id="vector" />
-                                          </svg>
-                                        </div>
-                                      </div>
-                                      <div className={`${isDark ? "bg-[#1a1a1a]" : "bg-white"} transition-colors duration-700 flex min-w-0 shrink items-center justify-center overflow-clip px-2 py-3 sm:px-3 sm:py-[14px] md:px-[12px] relative rounded-[14px] shadow-[0px_1px_1px_-0.5px_rgba(0,0,0,0.03),0px_3px_3px_-1.5px_rgba(0,0,0,0.03),0px_20px_20px_-12px_rgba(0,0,0,0.03)]`}>
-                                        <p className={`font-['Switzer_Variable:Medium',sans-serif] font-medium leading-[18px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[11px] sm:text-[13px] whitespace-nowrap`}>Judge</p>
-                                      </div>
-                                      <div className="overflow-clip relative shrink-0 size-[16px]" data-name="arrow-right">
-                                        <div className="absolute inset-[20.83%_12.5%]" data-name="vector">
-                                          <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 12 9.33333">
-                                            <path clipRule="evenodd" d={svgPaths.p7be9470} fill="var(--fill-0, #C3C6CC)" fillRule="evenodd" id="vector" />
-                                          </svg>
-                                        </div>
-                                      </div>
-                                      <div className={`${isDark ? "bg-[#1a1a1a]" : "bg-white"} transition-colors duration-700 flex min-w-0 shrink items-center justify-center overflow-clip px-2 py-3 sm:px-3 sm:py-[14px] md:px-[12px] relative rounded-[14px] shadow-[0px_1px_1px_-0.5px_rgba(0,0,0,0.03),0px_3px_3px_-1.5px_rgba(0,0,0,0.03),0px_20px_20px_-12px_rgba(0,0,0,0.03)]`}>
-                                        <p className={`font-['Switzer_Variable:Medium',sans-serif] font-medium leading-[18px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[11px] sm:text-[13px] whitespace-nowrap`}>Refine</p>
-                                      </div>
-                                      <div className="overflow-clip relative shrink-0 size-[16px]" data-name="arrow-right">
-                                        <div className="absolute inset-[20.83%_12.5%]" data-name="vector">
-                                          <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 12 9.33333">
-                                            <path clipRule="evenodd" d={svgPaths.p7be9470} fill="var(--fill-0, #C3C6CC)" fillRule="evenodd" id="vector" />
-                                          </svg>
-                                        </div>
-                                      </div>
-                                      <div className={`${isDark ? "bg-[#1a1a1a]" : "bg-white"} transition-colors duration-700 flex min-w-0 shrink items-center justify-center overflow-clip px-2 py-3 sm:px-3 sm:py-[14px] md:px-[12px] relative rounded-[14px] shadow-[0px_1px_1px_-0.5px_rgba(0,0,0,0.03),0px_3px_3px_-1.5px_rgba(0,0,0,0.03),0px_20px_20px_-12px_rgba(0,0,0,0.03)]`}>
-                                        <p className={`font-['Switzer_Variable:Medium',sans-serif] font-medium leading-[18px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[11px] sm:text-[13px] whitespace-nowrap`}>Ship</p>
-                                      </div>
+                                      <LoopFlowDiagram isDark={isDark} />
                                     </div>
-                                    <div className="h-[18.005px] relative w-full shrink-0">
-                                      <svg className="block size-full" fill="none" preserveAspectRatio="xMidYMid meet" viewBox="0 0 418.5 18.0054">
-                                        <g id="Frame 2147229874">
-                                          <path d={svgPaths.p1ee0a600} fill="var(--fill-0, #C3C6CC)" id="Line 1 (Stroke)" />
-                                        </g>
-                                      </svg>
-                                    </div>
-                                    <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 text-center ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>(repeat in hours, not weeks)</p>
                                   </div>
                                 </div>
-                              </div>
                               </div>
                               <div className={`mt-auto shrink-0 backdrop-blur-[12px] ${isDark ? 'bg-[#1e2836]' : 'bg-[#effaff]'} transition-colors duration-700 relative rounded-[28px] w-full`} data-name="Alert">
                                 <div className="flex flex-row justify-center size-full">
@@ -1555,26 +1518,34 @@ export default function MainV({
             <HomeSection id="career" className="w-full shrink-0">
             <CareerPath isDark={isDark} />
             </HomeSection>
+            <HomeSection id="focusAndServices" className="w-full shrink-0">
+              <FocusAreasServices isDark={isDark} />
+            </HomeSection>
           </div>
       </SitePageLayout>
+      ) : pathname === "/works" ? (
+        <div className="flex w-full flex-col items-start">
+          <WorksPage isDark={isDark} />
+          <SitePageEnd isDark={isDark} className="mt-12 w-full md:mt-16 lg:mt-[104px]" />
+        </div>
+      ) : worksCaseStudySlug ? (
+        <div className="flex w-full flex-col items-start">
+          <ProjectCaseStudyPage isDark={isDark} slug={worksCaseStudySlug} />
+          <SitePageEnd isDark={isDark} className="mt-12 w-full md:mt-16 lg:mt-[104px]" />
+        </div>
       ) : pathname === "/approach" ? (
         <div className="flex w-full flex-col items-start">
           <ApproachPage isDark={isDark} />
           <SitePageEnd isDark={isDark} className="mt-12 w-full md:mt-16 lg:mt-[104px]" />
         </div>
+      ) : pathname === "/playground" ? (
+        <PlaygroundView isDark={isDark} />
       ) : (
         <SitePageLayout
           isDark={isDark}
           route={pathname.replace(/^\//, "") || "page"}
-          bookCallUrl={bookCallUrl}
-          contactEmailUrl={contactEmailUrl}
-          mainClassName={pathname === "/playground" ? "relative my-0 flex min-h-0 w-full min-w-0 flex-1 flex-col py-0" : undefined}
         >
-          {pathname === "/playground" ? (
-            <PlaygroundView isDark={isDark} />
-          ) : (
-            <TabEmptyState title={phTitle} isDark={isDark} />
-          )}
+          <TabEmptyState title={phTitle} isDark={isDark} />
         </SitePageLayout>
       )}
       </main>

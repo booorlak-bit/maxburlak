@@ -1,4 +1,6 @@
 import { useEffect } from "react";
+import { useWorksContent } from "../sanity/useWorksContent";
+import { useCaseStudies } from "../sanity/CmsProvider";
 import { canonicalUrl, getPageMeta } from "./getPageMeta";
 import { OG_IMAGE_URL, SITE_NAME } from "./site";
 
@@ -29,8 +31,11 @@ function upsertLink(rel: string, href: string) {
 }
 
 export function usePageSeo(pathname: string) {
+  const { hero, allProjects } = useWorksContent();
+  const caseStudies = useCaseStudies();
+
   useEffect(() => {
-    const meta = getPageMeta(pathname);
+    const meta = getPageMeta(pathname, { hero, allProjects, caseStudies });
     const canonical = canonicalUrl(meta.canonicalPath);
     const isHome = meta.canonicalPath === "/";
 
@@ -68,5 +73,5 @@ export function usePageSeo(pathname: string) {
       "data-seo-indexable",
       meta.robots.startsWith("index") ? "true" : "false",
     );
-  }, [pathname]);
+  }, [pathname, hero, allProjects, caseStudies]);
 }

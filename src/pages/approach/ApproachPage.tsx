@@ -3,7 +3,6 @@ import {
   APPROACH_HERO,
   ENGAGEMENT_MODELS,
   LOOP_CYCLE_NOTE,
-  LOOP_FLOW,
   LOOP_STEPS,
   MODEL_OVERVIEW,
   MULTIPLIER_PHASES,
@@ -12,8 +11,19 @@ import {
   REQUIREMENTS_INTRO,
   TIME_ALLOCATION,
 } from "../../content/approachPage";
+import { LoopFlowDiagram } from "../../components/LoopFlowDiagram";
+import { PortfolioImage } from "../../components/PortfolioImage";
 import { getSiteTheme, SITE_FONT } from "../../components/site/siteTheme";
 import { DataTable, PageSection, SectionHeader, TimeBars } from "./helpers";
+import imgEngagementEmbedded from "figma:asset/engagement-embedded.png";
+import imgEngagementFractional from "figma:asset/engagement-fractional.png";
+import imgEngagementProject from "figma:asset/engagement-project.png";
+
+const ENGAGEMENT_IMAGES: Record<string, string> = {
+  embedded: imgEngagementEmbedded,
+  fractional: imgEngagementFractional,
+  project: imgEngagementProject,
+};
 
 type ApproachPageProps = {
   isDark: boolean;
@@ -29,15 +39,23 @@ function PhaseBlock({
   duration,
   human,
   ai,
+  stacked = false,
 }: {
   theme: ReturnType<typeof getSiteTheme>;
   title: string;
   duration: string;
   human: string;
   ai: string;
+  stacked?: boolean;
 }) {
   return (
-    <article className={`${t.card} ${t.transition} relative border border-solid p-6 md:p-8 ${t.borderHairline}`}>
+    <article
+      className={`${t.card} ${t.transition} relative p-6 md:p-8 ${
+        stacked
+          ? `border-0 border-b border-solid last:border-b-0 ${t.borderHairline}`
+          : `border border-solid ${t.borderHairline}`
+      }`}
+    >
       <h4 className={`${t.h3}`}>
         {title} <span className={`${t.muted} ${t.caption} font-normal`}>({duration})</span>
       </h4>
@@ -61,7 +79,7 @@ function ModelCard({
   model: (typeof MODEL_OVERVIEW)[number];
 }) {
   return (
-    <article className={`${t.card} ${t.transition} relative flex flex-col border border-solid p-6 md:p-8 ${t.borderHairline}`}>
+    <article className={`${t.card} ${t.transition} relative flex flex-col rounded-[14px] border border-solid p-6 text-[14px] md:p-8 ${t.borderHairline}`}>
       <p className="text-2xl" aria-hidden>
         {model.icon}
       </p>
@@ -139,10 +157,13 @@ export function ApproachPage({ isDark }: ApproachPageProps) {
 
         <PageSection id="multiplier">
           <SectionHeader theme={t} title="Multiplier Model" subtitle="Phase breakdown" />
-          <div className="flex flex-col gap-4">
+          <div
+            className={`flex flex-col gap-0 overflow-hidden rounded-[14px] border border-solid ${t.borderHairline}`}
+          >
             {MULTIPLIER_PHASES.map((phase) => (
               <PhaseBlock
                 key={phase.id}
+                stacked
                 theme={t}
                 title={phase.title}
                 duration={phase.duration}
@@ -160,7 +181,9 @@ export function ApproachPage({ isDark }: ApproachPageProps) {
 
         <PageSection id="loop">
           <SectionHeader theme={t} title="Loop Model" subtitle="Cycle flow" />
-          <p className={`${SITE_FONT} ${t.text} ${t.body} ${t.transition} break-words`}>{LOOP_FLOW}</p>
+          <div className={`${t.cardInset} ${t.transition} mt-6 rounded-[28px] px-6 py-8 md:px-8`}>
+            <LoopFlowDiagram isDark={isDark} />
+          </div>
           <div className="mt-8">
             <DataTable
               theme={t}
@@ -179,13 +202,18 @@ export function ApproachPage({ isDark }: ApproachPageProps) {
 
         <PageSection id="requirements">
           <SectionHeader theme={t} title="Requirements" subtitle={REQUIREMENTS_INTRO} />
-          <ol className="mt-6 flex flex-col gap-6">
+          <ol className="mt-6 flex flex-col gap-4">
             {REQUIREMENTS.map((req, index) => (
-              <li key={req.title} className={`${SITE_FONT} ${t.text}`}>
-                <h3 className={`${t.bodyMedium}`}>
-                  {index + 1}. {req.title}
-                </h3>
-                <p className={`${t.muted} ${t.caption} mt-2`}>{req.description}</p>
+              <li key={req.title} className="list-none">
+                <article
+                  className={`${t.card} ${SITE_FONT} ${t.text} ${t.transition} relative flex h-full min-h-[140px] flex-col rounded-[14px] border border-solid p-5 md:min-h-0 md:p-6 ${t.borderHairline}`}
+                >
+                  <p className={`${t.muted} ${t.label}`} aria-hidden>
+                    {index + 1}
+                  </p>
+                  <h3 className="text-[18px] font-medium leading-[24px] mt-2">{req.title}</h3>
+                  <p className={`${t.muted} ${t.caption} mt-2 flex-1`}>{req.description}</p>
+                </article>
               </li>
             ))}
           </ol>
@@ -193,16 +221,28 @@ export function ApproachPage({ isDark }: ApproachPageProps) {
 
         <PageSection id="engagement">
           <SectionHeader theme={t} title="Engagement models" />
-          <div className="mt-6 flex flex-col gap-6">
+          <div className="mt-6 flex flex-col gap-[16px]">
             {ENGAGEMENT_MODELS.map((model) => (
-              <article key={model.title} className={`${t.card} ${t.transition} relative border border-solid p-6 md:p-8 ${t.borderHairline}`}>
-                <h3 className={`${t.h3}`}>{model.title}</h3>
-                <p className={`${t.muted} ${t.label} mt-2`}>{model.duration}</p>
-                <p className={`${t.muted} ${t.caption} mt-4`}>{model.description}</p>
-                <p className={`${t.muted} ${t.caption} mt-4 border-t border-solid pt-4 ${t.borderHairline}`}>
-                  <span className={`${t.text} font-medium`}>Best for: </span>
-                  {model.bestFor}
-                </p>
+              <article
+                key={model.id}
+                className={`${t.transition} relative flex min-w-0 flex-1 flex-row items-start gap-6 rounded-[14px] border border-solid p-6 md:gap-8 md:p-8 ${t.borderHairline}`}
+              >
+                <div className="isolate relative size-[100px] shrink-0 overflow-hidden rounded-[12px] bg-[#0a0a0a]">
+                  <PortfolioImage
+                    alt=""
+                    className="size-full object-contain mix-blend-screen"
+                    src={ENGAGEMENT_IMAGES[model.id]}
+                  />
+                </div>
+                <div className="flex min-w-0 flex-1 flex-col">
+                  <h3 className="text-[24px] font-normal leading-[30px] tracking-[-0.2px]">{model.title}</h3>
+                  <p className={`${t.text} ${t.label} mt-2`}>{model.duration}</p>
+                  <p className={`${t.text} ${t.caption} mt-4`}>{model.description}</p>
+                  <p className={`${t.muted} ${t.caption} mt-4 border-t border-solid pt-4 ${t.borderHairline}`}>
+                    <span className={`${t.text} font-medium`}>Best for: </span>
+                    {model.bestFor}
+                  </p>
+                </div>
               </article>
             ))}
           </div>

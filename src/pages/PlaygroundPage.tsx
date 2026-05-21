@@ -29,12 +29,9 @@ export function PlaygroundEmbed({ isDark }: PlaygroundPageProps) {
 /** Full playground tab — content only; index header lives in MainV2 */
 export function PlaygroundView({ isDark }: PlaygroundPageProps) {
   return (
-    <div
-      data-route="playground"
-      className="relative h-full min-h-[min(100%,calc(100svh-70px))] w-full min-w-0 supports-[height:100dvh]:min-h-[min(100%,calc(100dvh-70px))]"
-    >
+    <div data-route="playground" className="relative flex h-full min-h-0 w-full min-w-0 flex-1 flex-col">
       <div
-        className={`relative h-full min-h-0 overflow-hidden rounded-[20px] border ${isDark ? "border-white/[0.06] bg-[#151515]" : "border-black/[0.06] bg-[#f9f9fa]"}`}
+        className={`relative h-full min-h-0 w-full overflow-hidden rounded-[20px] border ${isDark ? "border-white/[0.06] bg-[#151515]" : "border-black/[0.06] bg-[#f9f9fa]"}`}
       >
         <PlaygroundCanvas isDark={isDark} />
       </div>

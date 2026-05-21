@@ -14,7 +14,7 @@ export function getSiteTheme(isDark: boolean) {
     borderHairline: isDark ? "border-white/[0.06]" : "border-[rgba(0,0,0,0.06)]",
     borderDashed: isDark ? "border-white/15" : "border-[rgba(0,0,0,0.12)]",
     h1: "text-[clamp(26px,4vw,32px)] font-medium leading-[1.14] tracking-[-0.4px]",
-    h2: "text-[25px] font-medium leading-[36px] tracking-[-0.2px]",
+    h2: "text-[32px] font-medium leading-normal tracking-[-0.2px]",
     h3: "text-[22px] font-medium leading-[30px] tracking-[-0.2px]",
     body: "text-[15px] font-light leading-[20px]",
     bodyMedium: "text-[15px] font-medium leading-[20px]",

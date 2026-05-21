@@ -36,6 +36,7 @@ export const homePage = defineType({
         { _type: "homeSectionSlot", enabled: true, sectionType: "workedWith" },
         { _type: "homeSectionSlot", enabled: true, sectionType: "bio" },
         { _type: "homeSectionSlot", enabled: true, sectionType: "career" },
+        { _type: "homeSectionSlot", enabled: true, sectionType: "focusAndServices" },
         { _type: "homeSectionSlot", enabled: true, sectionType: "contact" },
       ],
     }),

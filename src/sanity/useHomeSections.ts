@@ -26,7 +26,22 @@ function normalizeSections(slots: HomeSectionSlot[] | undefined): ResolvedHomeSe
       titleOverride: s.titleOverride,
     }));
 
-  if (fromCms.length > 0) return fromCms;
+  if (fromCms.length > 0) {
+    const cmsIds = new Set(fromCms.map((section) => section.id));
+    const merged = [...fromCms];
+
+    for (const fallback of DEFAULT_HOME_SECTIONS) {
+      if (!cmsIds.has(fallback.sectionType)) {
+        merged.push({
+          id: fallback.sectionType,
+          enabled: fallback.enabled,
+          order: merged.length,
+        });
+      }
+    }
+
+    return merged;
+  }
 
   return DEFAULT_HOME_SECTIONS.map((s, index) => ({
     id: s.sectionType,
