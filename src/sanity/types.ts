@@ -1,5 +1,6 @@
 import type { HomeSectionId } from "./sectionIds";
 import type { WorksProjectCategory } from "../content/worksPage";
+import type { SanityBlock } from "./portableText";
 
 export type SanityImage = {
   asset?: { _ref?: string; _type?: string };
@@ -156,10 +157,66 @@ export type FocusArea = {
   image?: SanityImage;
 };
 
+export type FeedGalleryImage = {
+  _key?: string;
+  image?: SanityImage;
+  alt?: string;
+};
+
+export type FeedContentBlock =
+  | {
+      _type: "feedImageBlock";
+      _key?: string;
+      image?: SanityImage;
+      alt?: string;
+      allowFullscreen?: boolean;
+      static?: boolean;
+    }
+  | {
+      _type: "feedVideoBlock";
+      _key?: string;
+      videoUrl?: string;
+      poster?: SanityImage;
+      alt?: string;
+    }
+  | {
+      _type: "feedGalleryBlock";
+      _key?: string;
+      images?: FeedGalleryImage[];
+      allowFullscreen?: boolean;
+    }
+  | {
+      _type: "feedLinkCard";
+      _key?: string;
+      url?: string;
+      title?: string;
+      description?: string;
+      image?: SanityImage;
+    }
+  | (SanityBlock & { _type: "block" });
+
+export type FeedPost = {
+  _id: string;
+  title?: string;
+  slug?: { current?: string };
+  publishedAt?: string;
+  status?: string;
+  tags?: string[];
+  layout?: "default" | "titleOnly";
+  previewBlockCount?: number;
+  content?: FeedContentBlock[];
+  seo?: {
+    title?: string;
+    description?: string;
+    ogImage?: SanityImage;
+  };
+};
+
 export type CmsPayload = {
   siteSettings: SiteSettings | null;
   homePage: HomePage | null;
   worksPage: WorksPageCms | null;
   caseStudies: CaseStudy[];
+  feedPosts: FeedPost[];
   playgroundPage: import("../playground/playgroundTypes").PlaygroundPageCms | null;
 };

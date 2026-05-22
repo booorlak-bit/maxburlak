@@ -137,7 +137,7 @@ export function SiteSidebar({ isDark, bookCallUrl, contactEmailUrl }: SiteSideba
                       <div className="content-stretch flex items-center p-[4.125px] relative rounded-[11px] size-[44px]">
                         <div className="overflow-clip relative rounded-[8px] shadow-[0px_1px_1px_-0.5px_rgba(0,0,0,0.03),0px_3px_3px_-1.5px_rgba(0,0,0,0.03)] shrink-0 size-[36px]" data-name="icon">
                           <div className="absolute inset-0 overflow-clip rounded-[9px] size-[36px]" data-name=".icon">
-                            <FliqMarkIcon className="block size-full" />
+                            <FliqMarkIcon className="block size-full" idSuffix="sidebar" />
                           </div>
                         </div>
                       </div>

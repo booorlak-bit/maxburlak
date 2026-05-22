@@ -148,6 +148,7 @@ export const ENGAGEMENT_MODELS = [
     id: "embedded",
     title: "Embedded",
     duration: "3-6 months",
+    price: "10 000 USD",
     description:
       "Full integration with your team. Daily collaboration, design system ownership, strategic input.",
     bestFor: "Companies without senior design capacity",
@@ -156,6 +157,7 @@ export const ENGAGEMENT_MODELS = [
     id: "fractional",
     title: "Fractional",
     duration: "2-3 days/week",
+    price: "6 000 USD",
     description:
       "Part-time leadership. Design reviews, mentorship, system direction, strategic projects.",
     bestFor: "Teams with designers who need senior guidance",
@@ -164,6 +166,7 @@ export const ENGAGEMENT_MODELS = [
     id: "project",
     title: "Project-based",
     duration: "2-8 weeks",
+    price: "Ownership scope based",
     description:
       "Scoped engagement. 0→1 feature, design system foundation, conversion optimization.",
     bestFor: "Specific problems with clear boundaries",

@@ -24,6 +24,7 @@ export function SectionHeader({
   label,
   title,
   subtitle,
+  subtitleClassName = "",
   id,
   centered,
 }: {
@@ -31,6 +32,7 @@ export function SectionHeader({
   label?: string;
   title: string;
   subtitle?: string;
+  subtitleClassName?: string;
   id?: string;
   centered?: boolean;
 }) {
@@ -43,7 +45,9 @@ export function SectionHeader({
         {title}
       </h2>
       {subtitle ? (
-        <p className={`${t.font} ${t.muted} ${t.caption} ${t.transition} ${centered ? "mx-auto max-w-[640px]" : "max-w-[640px]"}`}>
+        <p
+          className={`${t.font} ${t.muted} ${t.caption} ${t.transition} ${centered ? "mx-auto max-w-[640px]" : "max-w-[640px]"} ${subtitleClassName}`}
+        >
           {subtitle}
         </p>
       ) : null}

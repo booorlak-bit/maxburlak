@@ -1,5 +1,17 @@
 packages:
   - '.'
+
+overrides:
+  react: 19.2.2
+  react-dom: 19.2.2
+  vite: 6.3.5
+
+onlyBuiltDependencies:
+  - '@tailwindcss/oxide'
+  - esbuild
+  - sharp
+
 allowBuilds:
-  '@tailwindcss/oxide': set this to true or false
-  esbuild: set this to true or false
+  '@tailwindcss/oxide': true
+  esbuild: true
+  sharp: true

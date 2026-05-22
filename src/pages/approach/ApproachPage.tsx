@@ -227,15 +227,20 @@ export function ApproachPage({ isDark }: ApproachPageProps) {
                 key={model.id}
                 className={`${t.transition} relative flex min-w-0 flex-1 flex-row items-start gap-6 rounded-[14px] border border-solid p-6 md:gap-8 md:p-8 ${t.borderHairline}`}
               >
-                <div className="isolate relative size-[100px] shrink-0 overflow-hidden rounded-[12px] bg-[#0a0a0a]">
+                <div className="relative size-[100px] shrink-0 overflow-hidden rounded-[12px]">
                   <PortfolioImage
                     alt=""
-                    className="size-full object-contain mix-blend-screen"
+                    className="size-full object-contain"
                     src={ENGAGEMENT_IMAGES[model.id]}
                   />
                 </div>
                 <div className="flex min-w-0 flex-1 flex-col">
-                  <h3 className="text-[24px] font-normal leading-[30px] tracking-[-0.2px]">{model.title}</h3>
+                  <div className="flex min-w-0 items-baseline justify-between gap-4">
+                    <h3 className="min-w-0 text-[24px] font-normal leading-[30px] tracking-[-0.2px]">{model.title}</h3>
+                    <p className={`${SITE_FONT} ${t.text} shrink-0 text-[18px] font-medium leading-[24px]`}>
+                      {model.price}
+                    </p>
+                  </div>
                   <p className={`${t.text} ${t.label} mt-2`}>{model.duration}</p>
                   <p className={`${t.text} ${t.caption} mt-4`}>{model.description}</p>
                   <p className={`${t.muted} ${t.caption} mt-4 border-t border-solid pt-4 ${t.borderHairline}`}>

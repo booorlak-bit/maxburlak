@@ -175,6 +175,37 @@ export const allCaseStudiesQuery = `*[_type == "caseStudy" && status != "draft"]
   ${caseStudyFields}
 }`;
 
+export const feedPostFields = `
+  _id,
+  title,
+  slug,
+  publishedAt,
+  status,
+  tags,
+  layout,
+  previewBlockCount,
+  content[]{
+    ...,
+    _type == "feedGalleryBlock" => {
+      ...,
+      images[]{
+        _key,
+        alt,
+        image
+      }
+    }
+  },
+  seo
+`;
+
+export const feedPostsQuery = `*[_type == "feedPost" && status == "published"] | order(publishedAt desc){
+  ${feedPostFields}
+}`;
+
+export const feedPostBySlugQuery = `*[_type == "feedPost" && slug.current == $slug][0]{
+  ${feedPostFields}
+}`;
+
 export const playgroundPageQuery = `*[_type == "playgroundPage"][0]{
   items[]{
     _key,

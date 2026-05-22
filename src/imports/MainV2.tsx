@@ -10,17 +10,21 @@ import { P2pValidatorLogo } from "../components/P2pValidatorLogo";
 import { WorkedWithSection } from "../components/WorkedWithSection";
 import { SitePageEnd } from "../components/layout/SitePageEnd";
 import { Link, Navigate, NavLink, useLocation, useSearchParams } from "react-router";
-import { isAllowedPath, NAV_ROUTES, parseWorksCaseStudySlug, placeholderTitleForPath } from "../nav/routes";
+import { isAllowedPath, NAV_ROUTES, parseFeedPostSlug, parseWorksCaseStudySlug, placeholderTitleForPath } from "../nav/routes";
 import { ApproachPage } from "../pages/ApproachPage";
+import { FeedPage } from "../pages/feed/FeedPage";
+import { FeedPostPage } from "../pages/feed/FeedPostPage";
 import { ProjectCaseStudyPage, WorksPage } from "../pages/WorksPage";
 import { PlaygroundEmbed, PlaygroundView } from "../pages/PlaygroundPage";
 import { TabEmptyState } from "../pages/TabEmptyState";
+import { VenturesPage } from "../pages/VenturesPage";
+import { AboutPage } from "../pages/AboutPage";
 import { LoopFlowDiagram } from "../components/LoopFlowDiagram";
 import { PortfolioImage } from "../components/PortfolioImage";
 import { useSiteSettings } from "../sanity/CmsProvider";
 import { HomeSection } from "../sanity/HomeSection";
 import { SitePageLayout } from "../components/layout/SitePageLayout";
-import { FliqMarkIcon, GradeStudioMarkIcon, PinnboardsMarkIcon } from "../components/ventureMarkIcons";
+import { FliqMarkIcon, OrganicaaaMarkIcon, PinnboardsMarkIcon } from "../components/ventureMarkIcons";
 
 const PlaygroundCanvas = lazy(() =>
   import("../playground/PlaygroundCanvas").then((m) => ({ default: m.PlaygroundCanvas })),
@@ -226,6 +230,7 @@ export default function MainV({
 
   const phTitle = placeholderTitleForPath(pathname);
   const worksCaseStudySlug = parseWorksCaseStudySlug(pathname);
+  const feedPostSlug = parseFeedPostSlug(pathname);
   if (!isAllowedPath(pathname)) {
     return <Navigate to="/" replace />;
   }
@@ -240,7 +245,7 @@ export default function MainV({
         className ||
         `transition-colors duration-700 ${isDark ? "bg-[#0a0a0a]" : "bg-white"} content-stretch flex flex-col items-start px-[12px] md:px-[20px] relative w-full max-w-[2250px] mx-auto ${
           isPlaygroundPage
-            ? "box-border h-[100vh] min-h-[100vh] overflow-hidden pt-[60px] pb-[60px] gap-0 supports-[height:100dvh]:h-[100dvh] supports-[height:100dvh]:min-h-[100dvh]"
+            ? "box-border h-[100vh] min-h-[100vh] overflow-hidden pt-[72px] pb-[72px] gap-0 supports-[height:100dvh]:h-[100dvh] supports-[height:100dvh]:min-h-[100dvh]"
             : "h-full gap-[10px] overflow-x-clip pb-[60px] pt-[60px]"
         }`
       }
@@ -1234,9 +1239,7 @@ export default function MainV({
                               <div className="flex-none rotate-15">
                                 <div className="content-stretch flex items-center p-[8.25px] relative rounded-[24px] size-[88px]">
                                   <div className="relative size-[72px] shrink-0 overflow-clip rounded-[24px] shadow-[0px_2px_2px_-0.5px_rgba(0,0,0,0.03)]" data-name="icon">
-                                    <div className="absolute inset-0 overflow-clip rounded-[24px] border border-[#252525] border-solid bg-[#252525] size-full">
-                                      <GradeStudioMarkIcon className="block size-full" />
-                                    </div>
+                                    <FliqMarkIcon className="block size-full" idSuffix="homepage-fliq" />
                                   </div>
                                 </div>
                               </div>
@@ -1360,19 +1363,7 @@ export default function MainV({
                               <div className="flex-none rotate-15">
                                 <div className="content-stretch flex items-center p-[8.25px] relative rounded-[24px] size-[88px]">
                                   <div className="aspect-[60/60] flex-[1_0_0] min-h-px min-w-px overflow-clip relative rounded-[24px] shadow-[0px_2px_2px_-0.5px_rgba(0,0,0,0.03),0px_6px_6px_-1.5px_rgba(0,0,0,0.03)]" data-name="icon">
-                                    <div className="absolute left-0 size-[71.788px] top-0" data-name=".icon">
-                                      <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 71.788 71.788">
-                                        <g id=".icon">
-                                          <rect fill="#FFE53D" height="71.788" width="71.788" rx="24" />
-                                          <circle cx="35.751" cy="22.8928" fill="var(--fill-0, black)" id="Ellipse 21" r="5.14286" />
-                                          <circle cx="24.1786" cy="29.3214" fill="var(--fill-0, black)" id="Ellipse 22" r="5.14286" />
-                                          <circle cx="24.1786" cy="42.1786" fill="var(--fill-0, black)" id="Ellipse 23" r="5.14286" />
-                                          <circle cx="35.751" cy="48.6072" fill="var(--fill-0, black)" id="Ellipse 24" r="5.14286" />
-                                          <circle cx="47.3214" cy="42.1786" fill="var(--fill-0, #FFB20D)" id="Ellipse 25" r="5.14286" />
-                                          <circle cx="47.3214" cy="29.3214" fill="var(--fill-0, #FFB20D)" id="Ellipse 26" r="5.14286" />
-                                        </g>
-                                      </svg>
-                                    </div>
+                                    <OrganicaaaMarkIcon className="block size-full" />
                                   </div>
                                 </div>
                               </div>
@@ -1539,6 +1530,26 @@ export default function MainV({
       ) : pathname === "/approach" ? (
         <div className="flex w-full flex-col items-start">
           <ApproachPage isDark={isDark} />
+          <SitePageEnd isDark={isDark} className="mt-12 w-full md:mt-16 lg:mt-[104px]" />
+        </div>
+      ) : pathname === "/ventures" ? (
+        <div className="flex w-full flex-col items-start">
+          <VenturesPage isDark={isDark} />
+          <SitePageEnd isDark={isDark} className="mt-12 w-full md:mt-16 lg:mt-[104px]" />
+        </div>
+      ) : pathname === "/feed" ? (
+        <div className="flex w-full flex-col items-start">
+          <FeedPage isDark={isDark} />
+          <SitePageEnd isDark={isDark} className="mt-12 w-full md:mt-16 lg:mt-[104px]" />
+        </div>
+      ) : feedPostSlug ? (
+        <div className="flex w-full flex-col items-start">
+          <FeedPostPage isDark={isDark} slug={feedPostSlug} />
+          <SitePageEnd isDark={isDark} className="mt-12 w-full md:mt-16 lg:mt-[104px]" />
+        </div>
+      ) : pathname === "/about" ? (
+        <div className="flex w-full flex-col items-start">
+          <AboutPage isDark={isDark} />
           <SitePageEnd isDark={isDark} className="mt-12 w-full md:mt-16 lg:mt-[104px]" />
         </div>
       ) : pathname === "/playground" ? (

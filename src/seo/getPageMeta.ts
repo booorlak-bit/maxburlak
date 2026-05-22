@@ -7,7 +7,9 @@ import {
 import type { CaseStudy } from "../sanity/types";
 import { getCaseStudyPageContent } from "../content/caseStudyContent";
 import { ALL_WORKS_PROJECTS } from "../content/worksPage";
-import { parseWorksCaseStudySlug } from "../nav/routes";
+import { parseFeedPostSlug, parseWorksCaseStudySlug } from "../nav/routes";
+import { findFeedPostBySlug, getFeedPostSlug } from "../sanity/feedUtils";
+import type { FeedPost } from "../sanity/types";
 import type { WorksProject } from "../content/worksPage";
 import { getCaseStudyDocumentBySlug } from "../sanity/useWorksContent";
 
@@ -22,6 +24,10 @@ export type WorksMetaSource = {
   hero?: { label?: string; title?: string; subtitle?: string };
   allProjects?: WorksProject[];
   caseStudies?: CaseStudy[];
+};
+
+export type FeedMetaSource = {
+  feedPosts?: FeedPost[];
 };
 
 function findProjectBySlug(projects: WorksProject[] | undefined, slug: string): WorksProject | undefined {
@@ -40,10 +46,30 @@ function placeholderMeta(section: string): PageMeta {
   };
 }
 
-export function getPageMeta(pathname: string, worksMeta?: WorksMetaSource): PageMeta {
+export function getPageMeta(
+  pathname: string,
+  worksMeta?: WorksMetaSource,
+  feedMeta?: FeedMetaSource,
+): PageMeta {
   const path = pathname.replace(/\/+$/, "") || "/";
   const caseStudySlug = parseWorksCaseStudySlug(path);
+  const feedPostSlug = parseFeedPostSlug(path);
   const projects = worksMeta?.allProjects ?? ALL_WORKS_PROJECTS;
+
+  if (feedPostSlug) {
+    const post = findFeedPostBySlug(feedMeta?.feedPosts ?? [], feedPostSlug);
+    if (post) {
+      const slug = getFeedPostSlug(post);
+      return {
+        title: `${post.seo?.title || post.title || "Feed post"} — ${SITE_NAME}`,
+        description:
+          post.seo?.description?.trim() ||
+          "Notes, process, and updates from Max Burlak.",
+        canonicalPath: slug ? `/feed/${slug}` : "/feed",
+        robots: post.status === "published" ? "index, follow" : "noindex, follow",
+      };
+    }
+  }
 
   if (caseStudySlug) {
     const project = findProjectBySlug(projects, caseStudySlug);
@@ -85,11 +111,29 @@ export function getPageMeta(pathname: string, worksMeta?: WorksMetaSource): Page
         robots: "index, follow",
       };
     case "/ventures":
-      return placeholderMeta("Ventures");
+      return {
+        title: `Ventures — side projects & products — ${SITE_NAME}`,
+        description:
+          "Side projects and products Max Burlak is building — The First, Pinnboards, Fliq, mndfrnd, Organicaaa, and why he builds outside client work.",
+        canonicalPath: "/ventures",
+        robots: "index, follow",
+      };
     case "/feed":
-      return placeholderMeta("Feed");
+      return {
+        title: `Feed — ${SITE_NAME}`,
+        description:
+          "Notes on AI-native product design, process, and what’s changing in design work — from Max Burlak.",
+        canonicalPath: "/feed",
+        robots: "index, follow",
+      };
     case "/about":
-      return placeholderMeta("About");
+      return {
+        title: `About — ${SITE_NAME}`,
+        description:
+          "Max Burlak — product design lead and builder in Barcelona. 14+ years in B2B SaaS, 3x founding designer, ventures, consulting, and how he works.",
+        canonicalPath: "/about",
+        robots: "index, follow",
+      };
     case "/playground":
       return {
         title: `Playground — ${SITE_NAME}`,

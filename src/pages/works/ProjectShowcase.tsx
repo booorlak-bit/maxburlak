@@ -162,8 +162,8 @@ export function ProjectShowcase({ project, theme: t, isDark, linkToProject = fal
       <WorkScreenshot project={project} linkToProject={linkToProject} />
 
       <div className="mt-8 flex flex-col gap-6 md:mt-10 md:gap-8">
-        <div className="flex w-full flex-nowrap items-center justify-start gap-x-4">
-          <div className="flex flex-col gap-2">
+        <div className="flex w-full flex-col gap-4 md:flex-row md:flex-nowrap md:items-center md:justify-start md:gap-x-4">
+          <div className="flex min-w-0 flex-col gap-2">
             <p className={`${SITE_FONT} ${t.muted} text-[13px] font-light leading-[18px]`}>
               {project.role} · {project.years}
             </p>
@@ -171,7 +171,7 @@ export function ProjectShowcase({ project, theme: t, isDark, linkToProject = fal
               {project.tags.join(" · ")}
             </p>
           </div>
-          <div className="ml-auto flex shrink-0 flex-nowrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 md:ml-auto md:shrink-0 md:flex-nowrap">
             <ProjectMetrics metrics={project.metrics} isDark={isDark} />
           </div>
         </div>

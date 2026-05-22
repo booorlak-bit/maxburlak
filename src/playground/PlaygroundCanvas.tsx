@@ -45,16 +45,17 @@ export function PlaygroundCanvas({ isDark, embed = false }: PlaygroundCanvasProp
 
     if (embed) {
       const padding = 20;
-      const controlsReserve = 48;
+      const controlsReserve = 64;
+      const availableW = vw - controlsReserve;
       const scale = Math.min(
-        (vw - padding * 2) / cw,
-        (vh - padding * 2 - controlsReserve) / ch,
+        (availableW - padding * 2) / cw,
+        (vh - padding * 2) / ch,
         MAX_SCALE,
       );
       const clamped = Math.max(MIN_SCALE, scale);
       setTransform({
         scale: clamped,
-        x: (vw - cw * clamped) / 2,
+        x: (availableW - cw * clamped) / 2,
         y: (vh - ch * clamped) / 2,
       });
       return;
@@ -196,7 +197,7 @@ export function PlaygroundCanvas({ isDark, embed = false }: PlaygroundCanvasProp
     <div className="relative h-full min-h-0 w-full overflow-hidden bg-transparent select-none" data-name="playground-canvas">
       <div
         ref={viewportRef}
-        className={`absolute inset-x-0 top-0 cursor-grab touch-none select-none active:cursor-grabbing ${embed ? "bottom-0" : "bottom-16"}`}
+        className="absolute inset-0 cursor-grab touch-none select-none active:cursor-grabbing"
         onDragStart={(e) => e.preventDefault()}
         onAuxClick={(e) => {
           if (e.button === 1) e.preventDefault();
@@ -230,45 +231,43 @@ export function PlaygroundCanvas({ isDark, embed = false }: PlaygroundCanvasProp
 
       <div
         data-playground-controls
-        className={`pointer-events-none absolute z-[1100] flex ${embed ? "bottom-3 right-3 scale-90" : "bottom-8 right-6"}`}
+        className={`pointer-events-none absolute top-1/2 z-[1100] flex -translate-y-1/2 ${embed ? "right-3 scale-90" : "right-6"}`}
       >
-        <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-black/6 bg-white/90 px-2 py-1.5 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-[#242831]/90">
+        <div className="pointer-events-auto flex flex-col items-center gap-2 rounded-[20px] border border-black/6 bg-white/90 px-1.5 py-2 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-[#242831]/90">
           <button
             type="button"
             aria-label="Reset view"
-            className="shrink-0 px-2 font-['Switzer_Variable:Regular',sans-serif] text-[11px] text-[#5b616d] hover:text-[#0a0c11] dark:text-gray-400 dark:hover:text-white"
+            className="shrink-0 px-1 font-['Switzer_Variable:Regular',sans-serif] text-[11px] text-[#5b616d] hover:text-[#0a0c11] dark:text-gray-400 dark:hover:text-white"
             onClick={fitToView}
           >
             Reset
           </button>
-          <div className="flex items-center gap-2">
-            <span
-              className="font-['Switzer_Variable:Regular',sans-serif] text-[10px] text-[#8c929c] dark:text-white/48"
-              aria-hidden
-            >
-              −
-            </span>
-            <input
-              type="range"
-              min={Math.round(MIN_SCALE * 100)}
-              max={Math.round(MAX_SCALE * 100)}
-              step={1}
-              value={Math.round(transform.scale * 100)}
-              onChange={(e) => setScaleAtCenter(Number(e.target.value) / 100)}
-              aria-label="Zoom level"
-              aria-valuemin={Math.round(MIN_SCALE * 100)}
-              aria-valuemax={Math.round(MAX_SCALE * 100)}
-              aria-valuenow={Math.round(transform.scale * 100)}
-              className={`h-1 w-28 shrink-0 cursor-pointer appearance-none rounded-full bg-black/10 dark:bg-white/15 ${isDark ? "accent-white" : "accent-[#0a0c11]"}`}
-            />
-            <span
-              className="font-['Switzer_Variable:Regular',sans-serif] text-[10px] text-[#8c929c] dark:text-white/48"
-              aria-hidden
-            >
-              +
-            </span>
-          </div>
-          <span className="min-w-[2.25rem] shrink-0 text-right font-['Switzer_Variable:Regular',sans-serif] text-[10px] tabular-nums text-[#5b616d] dark:text-white/64">
+          <span
+            className="font-['Switzer_Variable:Regular',sans-serif] text-[10px] leading-none text-[#8c929c] dark:text-white/48"
+            aria-hidden
+          >
+            +
+          </span>
+          <input
+            type="range"
+            min={Math.round(MIN_SCALE * 100)}
+            max={Math.round(MAX_SCALE * 100)}
+            step={1}
+            value={Math.round(transform.scale * 100)}
+            onChange={(e) => setScaleAtCenter(Number(e.target.value) / 100)}
+            aria-label="Zoom level"
+            aria-valuemin={Math.round(MIN_SCALE * 100)}
+            aria-valuemax={Math.round(MAX_SCALE * 100)}
+            aria-valuenow={Math.round(transform.scale * 100)}
+            className={`h-24 w-1 shrink-0 cursor-pointer appearance-none rounded-full bg-black/10 [direction:rtl] [writing-mode:vertical-lr] dark:bg-white/15 ${isDark ? "accent-white" : "accent-[#0a0c11]"}`}
+          />
+          <span
+            className="font-['Switzer_Variable:Regular',sans-serif] text-[10px] leading-none text-[#8c929c] dark:text-white/48"
+            aria-hidden
+          >
+            −
+          </span>
+          <span className="shrink-0 font-['Switzer_Variable:Regular',sans-serif] text-[10px] tabular-nums text-[#5b616d] dark:text-white/64">
             {Math.round(transform.scale * 100)}%
           </span>
         </div>

@@ -8,7 +8,7 @@ import {
 } from "react";
 import { isSanityConfigured } from "./client";
 import { fetchCms } from "./fetch";
-import type { CmsPayload, CaseStudy, HomePage, SiteSettings, WorksPageCms } from "./types";
+import type { CmsPayload, CaseStudy, FeedPost, HomePage, SiteSettings, WorksPageCms } from "./types";
 
 type CmsContextValue = CmsPayload & {
   isLoading: boolean;
@@ -20,6 +20,7 @@ const CmsContext = createContext<CmsContextValue>({
   homePage: null,
   worksPage: null,
   caseStudies: [],
+  feedPosts: [],
   playgroundPage: null,
   isLoading: false,
   isConfigured: false,
@@ -31,6 +32,7 @@ export function CmsProvider({ children }: { children: ReactNode }) {
     homePage: null,
     worksPage: null,
     caseStudies: [],
+    feedPosts: [],
     playgroundPage: null,
   });
   const [isLoading, setIsLoading] = useState(isSanityConfigured);
@@ -91,4 +93,8 @@ export function useCaseStudies(): CaseStudy[] {
 
 export function usePlaygroundPageCms() {
   return useCms().playgroundPage;
+}
+
+export function useFeedPosts(): FeedPost[] {
+  return useCms().feedPosts;
 }

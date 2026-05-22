@@ -1,4 +1,5 @@
 import { caseStudy } from "./documents/caseStudy";
+import { feedPost } from "./documents/feedPost";
 import { experience } from "./documents/experience";
 import { focusArea } from "./documents/focusArea";
 import { homePage } from "./documents/homePage";
@@ -18,6 +19,10 @@ import { caseStudyTableRow } from "./objects/caseStudyTableRow";
 import { homeSectionSlot } from "./objects/homeSectionSlot";
 import { metric } from "./objects/metric";
 import { playgroundCanvasItem } from "./objects/playgroundCanvasItem";
+import { feedGalleryBlock } from "./objects/feedGalleryBlock";
+import { feedImageBlock } from "./objects/feedImageBlock";
+import { feedLinkCard } from "./objects/feedLinkCard";
+import { feedVideoBlock } from "./objects/feedVideoBlock";
 import { seo } from "./objects/seo";
 
 export const schemaTypes = [
@@ -27,6 +32,7 @@ export const schemaTypes = [
   playgroundPage,
   page,
   caseStudy,
+  feedPost,
   venture,
   story,
   experience,
@@ -42,4 +48,8 @@ export const schemaTypes = [
   caseStudySection,
   homeSectionSlot,
   playgroundCanvasItem,
+  feedImageBlock,
+  feedVideoBlock,
+  feedGalleryBlock,
+  feedLinkCard,
 ];

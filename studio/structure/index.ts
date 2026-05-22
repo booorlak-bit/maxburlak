@@ -24,6 +24,7 @@ export const structure: StructureResolver = (S) =>
         .child(S.document().schemaType("playgroundPage").documentId("playgroundPage")),
       S.divider(),
       S.documentTypeListItem("caseStudy").title("Case studies"),
+      S.documentTypeListItem("feedPost").title("Feed posts"),
       S.documentTypeListItem("venture").title("Ventures"),
       S.documentTypeListItem("story").title("Stories"),
       S.documentTypeListItem("experience").title("Experience"),
@@ -34,7 +35,7 @@ export const structure: StructureResolver = (S) =>
       ...S.documentTypeListItems().filter(
         (item) =>
           !SINGLETONS.includes(item.getId() as (typeof SINGLETONS)[number]) &&
-          !["caseStudy", "venture", "story", "experience", "testimonial", "focusArea", "page", "worksPage", "playgroundPage"].includes(
+          !["caseStudy", "feedPost", "venture", "story", "experience", "testimonial", "focusArea", "page", "worksPage", "playgroundPage"].includes(
             item.getId() ?? "",
           ),
       ),

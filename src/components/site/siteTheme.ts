@@ -19,6 +19,7 @@ export function getSiteTheme(isDark: boolean) {
     body: "text-[15px] font-light leading-[20px]",
     bodyMedium: "text-[15px] font-medium leading-[20px]",
     caption: "text-[13px] font-light leading-[18px]",
+    feedTag: isDark ? "text-[#c4c7ce]" : "text-[#727780]",
     label: "text-[13px] font-medium leading-[18px]",
     aiAccent: "text-[#6f61ff]",
     barMuted: isDark ? "bg-[#404040]" : "bg-[#d4d4d4]",

@@ -47,6 +47,8 @@ export function PortableTextBody({
 }) {
   if (!blocks?.length) return null;
 
+  const bodyClass = `${SITE_FONT} ${t.muted} text-[15px] font-normal leading-[22px]`;
+
   return (
     <div className="flex flex-col gap-4">
       {blocks.map((block, index) => {
@@ -58,22 +60,22 @@ export function PortableTextBody({
 
         if (block.listItem === "bullet") {
           return (
-            <ul key={block._key ?? index} className={`${SITE_FONT} ${t.muted} list-disc pl-5 text-[15px] font-light leading-[22px]`}>
-              <li>{children}</li>
+            <ul key={block._key ?? index} className={`${bodyClass} max-w-[640px] list-disc pl-5`}>
+              <li className="font-normal">{children}</li>
             </ul>
           );
         }
 
         if (block.listItem === "number") {
           return (
-            <ol key={block._key ?? index} className={`${SITE_FONT} ${t.muted} list-decimal pl-5 text-[15px] font-light leading-[22px]`}>
-              <li>{children}</li>
+            <ol key={block._key ?? index} className={`${bodyClass} max-w-[640px] list-decimal pl-5`}>
+              <li className="font-normal">{children}</li>
             </ol>
           );
         }
 
         return (
-          <p key={block._key ?? index} className={`${SITE_FONT} ${t.muted} max-w-[640px] text-[15px] font-light leading-[22px]`}>
+          <p key={block._key ?? index} className={`${bodyClass} max-w-[640px]`}>
             {children}
           </p>
         );

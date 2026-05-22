@@ -156,6 +156,8 @@ function CaseStudyMetrics({
 }
 
 function CaseStudySectionBlock({ section, theme: t }: { section: CaseStudySection; theme: SiteTheme }) {
+  const bodyClass = `${SITE_FONT} ${t.muted} max-w-[640px] text-[15px] font-normal leading-[22px]`;
+
   return (
     <section id={section.id} className="scroll-mt-28 flex flex-col gap-4 md:gap-5">
       <h2 className={`${SITE_FONT} ${t.text} text-[22px] font-medium leading-[30px] tracking-[-0.2px]`}>
@@ -166,7 +168,7 @@ function CaseStudySectionBlock({ section, theme: t }: { section: CaseStudySectio
       ) : section.paragraphs && section.paragraphs.length > 0 ? (
         <div className="flex flex-col gap-4">
           {section.paragraphs.map((paragraph, index) => (
-            <p key={index} className={`${SITE_FONT} ${t.muted} max-w-[640px] text-[15px] font-light leading-[22px]`}>
+            <p key={index} className={bodyClass}>
               {paragraph}
             </p>
           ))}
@@ -177,7 +179,7 @@ function CaseStudySectionBlock({ section, theme: t }: { section: CaseStudySectio
           {section.table.map((row) => (
             <li key={row.key} className="flex flex-col gap-2">
               <h3 className={`${SITE_FONT} ${t.text} text-[15px] font-medium leading-[20px]`}>{row.title}</h3>
-              <p className={`${SITE_FONT} ${t.muted} max-w-[640px] text-[15px] font-light leading-[22px]`}>
+              <p className={bodyClass}>
                 {row.description}
               </p>
             </li>
@@ -191,7 +193,7 @@ function CaseStudySectionBlock({ section, theme: t }: { section: CaseStudySectio
               <h3 className={`${SITE_FONT} ${t.text} text-[15px] font-medium leading-[20px]`}>
                 {phase.phase} · {phase.title}
               </h3>
-              <p className={`${SITE_FONT} ${t.muted} max-w-[640px] text-[15px] font-light leading-[22px]`}>
+              <p className={bodyClass}>
                 {phase.description}
               </p>
             </li>
@@ -203,16 +205,18 @@ function CaseStudySectionBlock({ section, theme: t }: { section: CaseStudySectio
           {section.features.map((feature) => (
             <li key={feature.title} className="flex flex-col gap-2">
               <h3 className={`${SITE_FONT} ${t.text} text-[15px] font-medium leading-[20px]`}>{feature.title}</h3>
-              <p className={`${SITE_FONT} ${t.muted} max-w-[640px] text-[15px] font-light leading-[22px]`}>{feature.body}</p>
+              <p className={bodyClass}>{feature.body}</p>
             </li>
           ))}
         </ul>
       ) : null}
       {section.metrics && section.metrics.length > 0 ? <CaseStudyMetrics metrics={section.metrics} theme={t} /> : null}
       {section.numberedList && section.numberedList.length > 0 ? (
-        <ol className={`${SITE_FONT} ${t.muted} mt-2 flex max-w-[640px] list-decimal flex-col gap-4 pl-5 text-[15px] font-light leading-[22px]`}>
+        <ol className={`${bodyClass} mt-2 flex list-decimal flex-col gap-4 pl-5`}>
           {section.numberedList.map((item) => (
-            <li key={item}>{item}</li>
+            <li key={item} className="font-normal">
+              {item}
+            </li>
           ))}
         </ol>
       ) : null}
