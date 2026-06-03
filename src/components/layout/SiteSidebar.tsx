@@ -3,6 +3,7 @@ import { CommunLogo } from "../CommunLogo";
 import { DefaultLogo } from "../DefaultLogo";
 import { KinescopeLogo } from "../KinescopeLogo";
 import { P2pValidatorLogo } from "../P2pValidatorLogo";
+import { SiteGhostAnchor } from "../site/SiteButtons";
 import { PortfolioImage } from "../PortfolioImage";
 import { FliqMarkIcon, GradeStudioMarkIcon, PinnboardsMarkIcon } from "../ventureMarkIcons";
 import svgPaths from "../../imports/svg-j4zqqnzmwo";

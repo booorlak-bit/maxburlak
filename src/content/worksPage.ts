@@ -170,6 +170,21 @@ export const MORE_PROJECTS: WorksProject[] = [
 
 export const ALL_WORKS_PROJECTS = [...FEATURED_PROJECTS, ...MORE_PROJECTS];
 
+/** Homepage Selected works blocks → index in Works featured list (same case studies as /works). */
+export const HOME_SELECTED_WORK_FEATURED_INDEXES = [0, 0, 1, 2] as const;
+
+export function worksCaseStudyPath(caseStudySlug: string): string {
+  return `/works/${caseStudySlug}`;
+}
+
+export function caseStudyPathForFeaturedIndex(
+  featuredProjects: WorksProject[],
+  featuredIndex: number,
+): string {
+  const project = featuredProjects[featuredIndex];
+  return project ? worksCaseStudyPath(project.caseStudySlug) : "/works";
+}
+
 export const WORKS_LOAD_MORE_BATCH = 2;
 
 export function filterWorksProjects(projects: WorksProject[], filter: WorksProjectFilterId): WorksProject[] {

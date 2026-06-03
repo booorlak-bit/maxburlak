@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Stories } from "../components/Stories";
 import { CareerPath } from "../components/CareerPath";
 import { FocusAreasServices } from "../components/FocusAreasServices";
@@ -21,9 +21,15 @@ import { VenturesPage } from "../pages/VenturesPage";
 import { AboutPage } from "../pages/AboutPage";
 import { LoopFlowDiagram } from "../components/LoopFlowDiagram";
 import { PortfolioImage } from "../components/PortfolioImage";
+import {
+  caseStudyPathForFeaturedIndex,
+  HOME_SELECTED_WORK_FEATURED_INDEXES,
+} from "../content/worksPage";
 import { useSiteSettings } from "../sanity/CmsProvider";
+import { useWorksContent } from "../sanity/useWorksContent";
 import { HomeSection } from "../sanity/HomeSection";
 import { SitePageLayout } from "../components/layout/SitePageLayout";
+import { SiteGhostLink } from "../components/site/SiteButtons";
 import { FliqMarkIcon, OrganicaaaMarkIcon, PinnboardsMarkIcon } from "../components/ventureMarkIcons";
 
 const PlaygroundCanvas = lazy(() =>
@@ -188,6 +194,14 @@ export default function MainV({
   onThemeToggle?: () => void;
 }) {
   const site = useSiteSettings();
+  const { featuredProjects } = useWorksContent();
+  const homeSelectedWorkPaths = useMemo(
+    () =>
+      HOME_SELECTED_WORK_FEATURED_INDEXES.map((featuredIndex) =>
+        caseStudyPathForFeaturedIndex(featuredProjects, featuredIndex),
+      ),
+    [featuredProjects],
+  );
   const bookCallUrl = site?.bookCallUrl || BOOK_CALL_URL;
   const contactEmailUrl = site?.contactEmail ? `mailto:${site.contactEmail}` : CONTACT_EMAIL_URL;
   const linkedinUrl = site?.linkedinUrl || LINKEDIN_URL;
@@ -528,9 +542,9 @@ export default function MainV({
                               </div>
                             </div>
                             <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[16px] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Trade-offs: Custom nodes, AI co-pilot functionality, on-platform actions through the workflow builder, recipes / templates.</p>
-                            <p className={`backdrop-blur-[12px] ${isDark ? 'bg-[#2a2a2a]' : 'bg-[#f2f2f4]'} transition-colors duration-700 content-stretch flex gap-[2px] h-[32px] items-center justify-center px-[8px] py-[4px] relative rounded-[1000px] shrink-0 opacity-90`} data-name="Button">
-                              <span className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-[#c3c6cc]" : "text-[#5b616d]"} transition-colors duration-700`}>Case study soon</span>
-                            </p>
+                            <SiteGhostLink isDark={isDark} to={homeSelectedWorkPaths[0]} size="xs" icon="arrow">
+                              View case study
+                            </SiteGhostLink>
                           </div>
                         </div>
                       </div>
@@ -637,9 +651,9 @@ export default function MainV({
                               <p className="font-light leading-[16px] mb-0">{`Trade-offs: Kanban view, calendar view, opportunities. `}</p>
                               <p className="font-light leading-[16px]">Shipped core value first.</p>
                             </div>
-                            <p className={`backdrop-blur-[12px] ${isDark ? 'bg-[#2a2a2a]' : 'bg-[#f2f2f4]'} transition-colors duration-700 content-stretch flex gap-[2px] h-[32px] items-center justify-center px-[8px] py-[4px] relative rounded-[1000px] shrink-0 opacity-90`} data-name="Button">
-                              <span className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-[#c3c6cc]" : "text-[#5b616d]"} transition-colors duration-700`}>Case study soon</span>
-                            </p>
+                            <SiteGhostLink isDark={isDark} to={homeSelectedWorkPaths[1]} size="xs" icon="arrow">
+                              View case study
+                            </SiteGhostLink>
                           </div>
                         </div>
                       </div>
@@ -734,9 +748,9 @@ export default function MainV({
                               <p className="font-light leading-[16px] mb-0">{`Trade-offs: Service outside the platform. `}</p>
                               <p className="font-light leading-[16px]">Focused on data quality on platform first.</p>
                             </div>
-                            <p className={`backdrop-blur-[12px] ${isDark ? 'bg-[#2a2a2a]' : 'bg-[#f2f2f4]'} transition-colors duration-700 content-stretch flex gap-[2px] h-[32px] items-center justify-center px-[8px] py-[4px] relative rounded-[1000px] shrink-0 opacity-90`} data-name="Button">
-                              <span className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-[#c3c6cc]" : "text-[#5b616d]"} transition-colors duration-700`}>Case study soon</span>
-                            </p>
+                            <SiteGhostLink isDark={isDark} to={homeSelectedWorkPaths[2]} size="xs" icon="arrow">
+                              View case study
+                            </SiteGhostLink>
                           </div>
                         </div>
                       </div>
@@ -830,9 +844,9 @@ export default function MainV({
                               </div>
                             </div>
                             <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[16px] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>{`Trade-offs: hypotheses based, sacrified crypto-direction, gamification & achievements.`}</p>
-                            <p className={`backdrop-blur-[12px] ${isDark ? 'bg-[#2a2a2a]' : 'bg-[#f2f2f4]'} transition-colors duration-700 content-stretch flex gap-[2px] h-[32px] items-center justify-center px-[8px] py-[4px] relative rounded-[1000px] shrink-0 opacity-90`} data-name="Button">
-                              <span className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-[#c3c6cc]" : "text-[#5b616d]"} transition-colors duration-700`}>Case study soon</span>
-                            </p>
+                            <SiteGhostLink isDark={isDark} to={homeSelectedWorkPaths[3]} size="xs" icon="arrow">
+                              View case study
+                            </SiteGhostLink>
                           </div>
                         </div>
                       </div>

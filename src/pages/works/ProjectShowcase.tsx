@@ -8,9 +8,10 @@ import { SiteBadge } from "../../components/site/SiteBadge";
 import { SITE_FONT, type SiteTheme } from "../../components/site/siteTheme";
 import { WORK_SCREENSHOTS } from "../../content/worksImages";
 import type { WorksProject } from "../../content/worksPage";
+import { worksCaseStudyPath } from "../../content/worksPage";
 
 function projectCaseStudyPath(project: WorksProject): string {
-  return `/works/${project.caseStudySlug}`;
+  return worksCaseStudyPath(project.caseStudySlug);
 }
 
 function companyInitials(company: string): string {
