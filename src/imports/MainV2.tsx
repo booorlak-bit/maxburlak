@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 import { Stories } from "../components/Stories";
 import { CareerPath } from "../components/CareerPath";
 import { FocusAreasServices } from "../components/FocusAreasServices";
@@ -158,7 +158,6 @@ const HERO_SLIDE_MS = 3500;
 const heroCrossfadeEase = [0.22, 1, 0.36, 1] as const;
 
 function HeroImage({ className, slide = "1" }: HeroImageProps) {
-  const reduceMotion = useReducedMotion();
   const initialSlideIndex = Math.max(0, Number(slide) - 1);
   const [activeIndex, setActiveIndex] = useState(initialSlideIndex);
 
@@ -170,30 +169,12 @@ function HeroImage({ className, slide = "1" }: HeroImageProps) {
   }, []);
 
   useEffect(() => {
-    if (reduceMotion) return;
-
     const interval = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % heroSlides.length);
     }, HERO_SLIDE_MS);
 
     return () => window.clearInterval(interval);
-  }, [reduceMotion]);
-
-  if (reduceMotion) {
-    return (
-      <div className={className || "relative h-[459.576px] w-[342.667px]"}>
-        <PortfolioImage
-          priority
-          alt="Max Burlak"
-          className="pointer-events-none absolute inset-0 size-full max-w-none object-cover"
-          height={1026}
-          sizes="(max-width: 1024px) 100vw, 400px"
-          src={heroSlides[initialSlideIndex]}
-          width={765}
-        />
-      </div>
-    );
-  }
+  }, []);
 
   return (
     <div className={className || "relative h-[459.576px] w-[342.667px]"}>
