@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { Stories } from "../components/Stories";
 import { CareerPath } from "../components/CareerPath";
 import { FocusAreasServices } from "../components/FocusAreasServices";
@@ -153,33 +154,68 @@ type HeroImageProps = {
 };
 
 const heroSlides = [imgSlide1, imgSlide2, imgSlide3] as const;
+const HERO_SLIDE_MS = 3500;
+const heroCrossfadeEase = [0.22, 1, 0.36, 1] as const;
 
 function HeroImage({ className, slide = "1" }: HeroImageProps) {
+  const reduceMotion = useReducedMotion();
   const initialSlideIndex = Math.max(0, Number(slide) - 1);
-  const [activeSlide, setActiveSlide] = useState(initialSlideIndex);
+  const [activeIndex, setActiveIndex] = useState(initialSlideIndex);
 
   useEffect(() => {
-    const interval = window.setInterval(() => {
-      setActiveSlide((currentSlide) => (currentSlide + 1) % heroSlides.length);
-    }, 3500);
-
-    return () => window.clearInterval(interval);
+    heroSlides.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
   }, []);
 
-  const src = heroSlides[activeSlide];
+  useEffect(() => {
+    if (reduceMotion) return;
+
+    const interval = window.setInterval(() => {
+      setActiveIndex((current) => (current + 1) % heroSlides.length);
+    }, HERO_SLIDE_MS);
+
+    return () => window.clearInterval(interval);
+  }, [reduceMotion]);
+
+  if (reduceMotion) {
+    return (
+      <div className={className || "relative h-[459.576px] w-[342.667px]"}>
+        <PortfolioImage
+          priority
+          alt="Max Burlak"
+          className="pointer-events-none absolute inset-0 size-full max-w-none object-cover"
+          height={1026}
+          sizes="(max-width: 1024px) 100vw, 400px"
+          src={heroSlides[initialSlideIndex]}
+          width={765}
+        />
+      </div>
+    );
+  }
 
   return (
-    <div className={className || "h-[459.576px] relative w-[342.667px]"}>
-      <PortfolioImage
-        priority={activeSlide === 0}
-        alt="Max Burlak"
-        className="absolute inset-0 max-w-none object-cover pointer-events-none size-full"
-        height={1026}
-        key={src}
-        sizes="(max-width: 1024px) 100vw, 400px"
-        src={src}
-        width={765}
-      />
+    <div className={className || "relative h-[459.576px] w-[342.667px]"}>
+      {heroSlides.map((src, index) => (
+        <motion.img
+          key={src}
+          alt="Max Burlak"
+          src={src}
+          draggable={false}
+          decoding={index === 0 ? "sync" : "async"}
+          loading="eager"
+          fetchPriority={index === 0 ? "high" : "auto"}
+          sizes="(max-width: 1024px) 100vw, 400px"
+          width={765}
+          height={1026}
+          className="pointer-events-none absolute inset-0 size-full max-w-none object-cover"
+          initial={false}
+          animate={{ opacity: index === activeIndex ? 1 : 0 }}
+          transition={{ duration: 1.1, ease: heroCrossfadeEase }}
+          style={{ zIndex: index === activeIndex ? 2 : 1 }}
+        />
+      ))}
     </div>
   );
 }
