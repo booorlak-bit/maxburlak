@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "build": "node scripts/ensure-sharp.mjs && node scripts/generate-webp.mjs && vite build",
+    "build": "node scripts/ensure-sharp.mjs && node scripts/generate-webp.mjs && vite build && node scripts/generate-route-html.mjs",
     "images:webp": "node scripts/ensure-sharp.mjs && node scripts/generate-webp.mjs",
     "dev": "vite",
     "studio": "sanity dev",
