@@ -157,7 +157,16 @@ export const caseStudyFields = `
       label,
       detail
     },
-    numberedList
+    numberedList,
+    media[]{
+      _key,
+      _type,
+      alt,
+      caption,
+      image,
+      videoUrl,
+      poster
+    }
   }
 `;
 

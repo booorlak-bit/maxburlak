@@ -11,6 +11,8 @@ import { venture } from "./documents/venture";
 import { worksPage } from "./documents/worksPage";
 import { playgroundPage } from "./documents/playgroundPage";
 import { caseStudyFeature } from "./objects/caseStudyFeature";
+import { caseStudyImage } from "./objects/caseStudyImage";
+import { caseStudyVideo } from "./objects/caseStudyVideo";
 import { caseStudyNavItem } from "./objects/caseStudyNavItem";
 import { caseStudyPhase } from "./objects/caseStudyPhase";
 import { caseStudyResultMetric } from "./objects/caseStudyResultMetric";
@@ -45,6 +47,8 @@ export const schemaTypes = [
   caseStudyPhase,
   caseStudyFeature,
   caseStudyResultMetric,
+  caseStudyImage,
+  caseStudyVideo,
   caseStudySection,
   homeSectionSlot,
   playgroundCanvasItem,

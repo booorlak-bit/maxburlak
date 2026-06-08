@@ -1,5 +1,6 @@
-import type { CaseStudyPageContent, CaseStudySection } from "../content/caseStudyContent";
+import type { CaseStudyMediaItem, CaseStudyPageContent, CaseStudySection } from "../content/caseStudyContent";
 import type { WorksProject } from "../content/worksPage";
+import { urlForSrc } from "./image";
 import { blocksToPlainParagraphs, type SanityBlock } from "./portableText";
 import type { CaseStudy } from "./types";
 
@@ -51,6 +52,29 @@ function mapSections(caseStudy: CaseStudy): CaseStudySection[] {
             }))
             .filter((metric) => metric.value && metric.label),
           numberedList: section.numberedList?.map((item) => item?.trim()).filter(Boolean) as string[] | undefined,
+          media: section.media
+            ?.map((item): CaseStudyMediaItem | null => {
+              if (item._type === "caseStudyVideo") {
+                const src = item.videoUrl?.trim();
+                if (!src) return null;
+                return {
+                  type: "video",
+                  src,
+                  poster: urlForSrc(item.poster, 1400),
+                  alt: item.alt?.trim() || undefined,
+                  caption: item.caption?.trim() || undefined,
+                };
+              }
+              const src = urlForSrc(item.image, 1400);
+              if (!src) return null;
+              return {
+                type: "image",
+                src,
+                alt: item.alt?.trim() || undefined,
+                caption: item.caption?.trim() || undefined,
+              };
+            })
+            .filter((item): item is CaseStudyMediaItem => item !== null),
         } satisfies CaseStudySection;
       })
       .filter((section): section is CaseStudySection => section !== null) ?? []

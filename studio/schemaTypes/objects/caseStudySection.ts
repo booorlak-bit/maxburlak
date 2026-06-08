@@ -22,7 +22,19 @@ export const caseStudySection = defineType({
       name: "paragraphs",
       type: "array",
       title: "Intro paragraphs",
-      of: [defineArrayMember({ type: "block" })],
+      description: "Rich text. Use the image button in the toolbar to embed images inline.",
+      of: [
+        defineArrayMember({ type: "block" }),
+        defineArrayMember({
+          type: "image",
+          title: "Image",
+          options: { hotspot: true },
+          fields: [
+            defineField({ name: "alt", type: "string", title: "Alt text" }),
+            defineField({ name: "caption", type: "string", title: "Caption" }),
+          ],
+        }),
+      ],
     }),
     defineField({
       name: "table",
@@ -53,6 +65,16 @@ export const caseStudySection = defineType({
       type: "array",
       title: "Numbered list",
       of: [defineArrayMember({ type: "string" })],
+    }),
+    defineField({
+      name: "media",
+      type: "array",
+      title: "Images & video",
+      description: "Add images or videos shown at the end of this section.",
+      of: [
+        defineArrayMember({ type: "caseStudyImage" }),
+        defineArrayMember({ type: "caseStudyVideo" }),
+      ],
     }),
   ],
   preview: {

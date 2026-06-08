@@ -95,6 +95,15 @@ export type CaseStudy = {
     features?: { _key?: string; title?: string; body?: string }[];
     metrics?: { _key?: string; value?: string; label?: string; detail?: string }[];
     numberedList?: string[];
+    media?: {
+      _key?: string;
+      _type?: "caseStudyImage" | "caseStudyVideo";
+      alt?: string;
+      caption?: string;
+      image?: SanityImage;
+      videoUrl?: string;
+      poster?: SanityImage;
+    }[];
   }[];
 };
 

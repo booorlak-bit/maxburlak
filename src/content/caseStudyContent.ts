@@ -31,6 +31,10 @@ export type CaseStudyMetric = {
   detail: string;
 };
 
+export type CaseStudyMediaItem =
+  | { type: "image"; src: string; alt?: string; caption?: string }
+  | { type: "video"; src: string; poster?: string; alt?: string; caption?: string };
+
 export type CaseStudySection = {
   id: string;
   title: string;
@@ -41,6 +45,7 @@ export type CaseStudySection = {
   features?: CaseStudyFeature[];
   metrics?: CaseStudyMetric[];
   numberedList?: string[];
+  media?: CaseStudyMediaItem[];
 };
 
 export type CaseStudyPageContent = {

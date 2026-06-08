@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import { SITE_FONT, type SiteTheme } from "../components/site/siteTheme";
+import { urlForSrc } from "./image";
+import type { SanityImage } from "./types";
 
 export type SanityBlockChild = {
   _type?: string;
@@ -14,6 +16,9 @@ export type SanityBlock = {
   listItem?: "bullet" | "number";
   level?: number;
   children?: SanityBlockChild[];
+  asset?: SanityImage["asset"];
+  alt?: string;
+  caption?: string;
 };
 
 export function blocksToPlainParagraphs(blocks: SanityBlock[] | undefined): string[] {
@@ -52,6 +57,26 @@ export function PortableTextBody({
   return (
     <div className="flex flex-col gap-4">
       {blocks.map((block, index) => {
+        if (block._type === "image") {
+          const src = block.asset ? urlForSrc({ asset: block.asset }, 1400) : undefined;
+          if (!src) return null;
+          return (
+            <figure key={block._key ?? index} className="w-full">
+              <img
+                alt={block.alt ?? ""}
+                className="h-auto w-full rounded-[12px] object-cover"
+                loading="lazy"
+                src={src}
+              />
+              {block.caption ? (
+                <figcaption className={`${SITE_FONT} ${t.muted} mt-2 text-[12px] font-light leading-[16px]`}>
+                  {block.caption}
+                </figcaption>
+              ) : null}
+            </figure>
+          );
+        }
+
         if (block._type !== "block") return null;
 
         const children = block.children?.map((child, childIndex) =>

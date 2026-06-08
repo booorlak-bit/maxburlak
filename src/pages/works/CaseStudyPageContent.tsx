@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { ApolloLogo } from "../../components/ApolloLogo";
 import { DefaultLogo } from "../../components/DefaultLogo";
@@ -97,6 +98,8 @@ function CaseStudyGallery({ project, theme: t }: { project: WorksProject; theme:
   );
 }
 
+const MOBILE_CASE_STUDY_NAV_TOP = 80;
+
 function CaseStudyNav({
   content,
   theme: t,
@@ -106,24 +109,91 @@ function CaseStudyNav({
   theme: SiteTheme;
   isDark: boolean;
 }) {
+  const [isPinned, setIsPinned] = useState(false);
+  const [navHeight, setNavHeight] = useState(0);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLElement>(null);
+
+  const renderNavLinks = () =>
+    content.nav.map((item) => (
+      <li key={item.id}>
+        <a
+          href={`#${item.id}`}
+          className={`${SITE_FONT} ${t.muted} text-[13px] font-medium leading-[18px] transition-colors duration-200 hover:underline`}
+        >
+          {item.label}
+        </a>
+      </li>
+    ));
+
+  const mobileShellClass = `border-y border-solid px-4 py-3 backdrop-blur-md ${t.borderHairline} ${isDark ? "bg-[#0a0a0a]/90" : "bg-white/90"}`;
+
+  useEffect(() => {
+    const desktopQuery = window.matchMedia("(min-width: 1024px)");
+
+    const updatePinned = () => {
+      if (desktopQuery.matches) {
+        setIsPinned(false);
+        return;
+      }
+
+      const sentinel = sentinelRef.current;
+      const nav = navRef.current;
+      if (!sentinel) return;
+
+      setIsPinned(sentinel.getBoundingClientRect().top <= MOBILE_CASE_STUDY_NAV_TOP);
+      if (nav) setNavHeight(nav.offsetHeight);
+    };
+
+    updatePinned();
+    window.addEventListener("scroll", updatePinned, { passive: true });
+    window.addEventListener("resize", updatePinned);
+    desktopQuery.addEventListener("change", updatePinned);
+
+    return () => {
+      window.removeEventListener("scroll", updatePinned);
+      window.removeEventListener("resize", updatePinned);
+      desktopQuery.removeEventListener("change", updatePinned);
+    };
+  }, []);
+
   return (
-    <nav
-      aria-label="Case study sections"
-      className={`sticky top-[84px] z-[1] -mx-4 border-b border-solid px-4 py-3 backdrop-blur-md md:-mx-8 md:px-8 lg:static lg:mx-0 lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none ${t.borderHairline} ${isDark ? "bg-[#0a0a0a]/90" : "bg-white/90"} lg:bg-transparent`}
-    >
-      <ul className={`${SITE_FONT} flex flex-col flex-nowrap gap-x-5 gap-y-2`}>
-        {content.nav.map((item) => (
-          <li key={item.id}>
-            <a
-              href={`#${item.id}`}
-              className={`${SITE_FONT} ${t.muted} text-[13px] font-medium leading-[18px] transition-colors duration-200 hover:underline`}
-            >
-              {item.label}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
+    <>
+      <div className="lg:hidden">
+        <div ref={sentinelRef} className="h-0 w-full" aria-hidden />
+        <div aria-hidden style={{ height: isPinned ? navHeight : 0 }} />
+        <nav
+          ref={navRef}
+          aria-label="Case study sections"
+          className={`z-20 ${mobileShellClass} ${
+            isPinned
+              ? "fixed inset-x-[12px] top-[80px]"
+              : "relative -mx-4 md:-mx-8 md:px-8"
+          }`}
+        >
+          <details className="group">
+            <summary className={`${SITE_FONT} ${t.text} flex cursor-pointer list-none items-center justify-between text-[13px] font-medium leading-[18px] [&::-webkit-details-marker]:hidden`}>
+              Sections
+              <span className={`${t.muted} transition-transform duration-200 group-open:rotate-45`} aria-hidden>
+                +
+              </span>
+            </summary>
+            <ul className={`${SITE_FONT} mt-3 flex flex-col gap-y-2 pb-1`}>
+              {renderNavLinks()}
+            </ul>
+          </details>
+        </nav>
+      </div>
+
+      <nav
+        aria-label="Case study sections"
+        className="sticky top-[84px] z-[1] hidden lg:block"
+      >
+        <ul className={`${SITE_FONT} flex flex-col flex-nowrap gap-y-2`}>
+          {renderNavLinks()}
+        </ul>
+      </nav>
+    </>
   );
 }
 
@@ -150,6 +220,46 @@ function CaseStudyMetrics({
             ) : null}
           </div>
         </div>
+      ))}
+    </div>
+  );
+}
+
+function CaseStudyMedia({
+  media,
+  theme: t,
+}: {
+  media: NonNullable<CaseStudySection["media"]>;
+  theme: SiteTheme;
+}) {
+  return (
+    <div className="mt-2 flex flex-col gap-6 md:gap-8">
+      {media.map((item, index) => (
+        <figure key={index} className="w-full">
+          {item.type === "video" ? (
+            <video
+              className="h-auto w-full rounded-[16px]"
+              controls
+              playsInline
+              preload="metadata"
+              poster={item.poster}
+              aria-label={item.alt ?? "Video"}
+            >
+              <source src={item.src} />
+            </video>
+          ) : (
+            <PortfolioImage
+              alt={item.alt ?? ""}
+              className="h-auto w-full rounded-[16px] object-cover"
+              src={item.src}
+            />
+          )}
+          {item.caption ? (
+            <figcaption className={`${SITE_FONT} ${t.muted} mt-3 text-[12px] font-light leading-[16px]`}>
+              {item.caption}
+            </figcaption>
+          ) : null}
+        </figure>
       ))}
     </div>
   );
@@ -220,6 +330,7 @@ function CaseStudySectionBlock({ section, theme: t }: { section: CaseStudySectio
           ))}
         </ol>
       ) : null}
+      {section.media && section.media.length > 0 ? <CaseStudyMedia media={section.media} theme={t} /> : null}
     </section>
   );
 }
