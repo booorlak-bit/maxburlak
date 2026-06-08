@@ -12,6 +12,9 @@ import { WORK_SCREENSHOTS } from "../../content/worksImages";
 import type { WorksProject } from "../../content/worksPage";
 import { WORKS_PROJECT_FILTERS } from "../../content/worksPage";
 import { PortableTextBody } from "../../sanity/portableText";
+import { FeedLightbox, type LightboxSlide } from "../feed/FeedLightbox";
+
+type OpenLightbox = (slides: LightboxSlide[], index: number) => void;
 
 function formatMetricChipText(metric: { label: string; value: string }): string {
   const label = metric.label.toLowerCase().replace(/→/g, " to ");
@@ -225,47 +228,122 @@ function CaseStudyMetrics({
   );
 }
 
+function CaseStudyMediaCaption({ caption, theme: t }: { caption: string; theme: SiteTheme }) {
+  return (
+    <figcaption className={`${SITE_FONT} ${t.muted} mt-3 text-[12px] font-light leading-[16px]`}>
+      {caption}
+    </figcaption>
+  );
+}
+
 function CaseStudyMedia({
   media,
   theme: t,
+  openLightbox,
 }: {
   media: NonNullable<CaseStudySection["media"]>;
   theme: SiteTheme;
+  openLightbox: OpenLightbox;
 }) {
   return (
-    <div className="mt-2 flex flex-col gap-6 md:gap-8">
-      {media.map((item, index) => (
-        <figure key={index} className="w-full">
-          {item.type === "video" ? (
-            <video
-              className="h-auto w-full rounded-[16px]"
-              controls
-              playsInline
-              preload="metadata"
-              poster={item.poster}
-              aria-label={item.alt ?? "Video"}
+    <div className="mt-2 flex w-full max-w-[1400px] flex-col gap-8 md:gap-10">
+      {media.map((item, index) => {
+        if (item.type === "video") {
+          return (
+            <figure key={index} className="w-full">
+              <video
+                className="h-auto w-full rounded-[16px]"
+                controls
+                playsInline
+                preload="metadata"
+                poster={item.poster}
+                aria-label={item.alt ?? "Video"}
+              >
+                <source src={item.src} />
+              </video>
+              {item.caption ? <CaseStudyMediaCaption caption={item.caption} theme={t} /> : null}
+            </figure>
+          );
+        }
+
+        if (item.type === "gallery") {
+          const slides: LightboxSlide[] = item.images.map((image) => ({ src: image.src, alt: image.alt }));
+          const canOpen = item.allowFullscreen !== false;
+          const isSingle = item.images.length === 1;
+
+          return (
+            <div
+              key={index}
+              className={`grid w-full gap-3 md:gap-4 ${isSingle ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2"}`}
             >
-              <source src={item.src} />
-            </video>
-          ) : (
-            <PortfolioImage
-              alt={item.alt ?? ""}
-              className="h-auto w-full rounded-[16px] object-cover"
-              src={item.src}
-            />
-          )}
-          {item.caption ? (
-            <figcaption className={`${SITE_FONT} ${t.muted} mt-3 text-[12px] font-light leading-[16px]`}>
-              {item.caption}
-            </figcaption>
-          ) : null}
-        </figure>
-      ))}
+              {item.images.map((image, imageIndex) => {
+                const imageEl = (
+                  <PortfolioImage
+                    alt={image.alt ?? ""}
+                    className="h-full w-full rounded-[16px] object-cover"
+                    src={image.src}
+                  />
+                );
+                return (
+                  <figure key={imageIndex} className="w-full">
+                    {canOpen ? (
+                      <button
+                        type="button"
+                        className="block w-full cursor-zoom-in overflow-hidden rounded-[16px] border-0 bg-transparent p-0"
+                        onClick={() => openLightbox(slides, imageIndex)}
+                      >
+                        {imageEl}
+                      </button>
+                    ) : (
+                      imageEl
+                    )}
+                    {image.caption ? <CaseStudyMediaCaption caption={image.caption} theme={t} /> : null}
+                  </figure>
+                );
+              })}
+            </div>
+          );
+        }
+
+        const canOpen = item.allowFullscreen !== false;
+        const imageEl = (
+          <PortfolioImage
+            alt={item.alt ?? ""}
+            className="h-auto w-full rounded-[16px] object-cover"
+            src={item.src}
+          />
+        );
+
+        return (
+          <figure key={index} className="w-full">
+            {canOpen ? (
+              <button
+                type="button"
+                className="block w-full cursor-zoom-in overflow-hidden rounded-[16px] border-0 bg-transparent p-0"
+                onClick={() => openLightbox([{ src: item.src, alt: item.alt }], 0)}
+              >
+                {imageEl}
+              </button>
+            ) : (
+              imageEl
+            )}
+            {item.caption ? <CaseStudyMediaCaption caption={item.caption} theme={t} /> : null}
+          </figure>
+        );
+      })}
     </div>
   );
 }
 
-function CaseStudySectionBlock({ section, theme: t }: { section: CaseStudySection; theme: SiteTheme }) {
+function CaseStudySectionBlock({
+  section,
+  theme: t,
+  openLightbox,
+}: {
+  section: CaseStudySection;
+  theme: SiteTheme;
+  openLightbox: OpenLightbox;
+}) {
   const bodyClass = `${SITE_FONT} ${t.muted} max-w-[640px] text-[15px] font-normal leading-[22px]`;
 
   return (
@@ -274,7 +352,11 @@ function CaseStudySectionBlock({ section, theme: t }: { section: CaseStudySectio
         {section.title}
       </h2>
       {section.paragraphBlocks && section.paragraphBlocks.length > 0 ? (
-        <PortableTextBody blocks={section.paragraphBlocks} theme={t} />
+        <PortableTextBody
+          blocks={section.paragraphBlocks}
+          theme={t}
+          onImageClick={(src, alt) => openLightbox([{ src, alt }], 0)}
+        />
       ) : section.paragraphs && section.paragraphs.length > 0 ? (
         <div className="flex flex-col gap-4">
           {section.paragraphs.map((paragraph, index) => (
@@ -330,7 +412,9 @@ function CaseStudySectionBlock({ section, theme: t }: { section: CaseStudySectio
           ))}
         </ol>
       ) : null}
-      {section.media && section.media.length > 0 ? <CaseStudyMedia media={section.media} theme={t} /> : null}
+      {section.media && section.media.length > 0 ? (
+        <CaseStudyMedia media={section.media} theme={t} openLightbox={openLightbox} />
+      ) : null}
     </section>
   );
 }
@@ -343,6 +427,10 @@ type CaseStudyPageContentViewProps = {
 };
 
 export function CaseStudyPageContentView({ project, content, theme: t, isDark }: CaseStudyPageContentViewProps) {
+  const [lightbox, setLightbox] = useState<{ slides: LightboxSlide[]; index: number } | null>(null);
+
+  const openLightbox: OpenLightbox = (slides, index) => setLightbox({ slides, index });
+
   return (
     <div className="flex w-full flex-col gap-12 md:gap-16 lg:gap-20">
       <CaseStudyHero project={project} content={content} theme={t} isDark={isDark} />
@@ -355,10 +443,19 @@ export function CaseStudyPageContentView({ project, content, theme: t, isDark }:
 
         <div className="flex min-w-0 flex-1 flex-col gap-12 md:gap-16 lg:gap-20">
           {content.sections.map((section) => (
-            <CaseStudySectionBlock key={section.id} section={section} theme={t} />
+            <CaseStudySectionBlock key={section.id} section={section} theme={t} openLightbox={openLightbox} />
           ))}
         </div>
       </div>
+
+      {lightbox ? (
+        <FeedLightbox
+          slides={lightbox.slides}
+          index={lightbox.index}
+          onClose={() => setLightbox(null)}
+          onIndexChange={(index) => setLightbox((current) => (current ? { ...current, index } : current))}
+        />
+      ) : null}
     </div>
   );
 }
