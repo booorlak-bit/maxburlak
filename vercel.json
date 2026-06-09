@@ -11,6 +11,12 @@
       "permanent": false
     },
     {
+      "source": "/",
+      "has": [{ "type": "host", "value": "www.maxburlak.com" }],
+      "destination": "https://maxburlak.com/",
+      "permanent": true
+    },
+    {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "www.maxburlak.com" }],
       "destination": "https://maxburlak.com/:path*",
