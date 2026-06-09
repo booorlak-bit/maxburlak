@@ -13,8 +13,8 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!assets/|max-burlak-resume\\.pdf|robots\\.txt|sitemap\\.xml|llms\\.txt|favicon\\.ico|favicon\\.svg|favicon-96x96\\.png|apple-touch-icon\\.png|og-image\\.jpg|site\\.webmanifest|web-app-manifest-).*)",
-      "destination": "/index.html"
+      "source": "/((?!assets/|app\\.html|max-burlak-resume\\.pdf|robots\\.txt|sitemap\\.xml|llms\\.txt|favicon\\.ico|favicon\\.svg|favicon-96x96\\.png|apple-touch-icon\\.png|og-image\\.jpg|site\\.webmanifest|web-app-manifest-).*)",
+      "destination": "/app.html"
     }
   ],
   "headers": [
