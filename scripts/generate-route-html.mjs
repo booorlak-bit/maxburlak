@@ -15,6 +15,25 @@ const DEFAULT_DESCRIPTION =
   "Founding product designer (3×) helping B2B SaaS founders ship faster: activation, conversion, design systems, and AI-native workflows. 13+ years; Default, Apollo.io, and startups from 0 to $2.5M+ ARR.";
 const OG_IMAGE_URL = `${SITE_URL}/og-image.jpg`;
 
+const NAV_LINKS = [
+  { href: "/", label: "Home" },
+  { href: "/works", label: "Works" },
+  { href: "/approach", label: "Approach" },
+  { href: "/ventures", label: "Ventures" },
+  { href: "/feed", label: "Feed" },
+  { href: "/about", label: "About" },
+];
+
+const EXTERNAL_LINKS = [
+  { href: "https://www.linkedin.com/in/maxburlak/", label: "LinkedIn" },
+  { href: "https://dribbble.com/maxburlak", label: "Dribbble" },
+  { href: "https://medium.com/@booorlak", label: "Medium" },
+  { href: "https://www.youtube.com/@heyhimaxo", label: "YouTube" },
+  { href: "https://www.instagram.com/multimaxo", label: "Instagram" },
+  { href: "https://cal.com/maxburlak/oppchat", label: "Book a call" },
+  { href: `${SITE_URL}/max-burlak-resume.pdf`, label: "Download CV" },
+];
+
 /** Static (non-CMS) routes. `index: false` keeps a route out of the sitemap. */
 const staticRoutes = [
   {
@@ -122,6 +141,7 @@ async function loadCaseStudies() {
       "title": coalesce(pageTitle, title),
       "description": coalesce(lede, summary),
       "ogImage": coalesce(coverImage.asset->url, heroImage.asset->url),
+      "headings": sections[].title,
       "updated": _updatedAt
     } | order(sortOrder asc)`,
   );
@@ -248,6 +268,40 @@ function sectionJsonLd(page) {
   );
 }
 
+function cleanHeading(title) {
+  return String(title ?? "").replace(new RegExp(`\\s*—\\s*${SITE_NAME}\\s*$`), "").trim();
+}
+
+function linkList(links) {
+  return links
+    .map((link) => `<li><a href="${escapeHtml(link.href)}">${escapeHtml(link.label)}</a></li>`)
+    .join("");
+}
+
+/**
+ * Visually-hidden, crawler-readable fallback so non-JS bots (and SEO auditors)
+ * see a real H1, headings, and an internal/external link graph. Removed by the
+ * app on mount (see main.tsx) so it never duplicates the rendered DOM.
+ */
+function buildSeoBlock(page, contentLinks) {
+  const h1 = escapeHtml(cleanHeading(page.rawTitle) || SITE_NAME);
+  const description = escapeHtml(page.rawDescription || DEFAULT_DESCRIPTION);
+  const headings = (page.headings ?? [])
+    .filter(Boolean)
+    .map((heading) => `<h2>${escapeHtml(heading)}</h2>`)
+    .join("");
+
+  return [
+    `<div id="seo-prerender" aria-hidden="true" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">`,
+    `<h1>${h1}</h1>`,
+    `<p>${description}</p>`,
+    headings,
+    `<nav aria-label="Site"><h2>Explore</h2><ul>${linkList(NAV_LINKS)}${linkList(contentLinks)}</ul></nav>`,
+    `<nav aria-label="Elsewhere"><h2>Elsewhere</h2><ul>${linkList(EXTERNAL_LINKS)}</ul></nav>`,
+    `</div>`,
+  ].join("");
+}
+
 function replaceTag(html, pattern, replacement, { required = true } = {}) {
   if (!pattern.test(html)) {
     if (required) throw new Error(`Could not find tag matching ${pattern}`);
@@ -288,6 +342,14 @@ function applyMeta(html, page) {
       /<script type="application\/ld\+json">[\s\S]*?<\/script>/,
       `<script type="application/ld+json">\n${page.jsonLd}\n      </script>`,
       { required: false },
+    );
+  }
+
+  if (page.seoBlock) {
+    next = replaceTag(
+      next,
+      /<div id="root"><\/div>/,
+      `${page.seoBlock}\n      <div id="root"></div>`,
     );
   }
 
@@ -356,6 +418,7 @@ async function main() {
       rawTitle: `${cs.title || "Case study"} — ${SITE_NAME}`,
       rawDescription: cs.description || DEFAULT_DESCRIPTION,
       ogImage: cs.ogImage || null,
+      headings: Array.isArray(cs.headings) ? cs.headings : [],
       updated: cs.updated || null,
       changefreq: "monthly",
       priority: "0.8",
@@ -379,6 +442,18 @@ async function main() {
     pages.push(page);
   }
 
+  // Internal link graph (case study + feed routes) added to every page's SEO block.
+  const contentLinks = pages
+    .filter((page) => page.type === "caseStudy" || page.type === "feed")
+    .map((page) => ({
+      href: page.route,
+      label: cleanHeading(page.rawTitle) || page.route,
+    }));
+
+  for (const page of pages) {
+    page.seoBlock = buildSeoBlock(page, contentLinks);
+  }
+
   await Promise.all(pages.map((page) => writeRouteHtml(template, page)));
 
   // noindex SPA fallback shell for any non-prerendered / unknown path.
@@ -387,6 +462,7 @@ async function main() {
     rawTitle: DEFAULT_TITLE,
     rawDescription: DEFAULT_DESCRIPTION,
     noindex: true,
+    seoBlock: buildSeoBlock({ rawTitle: DEFAULT_TITLE, rawDescription: DEFAULT_DESCRIPTION }, contentLinks),
   }).replace(
     /<link rel="canonical" href="[^"]*" \/>\s*/,
     "",
@@ -399,6 +475,7 @@ async function main() {
     rawTitle: `Page not found — ${SITE_NAME}`,
     rawDescription: "This page could not be found.",
     noindex: true,
+    seoBlock: buildSeoBlock({ rawTitle: `Page not found — ${SITE_NAME}`, rawDescription: "This page could not be found." }, contentLinks),
   }).replace(/<link rel="canonical" href="[^"]*" \/>\s*/, "");
   await writeFile(path.join(DIST_DIR, "404.html"), notFound);
 

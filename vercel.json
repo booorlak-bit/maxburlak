@@ -9,6 +9,12 @@
       "source": "/studio/:path*",
       "destination": "https://maxburlak.sanity.studio/:path*",
       "permanent": false
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.maxburlak.com" }],
+      "destination": "https://maxburlak.com/:path*",
+      "permanent": true
     }
   ],
   "rewrites": [
