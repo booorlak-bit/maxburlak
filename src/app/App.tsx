@@ -1,4 +1,5 @@
 import { BrowserRouter } from "react-router";
+import { Analytics } from "@vercel/analytics/react";
 import { SeoManager } from "../components/SeoManager";
 import MainV from "../imports/MainV2";
 import { CmsProvider } from "../sanity/CmsProvider";
@@ -21,6 +22,7 @@ export default function App() {
           <MainV isDark={isDark} onThemeToggle={toggleTheme} />
         </CmsProvider>
       </BrowserRouter>
+      <Analytics />
       <style>{`
         /* Full-width page shell */
         [data-name="Main V2"] > main > [data-layout="full-width"] {
