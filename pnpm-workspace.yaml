@@ -13,5 +13,6 @@ onlyBuiltDependencies:
 
 allowBuilds:
   '@tailwindcss/oxide': true
+  core-js: false
   esbuild: true
   sharp: true

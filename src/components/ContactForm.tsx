@@ -1,5 +1,6 @@
 import { type FormEvent, useEffect, useId, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { usePostHog } from "@posthog/react";
 import { DEFAULT_FORM_ID } from "../integrations/default";
 import svgPaths from "../imports/svg-j4zqqnzmwo";
 
@@ -114,6 +115,7 @@ function ThankYouState({ isDark }: { isDark: boolean }) {
 /** Bottom-of-page contact form — submissions go to Default.com. */
 export function ContactForm({ isDark = false }: ContactFormProps) {
   const id = useId();
+  const posthog = usePostHog();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [lookingFor, setLookingFor] = useState("");
@@ -136,6 +138,9 @@ export function ContactForm({ isDark = false }: ContactFormProps) {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    posthog?.capture("contact_form_submitted", {
+      inquiry_type: lookingFor,
+    });
     setShowThankYou(true);
   };
 

@@ -1,3 +1,4 @@
+import { usePostHog } from "@posthog/react";
 import { SiteBookCallButton, SiteGhostLink } from "../../components/site/SiteButtons";
 import {
   FliqMarkIcon,
@@ -79,7 +80,15 @@ function VentureMark({ venture }: { venture: Venture }) {
 }
 
 function VentureCard({ venture, theme: t }: { venture: Venture; theme: ReturnType<typeof getSiteTheme> }) {
+  const posthog = usePostHog();
   const href = ventureHref(venture.url);
+
+  const handleVentureLinkClick = () => {
+    posthog?.capture("venture_website_clicked", {
+      venture_name: venture.name,
+      venture_id: venture.id,
+    });
+  };
 
   return (
     <article
@@ -94,6 +103,7 @@ function VentureCard({ venture, theme: t }: { venture: Venture; theme: ReturnTyp
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={handleVentureLinkClick}
                 className={`${SITE_FONT} ${t.text} text-[22px] font-medium leading-[28px] tracking-[-0.2px] no-underline transition-opacity hover:opacity-80`}
               >
                 {venture.name}
