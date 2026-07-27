@@ -1,4 +1,5 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { usePostHog } from "@posthog/react";
 import { motion } from "motion/react";
 import { Stories } from "../components/Stories";
 import { CareerPath } from "../components/CareerPath";
@@ -219,11 +220,17 @@ export default function MainV({
       ),
     [featuredProjects],
   );
+  const posthog = usePostHog();
   const bookCallUrl = site?.bookCallUrl || BOOK_CALL_URL;
   const contactEmailUrl = site?.contactEmail ? `mailto:${site.contactEmail}` : CONTACT_EMAIL_URL;
   const linkedinUrl = site?.linkedinUrl || LINKEDIN_URL;
   const dribbbleUrl = site?.dribbbleUrl || DRIBBBLE_URL;
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleThemeToggle = useCallback(() => {
+    posthog?.capture("theme_toggled", { new_theme: isDark ? "light" : "dark" });
+    onThemeToggle?.();
+  }, [isDark, onThemeToggle, posthog]);
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
@@ -330,7 +337,7 @@ export default function MainV({
                         <p className="leading-[36px] mb-0">{`Focus → Outcomes over outputs: `}</p>
                         <p className="leading-[36px]">from insight to shipped impact.</p>
                       </div>
-                      <a href={bookCallUrl} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg no-underline" data-name="Button">
+                      <a href={bookCallUrl} target="_blank" rel="noopener noreferrer" onClick={() => posthog?.capture("book_call_clicked", { source: "hero" })} className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg no-underline" data-name="Button">
                         <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-white' : 'bg-black'} inset-0 pointer-events-none rounded-[1000px] transition-all duration-200`} />
                         <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.09)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_1px_1px_0px_rgba(0,0,0,0.03)]" />
                         <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
@@ -1308,7 +1315,7 @@ export default function MainV({
                                         <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Let’s chat and define the idea</p>
                                       </div>
                                       <div className="flex flex-col items-start gap-[12px] w-full min-w-0" data-name="CTAs">
-                                        <a href={bookCallUrl} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
+                                        <a href={bookCallUrl} target="_blank" rel="noopener noreferrer" onClick={() => posthog?.capture("book_call_clicked", { source: "sidebar" })} className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline" data-name="Button">
                                           <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-[rgba(255,255,255,0.1)]' : 'bg-[rgba(242,242,244,0.8)]'} transition-colors duration-700 inset-0 pointer-events-none rounded-[1000px]`} />
                                           <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)]" />
                                           <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
@@ -1447,7 +1454,7 @@ export default function MainV({
                       </div>
                     </div>
                     <div className="content-stretch flex items-center relative shrink-0 w-full">
-                      <a href={bookCallUrl} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg no-underline" data-name="Button">
+                      <a href={bookCallUrl} target="_blank" rel="noopener noreferrer" onClick={() => posthog?.capture("book_call_clicked", { source: "ventures_cta" })} className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg no-underline" data-name="Button">
                         <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-white' : 'bg-black'} inset-0 pointer-events-none rounded-[1000px] transition-all duration-200`} />
                         <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.09)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_1px_1px_0px_rgba(0,0,0,0.03)]" />
                         <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
@@ -1647,7 +1654,7 @@ export default function MainV({
                 </div>
                 <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_2px_3px_0px_rgba(255,255,255,0.03)]" />
               </a>
-              <button type="button" onClick={onThemeToggle} aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"} className="content-stretch flex min-h-[44px] min-w-[44px] size-[44px] gap-[2px] items-center justify-center border-0 bg-transparent px-[10px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-700 hover:scale-105 hover:rotate-180" data-name="Button">
+              <button type="button" onClick={handleThemeToggle} aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"} className="content-stretch flex min-h-[44px] min-w-[44px] size-[44px] gap-[2px] items-center justify-center border-0 bg-transparent px-[10px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-700 hover:scale-105 hover:rotate-180" data-name="Button">
                 <div aria-hidden="true" className={`absolute backdrop-blur-[12px] inset-0 pointer-events-none rounded-[1000px] transition-all duration-700 ${isDark ? 'bg-[rgba(255,255,255,0.1)]' : 'bg-[rgba(242,242,244,0.8)]'}`} />
                 <div aria-hidden="true" className={`absolute border border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)] transition-all duration-700 ${isDark ? 'border-[rgba(255,255,255,0.1)]' : 'border-[rgba(0,0,0,0.06)]'}`} />
                 <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="Right_md">
@@ -1669,7 +1676,7 @@ export default function MainV({
           </div>
           {/* Responsive: theme toggle + burger for tablet/phone */}
           <div className="flex xl:hidden gap-[8px] items-center">
-            <button type="button" onClick={onThemeToggle} aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"} className="content-stretch flex gap-[2px] items-center justify-center relative rounded-[1000px] shrink-0 min-h-[44px] min-w-[44px] size-[44px] border-0 bg-transparent cursor-pointer" data-name="Button">
+            <button type="button" onClick={handleThemeToggle} aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"} className="content-stretch flex gap-[2px] items-center justify-center relative rounded-[1000px] shrink-0 min-h-[44px] min-w-[44px] size-[44px] border-0 bg-transparent cursor-pointer" data-name="Button">
               <div aria-hidden="true" className={`absolute backdrop-blur-[12px] inset-0 pointer-events-none rounded-[1000px] ${isDark ? 'bg-[rgba(255,255,255,0.1)]' : 'bg-[rgba(242,242,244,0.8)]'}`} />
               <div aria-hidden="true" className={`absolute border border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)] ${isDark ? 'border-[rgba(255,255,255,0.1)]' : 'border-[rgba(0,0,0,0.06)]'}`} />
               <div className="overflow-clip relative shrink-0 size-[18px]">

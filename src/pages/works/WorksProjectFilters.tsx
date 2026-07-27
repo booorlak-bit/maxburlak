@@ -1,3 +1,4 @@
+import { usePostHog } from "@posthog/react";
 import {
   WORKS_PROJECT_FILTERS,
   type WorksProjectFilterId,
@@ -17,6 +18,13 @@ export function WorksProjectFilters({
   activeFilter,
   onFilterChange,
 }: WorksProjectFiltersProps) {
+  const posthog = usePostHog();
+
+  const handleFilterChange = (filter: WorksProjectFilterId) => {
+    posthog?.capture("works_filter_changed", { filter });
+    onFilterChange(filter);
+  };
+
   return (
     <div
       className="mt-8 flex flex-wrap gap-2 md:mt-10 md:gap-3"
@@ -32,7 +40,7 @@ export function WorksProjectFilters({
             type="button"
             role="tab"
             aria-selected={isActive}
-            onClick={() => onFilterChange(filter.id)}
+            onClick={() => handleFilterChange(filter.id)}
             className={`relative flex h-9 min-h-[36px] shrink-0 cursor-pointer items-center justify-center rounded-[1000px] border-0 px-4 py-1 transition-all duration-200 hover:scale-105 ${t.font} text-[13px] font-medium leading-[18px] whitespace-nowrap`}
           >
             <span

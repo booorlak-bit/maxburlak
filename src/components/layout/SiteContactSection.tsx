@@ -1,3 +1,4 @@
+import { usePostHog } from "@posthog/react";
 import { ContactForm } from "../ContactForm";
 import { PortfolioImage } from "../PortfolioImage";
 import svgPaths from "../../imports/svg-j4zqqnzmwo";
@@ -20,6 +21,16 @@ export function SiteContactSection({
   linkedinUrl,
   dribbbleUrl,
 }: SiteContactSectionProps) {
+  const posthog = usePostHog();
+
+  const handleBookCallClick = () => {
+    posthog?.capture("book_call_clicked", { source: "contact_section" });
+  };
+
+  const handleSocialLinkClick = (platform: string) => {
+    posthog?.capture("social_link_clicked", { platform });
+  };
+
   return (
     <>
       <div className="content-stretch flex flex-col lg:flex-row items-stretch overflow-x-clip relative w-full shrink-0" data-name="Contact CTA">
@@ -126,6 +137,7 @@ export function SiteContactSection({
                     href={bookCallUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={handleBookCallClick}
                     className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline"
                     data-name="Button"
                   >
@@ -157,6 +169,7 @@ export function SiteContactSection({
                     href={linkedinUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => handleSocialLinkClick("linkedin")}
                     className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline"
                     data-name="Button"
                   >
@@ -193,6 +206,7 @@ export function SiteContactSection({
                     href={dribbbleUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => handleSocialLinkClick("dribbble")}
                     className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[1000px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 no-underline"
                     data-name="Button"
                   >

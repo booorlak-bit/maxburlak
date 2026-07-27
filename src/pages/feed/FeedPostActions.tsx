@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { usePostHog } from "@posthog/react";
 import { SITE_FONT, type SiteTheme } from "../../components/site/siteTheme";
 import { getFeedPostPath } from "../../sanity/feedUtils";
 import type { FeedPost } from "../../sanity/types";
@@ -63,6 +64,7 @@ export function FeedPostActions({
   expanded = false,
   onToggleExpand,
 }: FeedPostActionsProps) {
+  const posthog = usePostHog();
   const [copied, setCopied] = useState(false);
   const detailPath = getFeedPostPath(post);
 
@@ -71,6 +73,9 @@ export function FeedPostActions({
     const url = `${window.location.origin}${detailPath}`;
     try {
       await navigator.clipboard.writeText(url);
+      posthog?.capture("feed_post_link_copied", {
+        post_slug: post.slug?.current,
+      });
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
