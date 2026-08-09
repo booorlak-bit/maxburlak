@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
+import { usePostHog } from "@posthog/react";
 
 export const CV_HREF = "/max-burlak-resume.pdf";
 export const CV_FILENAME = "max-burlak-resume.pdf";
@@ -43,9 +44,11 @@ function CvPillButton({
 function CvViewerModal({
   isDark,
   onClose,
+  onDownload,
 }: {
   isDark: boolean;
   onClose: () => void;
+  onDownload: () => void;
 }) {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -90,6 +93,7 @@ function CvViewerModal({
             <a
               href={CV_HREF}
               download={CV_FILENAME}
+              onClick={onDownload}
               className={`relative inline-flex h-11 min-h-[44px] items-center justify-center rounded-[1000px] px-3 no-underline transition-colors duration-200 ${isDark ? "bg-white text-[#0a0c11] hover:bg-white/90" : "bg-[#0a0c11] text-white hover:bg-black"}`}
             >
               <span className={labelClass}>Download</span>
@@ -117,12 +121,18 @@ function CvViewerModal({
 }
 
 export function CvViewerButton({ isDark }: { isDark: boolean }) {
+  const posthog = usePostHog();
   const [isOpen, setIsOpen] = useState(false);
+  const handleOpen = () => {
+    posthog?.capture("cv_viewed");
+    setIsOpen(true);
+  };
+  const handleDownload = () => posthog?.capture("cv_downloaded");
   const labelClass = `font-['Switzer_Variable:Regular',sans-serif] text-[13px] font-medium leading-[18px] whitespace-nowrap ${isDark ? "text-white" : "text-[#0a0c11]"} transition-colors duration-700`;
 
   return (
     <>
-      <CvPillButton ariaLabel="View CV" isDark={isDark} onClick={() => setIsOpen(true)}>
+      <CvPillButton ariaLabel="View CV" isDark={isDark} onClick={handleOpen}>
         <span className="relative flex items-center justify-center gap-[4px] px-[4px]">
           <span className={labelClass}>View CV</span>
         </span>
@@ -139,7 +149,7 @@ export function CvViewerButton({ isDark }: { isDark: boolean }) {
           </svg>
         </span>
       </CvPillButton>
-      {isOpen ? <CvViewerModal isDark={isDark} onClose={() => setIsOpen(false)} /> : null}
+      {isOpen ? <CvViewerModal isDark={isDark} onClose={() => setIsOpen(false)} onDownload={handleDownload} /> : null}
     </>
   );
 }

@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-import { usePostHog } from "@posthog/react";
 import { getCaseStudyPageContent } from "../../content/caseStudyContent";
 import { getOtherWorksProjects, getProjectByCaseStudySlug } from "../../content/worksPage";
 import { getSiteTheme, SITE_FONT } from "../../components/site/siteTheme";
@@ -14,17 +12,11 @@ type ProjectCaseStudyPageProps = {
 };
 
 export function ProjectCaseStudyPage({ isDark, slug }: ProjectCaseStudyPageProps) {
-  const posthog = usePostHog();
   const t = getSiteTheme(isDark);
   const worksContent = useWorksContent();
   const { caseStudies } = useCms();
   const { project: cmsResolvedProject, caseStudy } = resolveProjectBySlug(worksContent, caseStudies, slug);
   const project = cmsResolvedProject ?? getProjectByCaseStudySlug(slug);
-
-  useEffect(() => {
-    if (!project) return;
-    posthog?.capture("case_study_viewed", { project_slug: slug });
-  }, [slug]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!project || (caseStudy && !isCaseStudyPageVisible(caseStudy))) {
     return (

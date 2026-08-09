@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { usePostHog } from "@posthog/react";
 import { Link } from "react-router";
 import { ApolloLogo } from "../../components/ApolloLogo";
 import { DefaultLogo } from "../../components/DefaultLogo";
@@ -29,6 +30,8 @@ function CaseStudyHero({
   theme: SiteTheme;
   isDark: boolean;
 }) {
+  const posthog = usePostHog();
+
   return (
     <header className="flex max-w-[720px] flex-col gap-4 md:gap-5">
       <p className={`${SITE_FONT} ${t.muted} text-[12px] font-medium uppercase tracking-[0.12em]`}>
@@ -59,6 +62,11 @@ function CaseStudyHero({
             href={content.visitUrl}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() =>
+              posthog?.capture("case_study_website_clicked", {
+                project_slug: project.caseStudySlug,
+              })
+            }
             className={`${SITE_FONT} ${t.text} text-[13px] font-medium leading-[18px] underline underline-offset-2 transition-opacity hover:opacity-80`}
           >
             {content.visitLabel ?? "Visit site"} →
