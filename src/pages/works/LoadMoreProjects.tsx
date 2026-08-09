@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { usePostHog } from "@posthog/react";
 import type { WorksProject } from "../../content/worksPage";
 import { SitePrimaryButton } from "../../components/site/SiteButtons";
 import { getSiteTheme } from "../../components/site/siteTheme";
@@ -11,6 +12,7 @@ type LoadMoreProjectsProps = {
 };
 
 export function LoadMoreProjects({ isDark, projects, loadMoreBatch }: LoadMoreProjectsProps) {
+  const posthog = usePostHog();
   const t = getSiteTheme(isDark);
   const [visibleCount, setVisibleCount] = useState(0);
   const visibleProjects = projects.slice(0, visibleCount);
@@ -28,7 +30,13 @@ export function LoadMoreProjects({ isDark, projects, loadMoreBatch }: LoadMorePr
         <div className="flex justify-center pt-2">
           <SitePrimaryButton
             isDark={isDark}
-            onClick={() => setVisibleCount((count) => Math.min(count + loadMoreBatch, projects.length))}
+            onClick={() => {
+              const remainingProjects = projects.length - visibleCount;
+              posthog?.capture("works_projects_loaded", {
+                requested_count: Math.min(loadMoreBatch, remainingProjects),
+              });
+              setVisibleCount((count) => Math.min(count + loadMoreBatch, projects.length));
+            }}
           >
             Load more
           </SitePrimaryButton>
