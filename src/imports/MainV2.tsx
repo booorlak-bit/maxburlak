@@ -38,6 +38,7 @@ const PlaygroundView = lazyRoute("playground", "PlaygroundView");
 const VenturesPage = lazyRoute("ventures", "VenturesPage");
 const AboutPage = lazyRoute("about", "AboutPage");
 const PrivacyPage = lazyRoute("privacy", "PrivacyPage");
+const FaqPage = lazyRoute("faq", "FaqPage");
 
 const PlaygroundCanvas = lazy(() =>
   import("../playground/PlaygroundCanvas").then((m) => ({ default: m.PlaygroundCanvas })),
@@ -1596,6 +1597,11 @@ export default function MainV({
       ) : pathname === "/about" ? (
         <div className="flex w-full flex-col items-start">
           <AboutPage isDark={isDark} />
+          <SitePageEnd isDark={isDark} className="mt-12 w-full md:mt-16 lg:mt-[104px]" />
+        </div>
+      ) : pathname === "/faq" ? (
+        <div className="flex w-full flex-col items-start">
+          <FaqPage isDark={isDark} />
           <SitePageEnd isDark={isDark} className="mt-12 w-full md:mt-16 lg:mt-[104px]" />
         </div>
       ) : pathname === "/privacy" ? (

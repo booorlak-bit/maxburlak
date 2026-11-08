@@ -99,6 +99,7 @@ export const homePageQuery = `*[_type == "homePage"][0]{
 
 export const caseStudyFields = `
   _id,
+  _updatedAt,
   title,
   slug,
   client,
@@ -193,6 +194,7 @@ export const allCaseStudiesQuery = `*[_type == "caseStudy" && status != "draft"]
 
 export const feedPostFields = `
   _id,
+  _updatedAt,
   title,
   slug,
   publishedAt,

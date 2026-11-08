@@ -20,6 +20,7 @@ const loaders = {
   about: () => import("../pages/AboutPage"),
   playground: () => import("../pages/PlaygroundPage"),
   privacy: () => import("../pages/PrivacyPage"),
+  faq: () => import("../pages/FaqPage"),
 } satisfies Record<string, Loader>;
 
 type RouteKey = keyof typeof loaders;
@@ -42,6 +43,7 @@ export function routeKeyFor(pathname: string): RouteKey | null {
   if (path === "/about") return "about";
   if (path === "/playground") return "playground";
   if (path === "/privacy") return "privacy";
+  if (path === "/faq") return "faq";
   return null;
 }
 

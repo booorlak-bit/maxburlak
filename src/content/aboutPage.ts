@@ -87,7 +87,7 @@ export const ABOUT_CONNECT = {
   headline: "Connect",
   body: "Best way to reach me: email or DM.",
   contacts: [
-    { label: "Email", display: "booorlak@gmail.com", href: "mailto:booorlak@gmail.com" },
+    { label: "Email", display: "hey@maxburlak.com", href: "mailto:hey@maxburlak.com" },
     {
       label: "LinkedIn",
       display: "linkedin.com/in/maxburlak",

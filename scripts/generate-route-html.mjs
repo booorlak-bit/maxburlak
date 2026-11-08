@@ -1,21 +1,38 @@
+/**
+ * Post-build: prerender every route, then write the files search engines and
+ * LLM crawlers read — sitemap.xml, llms.txt, llms-full.txt, a .md twin of each
+ * page, JSON-LD per page — and ping IndexNow (Bing, Yandex, ...) on production.
+ *
+ * Data comes from the build-time CMS snapshot (scripts/fetch-cms.mjs), the same
+ * data the app renders, so HTML, markdown and structured data never disagree.
+ */
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, OG_IMAGE_URL, SITE_NAME, SITE_URL } from "../src/seo/site.ts";
+import { FAQ_DESCRIPTION, FAQ_TITLE } from "../src/content/faq.ts";
+import {
+  aboutMarkdown,
+  approachMarkdown,
+  caseStudyMarkdown,
+  faqMarkdown,
+  feedPostMarkdown,
+  homeMarkdown,
+  llmsTxt,
+  mdPath,
+  url as canonicalFor,
+  venturesMarkdown,
+  worksMarkdown,
+} from "./seo/markdown.mjs";
+import { caseStudyJsonLd, faqJsonLd, feedPostJsonLd, homeJsonLd, sectionJsonLd } from "./seo/jsonld.mjs";
 
-const SITE_URL = "https://maxburlak.com";
-const SITE_NAME = "Max Burlak";
 const DIST_DIR = "dist";
 const SSR_ENTRY = "dist-ssr/entry-server.js";
-
-const PROJECT_ID = process.env.VITE_SANITY_PROJECT_ID || "1r0eu2jx";
-const DATASET = process.env.VITE_SANITY_DATASET || "production";
-const API_VERSION = process.env.VITE_SANITY_API_VERSION || "2024-01-01";
-const READ_TOKEN = process.env.SANITY_API_READ_TOKEN || process.env.VITE_SANITY_API_READ_TOKEN || "";
-
-const DEFAULT_TITLE = "Max Burlak — AI-Driven Product Designer for B2B SaaS Founders";
-const DEFAULT_DESCRIPTION =
-  "Founding product designer (3×) helping B2B SaaS founders ship faster: activation, conversion, design systems, and AI-native workflows. 13+ years; Default, Apollo.io, and startups from 0 to $2.5M+ ARR.";
-const OG_IMAGE_URL = `${SITE_URL}/og-image.jpg`;
+const SNAPSHOT_FILE = "src/generated/cms-snapshot.json";
+const PROJECT_ID = process.env.SANITY_PROJECT_ID || process.env.VITE_SANITY_PROJECT_ID || "1r0eu2jx";
+const DATASET = process.env.SANITY_DATASET || process.env.VITE_SANITY_DATASET || "production";
+/** Public by design: IndexNow verifies ownership via /<key>.txt in public/. */
+const INDEXNOW_KEY = "2c70370b3b89df60037d5d29ce20bb5f";
 
 /** Static (non-CMS) routes. `index: false` keeps a route out of the sitemap. */
 const staticRoutes = [
@@ -68,6 +85,13 @@ const staticRoutes = [
     priority: "0.8",
   },
   {
+    route: "/faq",
+    title: FAQ_TITLE,
+    description: FAQ_DESCRIPTION,
+    changefreq: "monthly",
+    priority: "0.9",
+  },
+  {
     route: "/privacy",
     title: "Privacy policy — Max Burlak",
     description:
@@ -85,22 +109,6 @@ const staticRoutes = [
   },
 ];
 
-/** Used only when CMS is unreachable so the build never produces an empty sitemap. */
-const fallbackCaseStudies = [
-  { slug: "default", title: "Revenue operations platform for GTM teams" },
-  { slug: "apollo", title: "Design system unification" },
-  { slug: "p2p", title: "Crypto banking launch" },
-  { slug: "kinescope", title: "Video hosting platform redesign" },
-  { slug: "round-2", title: "Sneaker marketplace mobile app" },
-  { slug: "mid-tv", title: "Streaming and media product design" },
-  { slug: "rentor", title: "Rental product design" },
-];
-const fallbackFeedPosts = [
-  { slug: "design-process-you-learned-is-dead", title: "Design process you learned is dead" },
-  { slug: "chilling-in-big-apple", title: "Chilling in Big Apple" },
-  { slug: "10-books-product-designer-2026", title: "10 books for product designers in 2026" },
-];
-
 function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -109,156 +117,32 @@ function escapeHtml(value) {
     .replace(/>/g, "&gt;");
 }
 
-async function sanityFetch(query) {
-  if (!READ_TOKEN) return null;
-  const url = `https://${PROJECT_ID}.api.sanity.io/v${API_VERSION}/data/query/${DATASET}?perspective=published&query=${encodeURIComponent(
-    query,
-  )}`;
-  try {
-    const res = await fetch(url, { headers: { Authorization: `Bearer ${READ_TOKEN}` } });
-    if (!res.ok) throw new Error(`Sanity ${res.status}`);
-    const json = await res.json();
-    return json.result ?? null;
-  } catch (error) {
-    console.warn(`[seo] Sanity fetch failed, using fallback: ${error.message}`);
-    return null;
+/** Sanity image reference -> CDN URL (image-<id>-<w>x<h>-<ext>). */
+function sanityImageUrl(image) {
+  const ref = image?.asset?._ref;
+  const match = ref?.match(/^image-([a-f0-9]+)-(\d+x\d+)-(\w+)$/);
+  return match ? `https://cdn.sanity.io/images/${PROJECT_ID}/${DATASET}/${match[1]}-${match[2]}.${match[3]}` : null;
+}
+
+async function loadSnapshot() {
+  const snapshot = JSON.parse(await readFile(SNAPSHOT_FILE, "utf8"));
+  const caseStudies = (snapshot.caseStudies ?? [])
+    .filter((cs) => cs?.slug?.current && cs.showCaseStudyPage !== false)
+    .map((cs) => ({ ...cs, slug: cs.slug.current }));
+  const feedPosts = (snapshot.feedPosts ?? [])
+    .filter((post) => post?.slug?.current && post.status === "published")
+    .map((post) => ({ ...post, slug: post.slug.current }))
+    .sort((a, b) => String(b.publishedAt ?? "").localeCompare(String(a.publishedAt ?? "")));
+  return { caseStudies, feedPosts };
+}
+
+function firstFeedImage(post) {
+  for (const block of post.content ?? []) {
+    if (block._type === "feedImageBlock") return sanityImageUrl(block.image);
+    if (block._type === "feedGalleryBlock") return sanityImageUrl(block.images?.[0]?.image);
   }
+  return null;
 }
-
-async function loadCaseStudies() {
-  const result = await sanityFetch(
-    `*[_type=="caseStudy" && status!="draft" && showCaseStudyPage!=false]{
-      "slug": slug.current,
-      "title": coalesce(pageTitle, title),
-      "description": coalesce(lede, summary),
-      "ogImage": coalesce(coverImage.asset->url, heroImage.asset->url),
-      "headings": sections[].title,
-      "updated": _updatedAt
-    } | order(sortOrder asc)`,
-  );
-  const rows = (result ?? []).filter((row) => row?.slug);
-  if (rows.length > 0) return rows;
-  return fallbackCaseStudies;
-}
-
-async function loadFeedPosts() {
-  const result = await sanityFetch(
-    `*[_type=="feedPost" && status=="published"]{
-      "slug": slug.current,
-      "title": coalesce(seo.title, title),
-      "description": coalesce(seo.description, ""),
-      "ogImage": coalesce(seo.ogImage.asset->url, content[_type=="feedImageBlock"][0].image.asset->url, content[_type=="feedGalleryBlock"][0].images[0].image.asset->url),
-      "updated": coalesce(publishedAt, _updatedAt)
-    } | order(coalesce(publishedAt, _updatedAt) desc)`,
-  );
-  const rows = (result ?? []).filter((row) => row?.slug);
-  if (rows.length > 0) return rows;
-  return fallbackFeedPosts;
-}
-
-function canonicalFor(route) {
-  return route === "/" ? `${SITE_URL}/` : `${SITE_URL}${route}`;
-}
-
-function breadcrumbJsonLd(items) {
-  return {
-    "@type": "BreadcrumbList",
-    itemListElement: items.map((item, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      name: item.name,
-      item: item.url,
-    })),
-  };
-}
-
-function caseStudyJsonLd(page) {
-  const url = canonicalFor(page.route);
-  return JSON.stringify(
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "CreativeWork",
-          "@id": `${url}#case-study`,
-          name: page.rawTitle,
-          headline: page.rawTitle,
-          description: page.rawDescription,
-          url,
-          ...(page.ogImage ? { image: page.ogImage } : {}),
-          author: { "@type": "Person", name: SITE_NAME, url: `${SITE_URL}/` },
-          creator: { "@type": "Person", name: SITE_NAME, url: `${SITE_URL}/` },
-          isPartOf: { "@id": `${SITE_URL}/#website` },
-        },
-        breadcrumbJsonLd([
-          { name: "Home", url: `${SITE_URL}/` },
-          { name: "Works", url: `${SITE_URL}/works` },
-          { name: page.rawTitle, url },
-        ]),
-      ],
-    },
-    null,
-    2,
-  );
-}
-
-function feedPostJsonLd(page) {
-  const url = canonicalFor(page.route);
-  return JSON.stringify(
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "BlogPosting",
-          "@id": `${url}#post`,
-          headline: page.rawTitle,
-          description: page.rawDescription,
-          url,
-          ...(page.ogImage ? { image: page.ogImage } : {}),
-          ...(page.updated ? { datePublished: page.updated, dateModified: page.updated } : {}),
-          author: { "@type": "Person", name: SITE_NAME, url: `${SITE_URL}/` },
-          publisher: { "@id": `${SITE_URL}/#person` },
-          isPartOf: { "@id": `${SITE_URL}/#website` },
-          mainEntityOfPage: url,
-        },
-        breadcrumbJsonLd([
-          { name: "Home", url: `${SITE_URL}/` },
-          { name: "Feed", url: `${SITE_URL}/feed` },
-          { name: page.rawTitle, url },
-        ]),
-      ],
-    },
-    null,
-    2,
-  );
-}
-
-function sectionJsonLd(page) {
-  const url = canonicalFor(page.route);
-  return JSON.stringify(
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "WebPage",
-          "@id": `${url}#webpage`,
-          url,
-          name: page.rawTitle,
-          description: page.rawDescription,
-          isPartOf: { "@id": `${SITE_URL}/#website` },
-          about: { "@id": `${SITE_URL}/#person` },
-        },
-        breadcrumbJsonLd([
-          { name: "Home", url: `${SITE_URL}/` },
-          { name: page.rawTitle.replace(` — ${SITE_NAME}`, ""), url },
-        ]),
-      ],
-    },
-    null,
-    2,
-  );
-}
-
 
 function replaceTag(html, pattern, replacement, { required = true } = {}) {
   if (!pattern.test(html)) {
@@ -300,6 +184,13 @@ function applyMeta(html, page) {
       /<script type="application\/ld\+json">[\s\S]*?<\/script>/,
       `<script type="application/ld+json">\n${page.jsonLd}\n      </script>`,
       { required: false },
+    );
+  }
+
+  if (page.markdownPath) {
+    next = next.replace(
+      "</head>",
+      `  <link rel="alternate" type="text/markdown" href="${SITE_URL}${page.markdownPath}" title="Markdown version" />\n    </head>`,
     );
   }
 
@@ -346,10 +237,44 @@ function buildSitemap(pages) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
 }
 
+async function pingIndexNow(urls) {
+  if (process.env.VERCEL_ENV !== "production") return;
+  try {
+    const res = await fetch("https://api.indexnow.org/indexnow", {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify({
+        host: new URL(SITE_URL).host,
+        key: INDEXNOW_KEY,
+        keyLocation: `${SITE_URL}/${INDEXNOW_KEY}.txt`,
+        urlList: urls,
+      }),
+      signal: AbortSignal.timeout(8000),
+    });
+    console.log(`[seo] IndexNow: ${res.status} for ${urls.length} URL(s).`);
+  } catch (error) {
+    console.warn(`[seo] IndexNow ping failed (non-fatal): ${error.message}`);
+  }
+}
+
+async function writeText(relativePath, content) {
+  const file = path.join(DIST_DIR, ...relativePath.split("/").filter(Boolean));
+  await mkdir(path.dirname(file), { recursive: true });
+  await writeFile(file, content.endsWith("\n") ? content : `${content}\n`);
+}
+
 async function main() {
   const template = await readFile(path.join(DIST_DIR, "index.html"), "utf8");
+  const { caseStudies, feedPosts } = await loadSnapshot();
 
-  const [caseStudies, feedPosts] = await Promise.all([loadCaseStudies(), loadFeedPosts()]);
+  const staticMarkdown = {
+    "/": () => homeMarkdown(caseStudies),
+    "/works": () => worksMarkdown(caseStudies),
+    "/faq": faqMarkdown,
+    "/about": aboutMarkdown,
+    "/approach": approachMarkdown,
+    "/ventures": venturesMarkdown,
+  };
 
   const pages = [];
 
@@ -362,39 +287,50 @@ async function main() {
       priority: item.priority,
       index: item.index,
       noindex: item.noindex,
-      home: item.home,
+      crumb: item.title.split(" — ")[0],
     };
-    // Keep the rich home graph as-is; add WebPage+breadcrumb schema to other sections.
-    if (!item.home) page.jsonLd = sectionJsonLd(page);
+    if (item.home) page.jsonLd = homeJsonLd();
+    else if (item.route === "/faq") page.jsonLd = faqJsonLd(page);
+    else page.jsonLd = sectionJsonLd(page, { profile: item.route === "/about" });
+    const markdown = staticMarkdown[item.route];
+    if (markdown) {
+      page.markdownPath = mdPath(item.route);
+      page.markdown = markdown();
+    }
     pages.push(page);
   }
 
   for (const cs of caseStudies) {
+    const route = `/works/${cs.slug}`;
     const page = {
-      route: `/works/${cs.slug}`,
-      type: "caseStudy",
-      rawTitle: `${cs.title || "Case study"} — ${SITE_NAME}`,
-      rawDescription: cs.description || DEFAULT_DESCRIPTION,
-      ogImage: cs.ogImage || null,
-      headings: Array.isArray(cs.headings) ? cs.headings : [],
-      updated: cs.updated || null,
+      route,
+      rawTitle: `${cs.client}: ${cs.pageTitle || cs.headline || "Case study"} — ${SITE_NAME}`,
+      rawDescription: cs.lede || cs.summary || DEFAULT_DESCRIPTION,
+      ogImage: sanityImageUrl(cs.coverImage) || sanityImageUrl(cs.heroImage),
+      updated: cs._updatedAt || null,
       changefreq: "monthly",
       priority: "0.8",
+      markdownPath: mdPath(route),
+      markdown: caseStudyMarkdown(cs),
     };
-    page.jsonLd = caseStudyJsonLd(page);
+    page.jsonLd = caseStudyJsonLd(page, cs);
     pages.push(page);
   }
 
   for (const post of feedPosts) {
+    const route = `/feed/${post.slug}`;
     const page = {
-      route: `/feed/${post.slug}`,
+      route,
       type: "feed",
-      rawTitle: `${post.title || "Feed post"} — ${SITE_NAME}`,
-      rawDescription: post.description || "Notes, process, and updates from Max Burlak.",
-      ogImage: post.ogImage || null,
-      updated: post.updated || null,
+      rawTitle: `${post.seo?.title || post.title || "Feed post"} — ${SITE_NAME}`,
+      rawDescription: post.seo?.description || "Notes, process, and updates from Max Burlak.",
+      ogImage: sanityImageUrl(post.seo?.ogImage) || firstFeedImage(post),
+      published: post.publishedAt || null,
+      updated: post._updatedAt || post.publishedAt || null,
       changefreq: "monthly",
       priority: "0.7",
+      markdownPath: mdPath(route),
+      markdown: feedPostMarkdown(post),
     };
     page.jsonLd = feedPostJsonLd(page);
     pages.push(page);
@@ -408,6 +344,19 @@ async function main() {
 
   await Promise.all(pages.map((page) => writeRouteHtml(template, page)));
 
+  // Markdown twins + llms.txt / llms-full.txt for LLM crawlers.
+  const withMarkdown = pages.filter((page) => page.markdown);
+  await Promise.all(withMarkdown.map((page) => writeText(page.markdownPath, page.markdown)));
+  const updated = new Date().toISOString().slice(0, 10);
+  await writeText("llms.txt", llmsTxt({ caseStudies, feedPosts, updated }));
+  await writeText(
+    "llms-full.txt",
+    [
+      `# ${SITE_NAME} — full site content`,
+      `Generated ${updated} from ${SITE_URL}/. Index: ${SITE_URL}/llms.txt`,
+      ...withMarkdown.map((page) => page.markdown),
+    ].join("\n\n---\n\n"),
+  );
 
   // Native 404 page (Vercel serves this with a 404 status for unmatched paths).
   const notFound = applyMeta(template, {
@@ -421,11 +370,13 @@ async function main() {
 
   await writeFile(path.join(DIST_DIR, "sitemap.xml"), buildSitemap(pages));
 
-  const indexable = pages.filter((p) => p.index !== false).length;
+  const indexable = pages.filter((p) => p.index !== false);
   console.log(
-    `[seo] Prerendered ${pages.length} route(s) (${indexable} in sitemap) + 404.html. CMS: ${caseStudies.length} case studies, ${feedPosts.length} feed posts.`,
+    `[seo] Prerendered ${pages.length} route(s) (${indexable.length} in sitemap) + 404.html, ${withMarkdown.length} markdown pages, llms.txt, llms-full.txt. CMS: ${caseStudies.length} case studies, ${feedPosts.length} feed posts.`,
   );
   await rm("dist-ssr", { recursive: true, force: true });
+
+  await pingIndexNow(indexable.map((p) => canonicalFor(p.route)));
 }
 
 main().catch((error) => {
