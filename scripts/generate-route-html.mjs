@@ -1,38 +1,21 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
 const SITE_URL = "https://maxburlak.com";
 const SITE_NAME = "Max Burlak";
 const DIST_DIR = "dist";
+const SSR_ENTRY = "dist-ssr/entry-server.js";
 
 const PROJECT_ID = process.env.VITE_SANITY_PROJECT_ID || "1r0eu2jx";
 const DATASET = process.env.VITE_SANITY_DATASET || "production";
 const API_VERSION = process.env.VITE_SANITY_API_VERSION || "2024-01-01";
-const READ_TOKEN = process.env.VITE_SANITY_API_READ_TOKEN || "";
+const READ_TOKEN = process.env.SANITY_API_READ_TOKEN || process.env.VITE_SANITY_API_READ_TOKEN || "";
 
 const DEFAULT_TITLE = "Max Burlak — AI-Driven Product Designer for B2B SaaS Founders";
 const DEFAULT_DESCRIPTION =
   "Founding product designer (3×) helping B2B SaaS founders ship faster: activation, conversion, design systems, and AI-native workflows. 13+ years; Default, Apollo.io, and startups from 0 to $2.5M+ ARR.";
 const OG_IMAGE_URL = `${SITE_URL}/og-image.jpg`;
-
-const NAV_LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/works", label: "Works" },
-  { href: "/approach", label: "Approach" },
-  { href: "/ventures", label: "Ventures" },
-  { href: "/feed", label: "Feed" },
-  { href: "/about", label: "About" },
-];
-
-const EXTERNAL_LINKS = [
-  { href: "https://www.linkedin.com/in/maxburlak/", label: "LinkedIn" },
-  { href: "https://dribbble.com/maxburlak", label: "Dribbble" },
-  { href: "https://medium.com/@booorlak", label: "Medium" },
-  { href: "https://www.youtube.com/@heyhimaxo", label: "YouTube" },
-  { href: "https://www.instagram.com/multimaxo", label: "Instagram" },
-  { href: "https://cal.com/maxburlak/oppchat", label: "Book a call" },
-  { href: `${SITE_URL}/max-burlak-resume.pdf`, label: "Download CV" },
-];
 
 /** Static (non-CMS) routes. `index: false` keeps a route out of the sitemap. */
 const staticRoutes = [
@@ -80,9 +63,17 @@ const staticRoutes = [
     route: "/about",
     title: "About — Max Burlak",
     description:
-      "Max Burlak — product design lead and builder in Barcelona. 14+ years in B2B SaaS, 3x founding designer, ventures, consulting, and how he works.",
+      "Max Burlak — product design lead and builder in Barcelona. 13+ years in B2B SaaS, 3x founding designer, ventures, consulting, and how he works.",
     changefreq: "monthly",
     priority: "0.8",
+  },
+  {
+    route: "/privacy",
+    title: "Privacy policy — Max Burlak",
+    description:
+      "What data maxburlak.com collects, why, which services process it, and how to exercise your rights.",
+    changefreq: "yearly",
+    priority: "0.2",
   },
   {
     route: "/playground",
@@ -268,39 +259,6 @@ function sectionJsonLd(page) {
   );
 }
 
-function cleanHeading(title) {
-  return String(title ?? "").replace(new RegExp(`\\s*—\\s*${SITE_NAME}\\s*$`), "").trim();
-}
-
-function linkList(links) {
-  return links
-    .map((link) => `<li><a href="${escapeHtml(link.href)}">${escapeHtml(link.label)}</a></li>`)
-    .join("");
-}
-
-/**
- * Visually-hidden, crawler-readable fallback so non-JS bots (and SEO auditors)
- * see a real H1, headings, and an internal/external link graph. Removed by the
- * app on mount (see main.tsx) so it never duplicates the rendered DOM.
- */
-function buildSeoBlock(page, contentLinks) {
-  const h1 = escapeHtml(cleanHeading(page.rawTitle) || SITE_NAME);
-  const description = escapeHtml(page.rawDescription || DEFAULT_DESCRIPTION);
-  const headings = (page.headings ?? [])
-    .filter(Boolean)
-    .map((heading) => `<h2>${escapeHtml(heading)}</h2>`)
-    .join("");
-
-  return [
-    `<div id="seo-prerender" aria-hidden="true" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">`,
-    `<h1>${h1}</h1>`,
-    `<p>${description}</p>`,
-    headings,
-    `<nav aria-label="Site"><h2>Explore</h2><ul>${linkList(NAV_LINKS)}${linkList(contentLinks)}</ul></nav>`,
-    `<nav aria-label="Elsewhere"><h2>Elsewhere</h2><ul>${linkList(EXTERNAL_LINKS)}</ul></nav>`,
-    `</div>`,
-  ].join("");
-}
 
 function replaceTag(html, pattern, replacement, { required = true } = {}) {
   if (!pattern.test(html)) {
@@ -345,11 +303,11 @@ function applyMeta(html, page) {
     );
   }
 
-  if (page.seoBlock) {
+  if (page.markup) {
     next = replaceTag(
       next,
       /<div id="root"><\/div>/,
-      `${page.seoBlock}\n      <div id="root"></div>`,
+      `<div id="root" data-prerender-theme="light">${page.markup}</div>`,
     );
   }
 
@@ -442,32 +400,14 @@ async function main() {
     pages.push(page);
   }
 
-  // Internal link graph (case study + feed routes) added to every page's SEO block.
-  const contentLinks = pages
-    .filter((page) => page.type === "caseStudy" || page.type === "feed")
-    .map((page) => ({
-      href: page.route,
-      label: cleanHeading(page.rawTitle) || page.route,
-    }));
-
+  // Real prerender: render each route with the SSR build of the app.
+  const { render } = await import(pathToFileURL(path.resolve(SSR_ENTRY)).href);
   for (const page of pages) {
-    page.seoBlock = buildSeoBlock(page, contentLinks);
+    page.markup = await render(page.route);
   }
 
   await Promise.all(pages.map((page) => writeRouteHtml(template, page)));
 
-  // noindex SPA fallback shell for any non-prerendered / unknown path.
-  const appShell = applyMeta(template, {
-    route: "/app",
-    rawTitle: DEFAULT_TITLE,
-    rawDescription: DEFAULT_DESCRIPTION,
-    noindex: true,
-    seoBlock: buildSeoBlock({ rawTitle: DEFAULT_TITLE, rawDescription: DEFAULT_DESCRIPTION }, contentLinks),
-  }).replace(
-    /<link rel="canonical" href="[^"]*" \/>\s*/,
-    "",
-  );
-  await writeFile(path.join(DIST_DIR, "app.html"), appShell);
 
   // Native 404 page (Vercel serves this with a 404 status for unmatched paths).
   const notFound = applyMeta(template, {
@@ -475,7 +415,7 @@ async function main() {
     rawTitle: `Page not found — ${SITE_NAME}`,
     rawDescription: "This page could not be found.",
     noindex: true,
-    seoBlock: buildSeoBlock({ rawTitle: `Page not found — ${SITE_NAME}`, rawDescription: "This page could not be found." }, contentLinks),
+    markup: await render("/404"),
   }).replace(/<link rel="canonical" href="[^"]*" \/>\s*/, "");
   await writeFile(path.join(DIST_DIR, "404.html"), notFound);
 
@@ -483,8 +423,9 @@ async function main() {
 
   const indexable = pages.filter((p) => p.index !== false).length;
   console.log(
-    `[seo] Generated ${pages.length} route(s) (${indexable} in sitemap), app.html, 404.html. CMS: ${caseStudies.length} case studies, ${feedPosts.length} feed posts.`,
+    `[seo] Prerendered ${pages.length} route(s) (${indexable} in sitemap) + 404.html. CMS: ${caseStudies.length} case studies, ${feedPosts.length} feed posts.`,
   );
+  await rm("dist-ssr", { recursive: true, force: true });
 }
 
 main().catch((error) => {

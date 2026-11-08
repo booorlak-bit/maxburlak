@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
-import { usePostHog } from "@posthog/react";
+import { usePostHog } from "../analytics/posthog";
 import { motion } from "motion/react";
 import { Stories } from "../components/Stories";
 import { CareerPath } from "../components/CareerPath";
@@ -11,16 +11,10 @@ import { KinescopeLogo } from "../components/KinescopeLogo";
 import { P2pValidatorLogo } from "../components/P2pValidatorLogo";
 import { WorkedWithSection } from "../components/WorkedWithSection";
 import { SitePageEnd } from "../components/layout/SitePageEnd";
-import { Link, Navigate, NavLink, useLocation, useSearchParams } from "react-router";
+import { Link, NavLink, useLocation, useSearchParams } from "react-router";
 import { isAllowedPath, NAV_ROUTES, parseFeedPostSlug, parseWorksCaseStudySlug, placeholderTitleForPath } from "../nav/routes";
-import { ApproachPage } from "../pages/ApproachPage";
-import { FeedPage } from "../pages/feed/FeedPage";
-import { FeedPostPage } from "../pages/feed/FeedPostPage";
-import { ProjectCaseStudyPage, WorksPage } from "../pages/WorksPage";
-import { PlaygroundEmbed, PlaygroundView } from "../pages/PlaygroundPage";
+import { lazyRoute } from "../app/routeModules";
 import { TabEmptyState } from "../pages/TabEmptyState";
-import { VenturesPage } from "../pages/VenturesPage";
-import { AboutPage } from "../pages/AboutPage";
 import { LoopFlowDiagram } from "../components/LoopFlowDiagram";
 import { PortfolioImage } from "../components/PortfolioImage";
 import {
@@ -33,6 +27,17 @@ import { HomeSection } from "../sanity/HomeSection";
 import { SitePageLayout } from "../components/layout/SitePageLayout";
 import { SiteGhostLink } from "../components/site/SiteButtons";
 import { FliqMarkIcon, OrganicaaaMarkIcon, PinnboardsMarkIcon } from "../components/ventureMarkIcons";
+
+const ApproachPage = lazyRoute("approach", "ApproachPage");
+const FeedPage = lazyRoute("feed", "FeedPage");
+const FeedPostPage = lazyRoute("feedPost", "FeedPostPage");
+const WorksPage = lazyRoute("works", "WorksPage");
+const ProjectCaseStudyPage = lazyRoute("works", "ProjectCaseStudyPage");
+const PlaygroundEmbed = lazyRoute("playground", "PlaygroundEmbed");
+const PlaygroundView = lazyRoute("playground", "PlaygroundView");
+const VenturesPage = lazyRoute("ventures", "VenturesPage");
+const AboutPage = lazyRoute("about", "AboutPage");
+const PrivacyPage = lazyRoute("privacy", "PrivacyPage");
 
 const PlaygroundCanvas = lazy(() =>
   import("../playground/PlaygroundCanvas").then((m) => ({ default: m.PlaygroundCanvas })),
@@ -269,12 +274,14 @@ export default function MainV({
   const phTitle = placeholderTitleForPath(pathname);
   const worksCaseStudySlug = parseWorksCaseStudySlug(pathname);
   const feedPostSlug = parseFeedPostSlug(pathname);
-  if (!isAllowedPath(pathname)) {
-    return <Navigate to="/" replace />;
-  }
+  const isNotFound = !isAllowedPath(pathname);
 
   if (pathname === "/playground" && searchParams.get("embed") === "1") {
-    return <PlaygroundEmbed isDark={isDark} />;
+    return (
+      <Suspense fallback={null}>
+        <PlaygroundEmbed isDark={isDark} />
+      </Suspense>
+    );
   }
 
   return (
@@ -295,6 +302,7 @@ export default function MainV({
         tabIndex={-1}
         className={isPlaygroundPage ? "flex min-h-0 w-full flex-1 flex-col" : "w-full"}
       >
+      <Suspense fallback={<div className="min-h-[100svh] w-full" />}>
       {pathname === "/" ? (
       <SitePageLayout
         isDark={isDark}
@@ -307,15 +315,15 @@ export default function MainV({
             <HomeSection id="heroImage" className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
               <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_280px] grid-rows-[repeat(1,fit-content(100%))] relative shrink-0 w-full">
                 <HeroImage className="aspect-[765/1026] h-auto w-full max-w-full justify-self-stretch col-1 relative row-1 shrink-0 overflow-hidden lg:w-[min(100%,calc(1000px*765/1026))] lg:max-w-[min(100%,calc(1000px*765/1026))] lg:justify-self-start" />
-                <p className={`hidden lg:block col-2 font-['Switzer_Variable:Regular',sans-serif] font-light leading-[20px] opacity-0 relative row-1 self-start shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[14px] whitespace-pre-wrap`}>{"Outside of my daily routine and outside a father duties, I\u2019m  travelling, skiing, scuba diving,  riding a bike, DJing, taking some cool photos with my pocket Ricoh GR lV and videos with Insta360 X5."}</p>
+                <p className={`hidden lg:block col-2 font-['Switzer_Variable:Regular',sans-serif] font-light leading-[20px] opacity-0 relative row-1 self-start shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[14px] whitespace-pre-wrap`}>{"Outside of work and being a dad, I\u2019m traveling, skiing, scuba diving, riding a bike, DJing, taking photos with my pocket Ricoh GR IV and videos with Insta360 X5."}</p>
               </div>
               <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-rows-[repeat(1,fit-content(100%))] relative shrink-0 w-full">
                 <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-light justify-self-stretch leading-[0] relative row-1 self-start shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] whitespace-pre-wrap`}>
-                  <span className="font-light leading-[20px]">{`Outside his daily routine and outside a father duties, Max is  traveling, skiing, scuba diving,  riding a bike, `}</span>
+                  <span className="font-light leading-[20px]">{`Outside of work and being a dad, I’m traveling, skiing, scuba diving, riding a bike, `}</span>
                   <a href="https://www.youtube.com/@heyhimaxo" target="_blank" rel="noopener noreferrer" className={`text-inherit [text-decoration-skip-ink:none] decoration-solid leading-[20px] underline cursor-pointer transition-colors duration-200 ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>DJing</a>
-                  <span className="leading-[20px]">{`, taking some `}</span>
+                  <span className="leading-[20px]">{`, taking `}</span>
                   <a href="https://www.instagram.com/multimaxo" target="_blank" rel="noopener noreferrer" className={`text-inherit [text-decoration-skip-ink:none] decoration-solid leading-[20px] underline cursor-pointer transition-colors duration-200 ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>cool photos</a>
-                  <span className="leading-[20px]">{` with his pocket Ricoh GR lV and `}</span>
+                  <span className="leading-[20px]">{` with my pocket Ricoh GR IV and `}</span>
                   <a href="https://www.tiktok.com/@alwaysixteen?_r=1&_t=ZS-96UqCutmwTf" target="_blank" rel="noopener noreferrer" className={`text-inherit [text-decoration-skip-ink:none] decoration-solid leading-[20px] underline cursor-pointer transition-colors duration-200 ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>videos</a>
                   <span className="leading-[20px]">{` with Insta360 X5.`}</span>
                 </p>
@@ -323,10 +331,10 @@ export default function MainV({
             </HomeSection>
             <HomeSection id="designPhilosophy" className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
               <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 lg:grid-cols-2 grid-rows-[repeat(1,fit-content(100%))] relative shrink-0 w-full">
-                <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-medium justify-self-stretch leading-[36px] relative row-1 self-start shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[25px] tracking-[-0.2px]`}>His design philosophy</p>
+                <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-medium justify-self-stretch leading-[36px] relative row-1 self-start shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[25px] tracking-[-0.2px]`}>My design philosophy</p>
               </div>
               <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 lg:grid-cols-2 grid-rows-[repeat(1,fit-content(100%))] relative shrink-0 w-full">
-                <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-light justify-self-stretch leading-[18px] relative row-1 self-start shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px]`}>Max believes in empathy-driven design that bridges user needs with business objectives. His approach combines data-driven insights with human-centered design principles to create solutions that are both meaningful and measurable.</p>
+                <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-light justify-self-stretch leading-[18px] relative row-1 self-start shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px]`}>I believe in empathy-driven design that bridges user needs with business objectives. My approach combines data-driven insights with human-centered design principles to create solutions that are both meaningful and measurable.</p>
               </div>
             </HomeSection>
             <HomeSection id="focusOutcomes" className="content-stretch flex flex-col items-start relative shrink-0 w-full">
@@ -341,7 +349,7 @@ export default function MainV({
                         <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-white' : 'bg-black'} inset-0 pointer-events-none rounded-[1000px] transition-all duration-200`} />
                         <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.09)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_1px_1px_0px_rgba(0,0,0,0.03)]" />
                         <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
-                          <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative shrink-0 text-[13px] ${isDark ? 'text-[#0a0c11]' : 'text-white'} whitespace-nowrap`}>Grab 30 mins</p>
+                          <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative shrink-0 text-[13px] ${isDark ? 'text-[#0a0c11]' : 'text-white'} whitespace-nowrap`}>Book a call</p>
                         </div>
                         <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="Right_md">
                           <div className="relative shrink-0 size-[18px]" data-name="icons / google meet">
@@ -441,7 +449,7 @@ export default function MainV({
                               <p className={`font-medium leading-[36px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[32px] tracking-[-0.2px] w-full`}>1.8×</p>
                               <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
                                 <p className={`font-medium leading-[24px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[18px] w-full`}>Dev Velocity</p>
-                                <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Design-system adoption (tokens + kits) increased throughpu</p>
+                                <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Design-system adoption (tokens + kits) increased throughput</p>
                               </div>
                             </div>
                             <div className="flex min-w-0 flex-col gap-4 items-start py-10 last:pb-6 sm:py-0">
@@ -490,12 +498,12 @@ export default function MainV({
                 </div>
                 <div className="relative z-10 w-full shrink-0 px-4 pt-8 sm:px-8 sm:pt-10 md:px-12 md:pt-12 lg:px-16 xl:px-[80px]">
                   <div className="relative aspect-[4096/2592] w-full overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-[1.02] md:mx-auto md:max-h-[min(55vh,792px)]" data-name="image 17">
-                    <PortfolioImage alt="" className="pointer-events-none absolute inset-0 size-full object-cover object-top" src={imgImage17} />
+                    <PortfolioImage alt="Default.com workflow builder screens" className="pointer-events-none absolute inset-0 size-full object-cover object-top" src={imgImage17} />
                   </div>
                 </div>
                 <div className="relative z-10 flex w-full shrink-0 items-center justify-center px-4 pb-10 pt-8 sm:px-6 sm:pb-16 sm:pt-10 md:pb-24 lg:pb-[120px]">
                   <div className="flex flex-col gap-2 sm:gap-[8px] items-center relative shrink-0 w-full max-w-[446px] mx-auto">
-                    <p className="font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 text-[13px] text-[rgba(255,255,255,0.88)] text-center text-balance">Default · B2B SaaS · 2023-2026</p>
+                    <p className="font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 text-[13px] text-[rgba(255,255,255,0.88)] text-center text-balance">Default · B2B SaaS · 2023–2026</p>
                     <div className="content-stretch flex flex-col gap-[20px] items-center relative shrink-0 w-full">
                       <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
                         <div className="content-stretch flex items-center relative shrink-0 w-full">
@@ -557,8 +565,8 @@ export default function MainV({
                                         <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Satisfaction</p>
                                       </div>
                                       <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
-                                        <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>x4</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>ARR Impact</p>
+                                        <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>3</p>
+                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Iterations</p>
                                       </div>
                                     </div>
                                   </div>
@@ -582,7 +590,7 @@ export default function MainV({
                     <div className={`${isDark ? 'bg-[rgba(255,255,255,0.1)]' : 'bg-[rgba(242,242,244,0.8)]'} transition-colors duration-700 content-stretch flex h-[24px] items-center justify-center px-[6px] py-[4px] relative rounded-[6px] shrink-0`} data-name="Chip">
                       <div aria-hidden="true" className="absolute border-0 border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none rounded-[6px]" />
                       <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap">
-                        <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[14px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[12px] whitespace-nowrap`}>2022 — 2026</p>
+                        <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[14px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[12px] whitespace-nowrap`}>2023 — 2026</p>
                       </div>
                     </div>
                   </div>
@@ -596,12 +604,12 @@ export default function MainV({
                 </div>
                 <div className="relative z-10 w-full shrink-0 px-4 pt-8 sm:px-6 sm:pt-10 md:px-10 md:pt-12 lg:px-12 xl:px-[48px]">
                   <div className="relative aspect-[3714/2493] w-full overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-[1.02] md:mx-auto md:max-h-[min(55vh,792px)]" data-name="image 15">
-                    <PortfolioImage alt="" className="pointer-events-none absolute inset-0 size-full object-cover object-top" src={imgImage15} />
+                    <PortfolioImage alt="Default.com records and pipeline views" className="pointer-events-none absolute inset-0 size-full object-cover object-top" src={imgImage15} />
                   </div>
                 </div>
                 <div className="relative z-10 flex w-full shrink-0 items-center justify-center px-4 pb-10 pt-8 sm:px-6 sm:pb-16 sm:pt-10 md:pb-24 lg:pb-[120px]">
                   <div className="flex flex-col gap-2 sm:gap-[8px] items-center relative shrink-0 w-full max-w-[446px] mx-auto">
-                    <p className="font-['Open_Sauce_Two:Regular',sans-serif] font-light leading-[18px] not-italic relative shrink-0 text-[13px] text-[rgba(255,255,255,0.88)] text-center text-balance">Default · B2B SaaS · 2023-2026</p>
+                    <p className="font-['Open_Sauce_Two:Regular',sans-serif] font-light leading-[18px] not-italic relative shrink-0 text-[13px] text-[rgba(255,255,255,0.88)] text-center text-balance">Default · B2B SaaS · 2023–2026</p>
                     <div className="content-stretch flex flex-col gap-[20px] items-center relative shrink-0 w-full">
                       <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
                         <div className="content-stretch flex items-center relative shrink-0 w-full">
@@ -656,7 +664,7 @@ export default function MainV({
                                     <div className="bg-clip-padding border-0 border-[transparent] border-solid flex flex-wrap font-['Switzer_Variable:Regular',sans-serif] gap-4 sm:gap-6 md:gap-[24px] items-center justify-center relative w-full text-center">
                                       <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                         <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>+34%</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Conversion</p>
+                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Trial→Paid</p>
                                       </div>
                                       <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                         <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>1.8×</p>
@@ -693,19 +701,19 @@ export default function MainV({
                 </div>
                 <div className="relative z-10 w-full shrink-0 px-4 pt-8 sm:px-8 sm:pt-10 md:px-12 md:pt-12 lg:px-14 xl:px-[72px]">
                   <div className="relative aspect-[4096/2592] w-full overflow-hidden shadow-[0px_16px_52.5px_0px_rgba(0,0,0,0.03),0px_9.432px_30.949px_0px_rgba(0,0,0,0.04)] cursor-pointer transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl md:mx-auto md:max-h-[min(55vh,792px)]" data-name="image 10">
-                    <PortfolioImage alt="" className="pointer-events-none absolute inset-0 size-full object-cover object-top" src={imgImage10} />
+                    <PortfolioImage alt="Apollo.io data quality feature screens" className="pointer-events-none absolute inset-0 size-full object-cover object-top" src={imgImage10} />
                   </div>
                 </div>
                 <div className="relative z-10 flex w-full shrink-0 items-center justify-center px-4 pb-10 pt-8 sm:px-6 sm:pb-16 sm:pt-10 md:pb-24 lg:pb-[120px]">
                   <div className="flex flex-col gap-2 sm:gap-[8px] items-center relative shrink-0 w-full max-w-[446px] mx-auto">
-                    <p className="font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 text-[13px] text-[rgba(255,255,255,0.88)] text-center text-balance">Apollo.io· B2B · SaaS · 2020-2022</p>
+                    <p className="font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 text-[13px] text-[rgba(255,255,255,0.88)] text-center text-balance">Apollo.io · B2B SaaS · 2021–2023</p>
                     <div className="content-stretch flex flex-col gap-[20px] items-center relative shrink-0 w-full">
                       <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
                         <div className="content-stretch flex items-center relative shrink-0 w-full">
                           <p className="flex-[1_0_0] font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[1.25] sm:leading-[36px] min-h-px min-w-px relative text-[22px] sm:text-[25px] text-center text-white tracking-[-0.2px] text-balance">Started as a small question about data quality, ended as a separate team project.</p>
                         </div>
                         <div className="content-stretch flex items-start relative shrink-0 w-full">
-                          <p className="flex-[1_0_0] font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] min-h-px min-w-px relative text-[13px] text-center text-white">Was working on small task, detected signals about functionality extension and as a result small initiative has been converted into the fully loaded product squad and separate product feature.</p>
+                          <p className="flex-[1_0_0] font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] min-h-px min-w-px relative text-[13px] text-center text-white">I picked up a small task, spotted signals that the functionality needed to expand, and turned a small initiative into a fully staffed product squad and a standalone feature.</p>
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-2 sm:gap-[8px] items-center justify-center relative shrink-0 w-full">
@@ -790,19 +798,19 @@ export default function MainV({
                 </div>
                 <div className="relative z-10 w-full shrink-0 px-4 pt-8 sm:px-8 sm:pt-10 md:px-12 md:pt-12 lg:px-14 xl:px-[72px]">
                   <div className="relative aspect-[4096/2592] w-full overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-[1.02] md:mx-auto md:max-h-[min(55vh,792px)]" data-name="image 349">
-                    <PortfolioImage alt="Default.com crowdfunding product screens" className="pointer-events-none absolute inset-0 size-full object-cover object-top" src={imgImage349} width={4096} height={2592} />
+                    <PortfolioImage alt="Crowdfunding platform screens (NDA project)" className="pointer-events-none absolute inset-0 size-full object-cover object-top" src={imgImage349} width={4096} height={2592} />
                   </div>
                 </div>
                 <div className="relative z-10 flex w-full shrink-0 items-center justify-center px-4 pb-10 pt-8 sm:px-6 sm:pb-16 sm:pt-10 md:pb-24 lg:pb-[120px]">
                   <div className="flex flex-col gap-2 sm:gap-[8px] items-center relative shrink-0 w-full max-w-[446px] mx-auto">
-                    <p className="font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 text-[13px] text-[rgba(255,255,255,0.88)] text-center text-balance">NDA Project · B2C · B2B · SaaS · 2020-2021</p>
+                    <p className="font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 text-[13px] text-[rgba(255,255,255,0.88)] text-center text-balance">NDA Project · B2C · B2B SaaS · 2020–2021</p>
                     <div className="content-stretch flex flex-col gap-[20px] items-center relative shrink-0 w-full">
                       <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
                         <div className="content-stretch flex items-center relative shrink-0 w-full">
-                          <p className="flex-[1_0_0] font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[1.25] sm:leading-[36px] min-h-px min-w-px relative text-[22px] sm:text-[25px] text-center text-white tracking-[-0.2px] text-balance whitespace-pre-wrap">{`250+ screens, 4 user roles, less than 6 months for re-shaping the  crowdfunding experience`}</p>
+                          <p className="flex-[1_0_0] font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[1.25] sm:leading-[36px] min-h-px min-w-px relative text-[22px] sm:text-[25px] text-center text-white tracking-[-0.2px] text-balance whitespace-pre-wrap">{`250+ screens, 4 user roles, under 6 months to reshape the crowdfunding experience`}</p>
                         </div>
                         <div className="content-stretch flex items-start relative shrink-0 w-full">
-                          <p className="flex-[1_0_0] font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] min-h-px min-w-px relative text-[13px] text-center text-white">Led the product design, re-shaped the way people support people, created more than 250 frames for 4 main user roles.</p>
+                          <p className="flex-[1_0_0] font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] min-h-px min-w-px relative text-[13px] text-center text-white">Led the product design, reshaped the way people support people, created more than 250 frames for 4 main user roles.</p>
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-2 sm:gap-[8px] items-center justify-center relative shrink-0 w-full">
@@ -858,7 +866,7 @@ export default function MainV({
                                           <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Roles</p>
                                         </div>
                                         <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
-                                          <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>{`>6`}</p>
+                                          <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>{`<6`}</p>
                                           <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Months</p>
                                         </div>
                                       </div>
@@ -867,7 +875,7 @@ export default function MainV({
                                 </div>
                               </div>
                             </div>
-                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[16px] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>{`Trade-offs: hypotheses based, sacrified crypto-direction, gamification & achievements.`}</p>
+                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[16px] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>{`Trade-offs: hypothesis-driven scope; dropped the crypto direction, gamification and achievements.`}</p>
                             <SiteGhostLink isDark={isDark} to={homeSelectedWorkPaths[3]} size="xs" icon="arrow">
                               View case study
                             </SiteGhostLink>
@@ -897,8 +905,8 @@ export default function MainV({
                     <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 lg:grid-cols-1 lg:grid-cols-2 p-[20px] md:p-[32px] relative w-full">
                       <div className="content-stretch flex flex-col gap-[20px] items-start justify-self-stretch relative self-start shrink-0 w-full">
                         <div className="content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] gap-[8px] items-start relative shrink-0 w-full">
-                          <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px] w-full`}>There are 40+ projects completed, to see some of them you can visit my Dribbble profile or go to the Playground where you will find unreleased conceptions or ideas visualization</p>
-                          <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>There is an opportunity to make quick concepts by request is you want to validate your idea not only with AI but with real users as well.</p>
+                          <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px] w-full`}>40+ projects shipped. See more on my Dribbble or in the Playground, where I keep unreleased concepts and idea visualizations.</p>
+                          <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Want to validate an idea with real users, not just AI? I can turn it into a quick concept.</p>
                         </div>
                         <div className="content-stretch flex items-center relative shrink-0 w-full">
                           <Link to="/playground" className="content-stretch flex gap-[2px] h-[44px] min-h-[44px] items-center justify-center px-[10px] py-[4px] relative rounded-[1000px] shrink-0 no-underline" data-name="Button">
@@ -1015,7 +1023,7 @@ export default function MainV({
                 <div className="content-stretch box-border mx-auto flex w-full min-w-0 max-w-[530px] flex-col gap-10 md:gap-[64px] items-start px-4 md:px-6 relative shrink-0">
                   <div className="content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] gap-[8px] items-start relative shrink-0 w-full">
                     <p className={`font-medium leading-[36px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[25px] tracking-[-0.2px] w-full`}>{`Companies aren't hiring "designers." They're hiring people who reduce chaos.`}</p>
-                    <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>{`Max’s methodology isn't about perfect artifacts. It's about driving clarity in complex environments and shipping outcomes that matter. From discovery to strategy to execution.`}</p>
+                    <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>{`My methodology isn't about perfect artifacts. It's about driving clarity in complex environments and shipping outcomes that matter. From discovery to strategy to execution.`}</p>
                   </div>
                   <div className="content-stretch flex flex-col gap-[24px] items-start relative shrink-0 w-full" data-name="Container">
                     <div className="relative shrink-0 w-full" data-name="Container">
@@ -1031,7 +1039,7 @@ export default function MainV({
                         </div>
                         <div className="flex-[1_0_0] min-h-px min-w-px relative">
                           <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] gap-[4px] items-center justify-center leading-[18px] relative size-full text-[13px]">
-                            <p className={`font-normal text-[15px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 w-full`}>Can Max ship when the brief changes?</p>
+                            <p className={`font-normal text-[15px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 w-full`}>Can you ship when the brief changes?</p>
                             <p className={`font-light relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 w-full`}>Yes. Recent project pivoted scope 3 weeks before launch. Shipped anyway.</p>
                           </div>
                         </div>
@@ -1050,7 +1058,7 @@ export default function MainV({
                         </div>
                         <div className="flex-[1_0_0] min-h-px min-w-px relative">
                           <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] gap-[4px] items-center justify-center leading-[18px] relative size-full text-[13px]">
-                            <p className={`font-normal text-[15px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 w-full`}>Can Max explain tradeoffs without perfect research?</p>
+                            <p className={`font-normal text-[15px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 w-full`}>Can you explain trade-offs without perfect research?</p>
                             <p className={`font-light relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 w-full`}>Went from 4 syncs/week to 1 at Apollo. Decision memos replaced status updates.</p>
                           </div>
                         </div>
@@ -1069,8 +1077,8 @@ export default function MainV({
                         </div>
                         <div className="flex-[1_0_0] min-h-px min-w-px relative">
                           <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] gap-[4px] items-center justify-center leading-[18px] relative size-full text-[13px]">
-                            <p className={`font-normal text-[15px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 w-full`}>Can Max reduce alignment meetings?</p>
-                            <p className={`font-light relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 w-full`}>{`Yes. Here's a decision memo I wrote with 48 hours notice and zero user data.`}</p>
+                            <p className={`font-normal text-[15px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 w-full`}>Can you reduce alignment meetings?</p>
+                            <p className={`font-light relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 w-full`}>{`Yes. Here's a decision memo I wrote with 48 hours’ notice and zero user data.`}</p>
                           </div>
                         </div>
                       </div>
@@ -1105,7 +1113,7 @@ export default function MainV({
                             </div>
                           </div>
                         </div>
-                        <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-[#b8bcc4]" : "text-[#6b7280]"}`}>MaxI believes in expert multiplication with AI, not replacement</p>
+                        <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[16px] relative shrink-0 text-[12px] whitespace-nowrap ${isDark ? "text-[#b8bcc4]" : "text-[#6b7280]"}`}>I believe in expert multiplication with AI, not replacement</p>
                       </div>
                     </div>
                   </div>
@@ -1128,7 +1136,7 @@ export default function MainV({
                           <div className="relative flex h-full min-h-0 w-full flex-1 flex-col gap-[24px] md:gap-[32px] items-stretch pb-[24px] md:pb-[32px] pt-[32px] md:pt-[48px] px-[16px] md:px-[32px]">
                             <div className="content-stretch flex gap-[16px] items-center relative shrink-0 w-full">
                               <div className="relative shrink-0 size-[56px]" data-name="Images">
-                                <PortfolioImage alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImages2} />
+                                <PortfolioImage alt="Multiplier model: human strategy with AI execution" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImages2} />
                               </div>
                               <div className="content-stretch flex flex-[1_0_0] flex-col items-start min-h-px min-w-px relative">
                                 <div className="content-stretch flex flex-col items-start relative shrink-0 w-full">
@@ -1166,7 +1174,7 @@ export default function MainV({
                                           <div className="content-stretch flex items-center relative shrink-0 w-full" data-name="Heading_top">
                                             <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[20px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[15px] whitespace-nowrap`}>Best for:</p>
                                           </div>
-                                          <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Embedded roles, complex stakeholder environments, team leadership</p>
+                                          <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Teams with clear direction needing faster execution</p>
                                         </div>
                                       </div>
                                     </div>
@@ -1181,7 +1189,7 @@ export default function MainV({
                           <div className="relative flex h-full min-h-0 w-full flex-1 flex-col gap-[24px] md:gap-[32px] items-stretch pb-[24px] md:pb-[32px] pt-[32px] md:pt-[48px] px-[16px] md:px-[32px]">
                             <div className="content-stretch flex shrink-0 gap-[16px] items-center relative w-full">
                               <div className="relative shrink-0 size-[56px]" data-name="Images">
-                                <PortfolioImage alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImages3} />
+                                <PortfolioImage alt="Loop model: prompt, generate, judge, refine, ship" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImages3} />
                               </div>
                               <div className="content-stretch flex flex-[1_0_0] flex-col items-start min-h-px min-w-px relative">
                                 <div className="content-stretch flex flex-col items-start relative shrink-0 w-full">
@@ -1210,7 +1218,7 @@ export default function MainV({
                                           <div className="content-stretch flex items-center relative shrink-0 w-full" data-name="Heading_top">
                                             <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[20px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[15px] whitespace-nowrap`}>Best for:</p>
                                           </div>
-                                          <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Embedded roles, complex stakeholder environments, team leadership</p>
+                                          <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>0→1 products, unclear problem spaces, rapid validation</p>
                                         </div>
                                       </div>
                                     </div>
@@ -1260,7 +1268,7 @@ export default function MainV({
             <HomeSection id="ventures" className="relative z-10 mt-6 flex w-full min-w-0 flex-col gap-8 md:mt-10 md:gap-[32px] items-start">
               <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
                 <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 lg:grid-cols-2 grid-rows-[repeat(1,fit-content(100%))] relative shrink-0 w-full">
-                  <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-medium justify-self-stretch leading-[36px] relative row-1 self-start shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[25px] tracking-[-0.2px]`}>Products Max is building</p>
+                  <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-medium justify-self-stretch leading-[36px] relative row-1 self-start shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[25px] tracking-[-0.2px]`}>Products I’m building</p>
                 </div>
                 <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 lg:grid-cols-2 grid-rows-[repeat(1,fit-content(100%))] relative shrink-0 w-full">
                   <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-light justify-self-stretch leading-[18px] relative row-1 self-start shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px]`}>Tools I build to keep my instincts sharp. Each started as a problem I faced.</p>
@@ -1302,7 +1310,7 @@ export default function MainV({
                             <p className={`font-['Switzer_Variable:Medium',sans-serif] font-medium leading-[18px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[15px] w-full`}>Fliq. Match. Meet. Launch.</p>
                             <div className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[0] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full whitespace-pre-wrap`}>
                               <p className="leading-[18px] mb-0">{`Start-up market and networking simplification. `}</p>
-                              <p className="leading-[18px]">Can it be new Linkedin?</p>
+                              <p className="leading-[18px]">Could it be the new LinkedIn?</p>
                             </div>
                             <div className={`backdrop-blur-[12px] ${isDark ? "bg-[#2a2a2a]" : "bg-[rgba(0,0,0,0.03)]"} transition-colors duration-700 relative rounded-[28px] shrink-0 w-full`} data-name="Alert">
                               <div className="flex flex-col items-stretch size-full">
@@ -1319,7 +1327,7 @@ export default function MainV({
                                           <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-[rgba(255,255,255,0.1)]' : 'bg-[rgba(242,242,244,0.8)]'} transition-colors duration-700 inset-0 pointer-events-none rounded-[1000px]`} />
                                           <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)]" />
                                           <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
-                                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[13px] whitespace-nowrap`}>Grab 30 mins</p>
+                                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[13px] whitespace-nowrap`}>Book a call</p>
                                           </div>
                                           <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="Right_md">
                                             <div className="relative shrink-0 size-[18px]" data-name="icons / google meet">
@@ -1431,7 +1439,7 @@ export default function MainV({
                           <div aria-hidden="true" className={`pointer-events-none absolute inset-0 rounded-[1000px] backdrop-blur-[12px] ${isDark ? "bg-[rgba(255,255,255,0.1)]" : "bg-[rgba(242,242,244,0.8)]"} transition-colors duration-700`} />
                           <div aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[1000px] border border-solid border-[rgba(0,0,0,0.06)] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)]" />
                           <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
-                            <p className={`font-['Switzer_Variable:Regular',sans-serif] text-[13px] font-medium leading-[18px] whitespace-nowrap ${isDark ? "text-white" : "text-[#0a0c11]"} transition-colors duration-700`}>Chat with Max</p>
+                            <p className={`font-['Switzer_Variable:Regular',sans-serif] text-[13px] font-medium leading-[18px] whitespace-nowrap ${isDark ? "text-white" : "text-[#0a0c11]"} transition-colors duration-700`}>Book a call</p>
                           </div>
                           <div className="relative flex items-center justify-center" data-name="Right_md">
                             <ArrowRightIcon className={isDark ? "text-white" : "text-[#0a0c11]"} />
@@ -1447,10 +1455,10 @@ export default function MainV({
                   <div className="content-stretch flex flex-col gap-[20px] items-start p-[32px] relative size-full">
                     <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
                       <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 lg:grid-cols-2 grid-rows-[repeat(1,fit-content(100%))] relative shrink-0 w-full">
-                        <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-medium justify-self-stretch leading-[30px] relative row-1 self-start shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>Want to hear more about what Max is building or have an interest in becoming a partner or investor?</p>
+                        <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-medium justify-self-stretch leading-[30px] relative row-1 self-start shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>Want to hear more about what I’m building, or interested in partnering or investing?</p>
                       </div>
                       <div className="gap-x-[32px] gap-y-[32px] grid grid-cols-1 lg:grid-cols-2 grid-rows-[repeat(1,fit-content(100%))] relative shrink-0 w-full">
-                        <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-light justify-self-stretch leading-[18px] relative row-1 self-start shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px]`}>He is always open to new partnership ideas or collaboration, do not hesitate to contact if you want to build something together.</p>
+                        <p className={`col-1 font-['Switzer_Variable:Regular',sans-serif] font-light justify-self-stretch leading-[18px] relative row-1 self-start shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px]`}>I’m always open to partnerships and collaborations — get in touch if you want to build something together.</p>
                       </div>
                     </div>
                     <div className="content-stretch flex items-center relative shrink-0 w-full">
@@ -1458,7 +1466,7 @@ export default function MainV({
                         <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-white' : 'bg-black'} inset-0 pointer-events-none rounded-[1000px] transition-all duration-200`} />
                         <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.09)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_1px_1px_0px_rgba(0,0,0,0.03)]" />
                         <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
-                          <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative shrink-0 text-[13px] ${isDark ? 'text-[#0a0c11]' : 'text-white'} whitespace-nowrap`}>Grab 30 mins</p>
+                          <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative shrink-0 text-[13px] ${isDark ? 'text-[#0a0c11]' : 'text-white'} whitespace-nowrap`}>Book a call</p>
                         </div>
                         <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="Right_md">
                           <div className="relative shrink-0 size-[18px]" data-name="icons / google meet">
@@ -1497,13 +1505,13 @@ export default function MainV({
               >
                 <div className="flex min-w-0 flex-col gap-4 font-['Switzer_Variable:Regular',sans-serif] lg:self-start lg:justify-start lg:gap-[16px]">
                   <p className={`font-medium leading-[36px] shrink-0 text-[25px] tracking-[-0.2px] ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700`}>
-                    Max design products that help revenue teams move faster.
+                    I design products that help revenue teams move faster.
                   </p>
                   <p className={`font-light text-[13px] leading-[18px] ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700`}>
-                    {`Product designer with 13+ years in B2B SaaS. He has been a founding designer three times, which means he built design from zero: no system, no team, no playbook. Just ambiguity and a deadline.`}
+                    {`I’m a product designer with 13+ years in B2B SaaS. I’ve been a founding designer three times, which means I built design from zero: no system, no team, no playbook. Just ambiguity and a deadline.`}
                   </p>
                   <p className={`font-light text-[13px] leading-[18px] ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700`}>
-                    {`He specializes in the messy middle of product work — the part between "we have an idea" and "it's shipping." He reduces chaos, aligns stakeholders, and makes sure what ships actually moves metrics.`}
+                    {`I specialize in the messy middle of product work — the part between "we have an idea" and "it's shipping." I reduce chaos, align stakeholders, and make sure what ships actually moves metrics.`}
                   </p>
                 </div>
 
@@ -1522,13 +1530,13 @@ export default function MainV({
 
                 <div className="flex min-w-0 flex-col gap-4 font-['Switzer_Variable:Regular',sans-serif] lg:justify-end lg:gap-[16px]">
                   <p className={`font-light text-[13px] leading-[18px] ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700`}>
-                    <span>{`Max operates at the intersection of `}</span>
+                    <span>{`I operate at the intersection of `}</span>
                     <span className={`font-semibold ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700`}>
                       {`Design × Product × Revenue × Systems thinking.`}
                     </span>
                   </p>
                   <p className={`font-light text-[13px] leading-[18px] ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700`}>
-                    <span className={`font-semibold ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700`}>{`His focus: `}</span>
+                    <span className={`font-semibold ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700`}>{`My focus: `}</span>
                     building intuitive tools that people actually want to use, balancing user needs with business outcomes.
                   </p>
                   <div className="flex items-center">
@@ -1590,6 +1598,11 @@ export default function MainV({
           <AboutPage isDark={isDark} />
           <SitePageEnd isDark={isDark} className="mt-12 w-full md:mt-16 lg:mt-[104px]" />
         </div>
+      ) : pathname === "/privacy" ? (
+        <div className="flex w-full flex-col items-start">
+          <PrivacyPage isDark={isDark} />
+          <SitePageEnd isDark={isDark} className="mt-12 w-full md:mt-16 lg:mt-[104px]" />
+        </div>
       ) : pathname === "/playground" ? (
         <PlaygroundView isDark={isDark} />
       ) : (
@@ -1597,9 +1610,10 @@ export default function MainV({
           isDark={isDark}
           route={pathname.replace(/^\//, "") || "page"}
         >
-          <TabEmptyState title={phTitle} isDark={isDark} />
+          <TabEmptyState title={isNotFound ? "Page not found" : phTitle ?? "Page"} isDark={isDark} notFound={isNotFound} />
         </SitePageLayout>
       )}
+      </Suspense>
       </main>
       <header className="fixed top-0 left-0 right-0 z-[1000] pointer-events-none">
         <div className="content-stretch flex items-center justify-between pointer-events-auto px-[12px] md:px-[20px] py-[10px] sticky top-0 w-full max-w-[2250px] mx-auto">
@@ -1641,7 +1655,7 @@ export default function MainV({
                 <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-[rgba(255,255,255,0.1)]' : 'bg-[rgba(242,242,244,0.8)]'} transition-colors duration-700 inset-0 pointer-events-none rounded-[1000px] transition-all duration-200`} />
                 <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)]" />
                 <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
-                  <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[13px] whitespace-nowrap`}>Chat with me</p>
+                  <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[13px] whitespace-nowrap`}>Email me</p>
                 </div>
                 <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="Right_md">
                   <div className="overflow-clip relative shrink-0 size-[18px]" data-name="filled=on, stroke=1, radius=0, join=round">
@@ -1748,7 +1762,7 @@ export default function MainV({
                 <a href={contactEmailUrl} className="content-stretch flex gap-[4px] h-[44px] items-center justify-center px-[16px] py-[4px] relative rounded-[1000px] flex-1 cursor-pointer no-underline">
                   <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-[rgba(255,255,255,0.1)]' : 'bg-[rgba(242,242,244,0.8)]'} inset-0 pointer-events-none rounded-[1000px]`} />
                   <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none rounded-[1000px]" />
-                  <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative ${isDark ? 'text-white' : 'text-[#0a0c11]'} text-[14px] whitespace-nowrap`}>Chat with me</p>
+                  <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative ${isDark ? 'text-white' : 'text-[#0a0c11]'} text-[14px] whitespace-nowrap`}>Email me</p>
                 </a>
               </div>
             </div>

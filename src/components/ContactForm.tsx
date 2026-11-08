@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useId, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { usePostHog } from "@posthog/react";
+import { usePostHog } from "../analytics/posthog";
 import { DEFAULT_FORM_ID } from "../integrations/default";
 import svgPaths from "../imports/svg-j4zqqnzmwo";
 

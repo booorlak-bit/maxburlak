@@ -3,9 +3,10 @@ import { Link } from "react-router";
 type TabEmptyStateProps = {
   title: string;
   isDark: boolean;
+  notFound?: boolean;
 };
 
-export function TabEmptyState({ title, isDark }: TabEmptyStateProps) {
+export function TabEmptyState({ title, isDark, notFound = false }: TabEmptyStateProps) {
   return (
     <div
       className={`flex min-h-[calc(100svh-140px)] w-full flex-col items-center justify-center px-[24px] pb-[100px] pt-[32px] text-center ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"}`}
@@ -16,20 +17,22 @@ export function TabEmptyState({ title, isDark }: TabEmptyStateProps) {
         {title}
       </h1>
       <p className="mb-10 max-w-md font-['Switzer_Variable:Regular',sans-serif] text-[15px] leading-[1.5]">
-        Nothing here yet — this page is a placeholder while the section is being built.
+        {notFound
+          ? "This page doesn’t exist or has moved."
+          : "Nothing here yet — this page is a placeholder while the section is being built."}
       </p>
-      <div
+      {!notFound && <div
         className={`mx-auto mb-6 flex h-[120px] w-full max-w-[320px] flex-col items-center justify-center rounded-[20px] border border-dashed ${isDark ? "border-white/15 bg-[#141414]" : "border-[#0a0c11]/12 bg-[#f9f9fa]"}`}
       >
         <span className={`text-[13px] font-['Switzer_Variable:Regular',sans-serif] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"}`}>
           Empty state
         </span>
-      </div>
+      </div>}
       <Link
         to="/"
         className={`rounded-[1000px] px-6 py-2.5 font-['Switzer_Variable:Regular',sans-serif] text-[14px] font-medium transition-opacity duration-200 hover:opacity-90 ${isDark ? "bg-white text-[#0a0c11]" : "bg-[#0a0c11] text-white"}`}
       >
-        Back to Index
+        Back to home
       </Link>
     </div>
   );

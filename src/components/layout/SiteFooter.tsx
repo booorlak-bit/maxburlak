@@ -103,7 +103,18 @@ export function SiteFooter({ isDark }: SiteFooterProps) {
                 >
                   About
                 </Link>
-                <p className="relative shrink-0 w-full">Contact</p>
+                <a
+                  className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"}`}
+                  href="mailto:hey@maxburlak.com"
+                >
+                  Contact
+                </a>
+                <Link
+                  className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"}`}
+                  to="/privacy"
+                >
+                  Privacy
+                </Link>
               </div>
             </div>
           </div>

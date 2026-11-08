@@ -150,38 +150,14 @@
           min-height: 100%;
           min-height: 100dvh;
         }
-        .seo-noscript {
-          max-width: 42rem;
-          margin: 2rem auto;
-          padding: 0 1.25rem;
-          font-family: system-ui, sans-serif;
-          line-height: 1.5;
-          color: #0a0c11;
-        }
-        .seo-noscript a {
-          color: #0a0c11;
+        /* Prerendered HTML is light-themed; dark-mode visitors wait for the client render. */
+        html.dark #root[data-prerender-theme="light"] {
+          visibility: hidden;
         }
       </style>
     </head>
 
     <body>
-      <noscript>
-        <main class="seo-noscript">
-          <h1>Max Burlak — AI-Driven Product Designer</h1>
-          <p>
-            Founding product designer (3×) helping B2B SaaS founders with activation, conversion,
-            design systems, and AI-native workflows. 13+ years experience including Default.com and
-            Apollo.io.
-          </p>
-          <p>
-            <a href="https://cal.com/maxburlak/oppchat">Book a call</a>
-            ·
-            <a href="mailto:hey@maxburlak.com">hey@maxburlak.com</a>
-            ·
-            <a href="https://maxburlak.com/max-burlak-resume.pdf">Download CV</a>
-          </p>
-        </main>
-      </noscript>
       <div id="root"></div>
       <script type="module" src="/src/main.tsx"></script>
     </body>

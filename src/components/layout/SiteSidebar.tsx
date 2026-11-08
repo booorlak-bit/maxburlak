@@ -51,7 +51,7 @@ export function SiteSidebar({ isDark, bookCallUrl, contactEmailUrl }: SiteSideba
                 <div aria-hidden="true" className={`absolute backdrop-blur-[12px] ${isDark ? 'bg-[rgba(255,255,255,0.1)]' : 'bg-[rgba(242,242,244,0.8)]'} transition-colors duration-700 inset-0 pointer-events-none rounded-[1000px] transition-all duration-200`} />
                 <div aria-hidden="true" className="absolute border border-[rgba(0,0,0,0.06)] border-solid inset-0 pointer-events-none rounded-[1000px] shadow-[0px_2px_1.5px_0px_rgba(0,0,0,0.03)]" />
                 <div className="content-stretch flex gap-[4px] items-center justify-center px-[4px] relative shrink-0" data-name="Text_wrap_md">
-                  <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[14px] whitespace-nowrap`}>Chat with me</p>
+                  <p className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[14px] whitespace-nowrap`}>Email me</p>
                 </div>
                 <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="Right_md">
                   <div className="overflow-clip relative shrink-0 size-[18px]" data-name="filled=on, stroke=1, radius=0, join=round">

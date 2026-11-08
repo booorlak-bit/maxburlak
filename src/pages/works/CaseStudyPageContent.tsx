@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { usePostHog } from "@posthog/react";
+import { usePostHog } from "../../analytics/posthog";
 import { Link } from "react-router";
 import { ApolloLogo } from "../../components/ApolloLogo";
 import { DefaultLogo } from "../../components/DefaultLogo";

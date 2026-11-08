@@ -14,7 +14,7 @@ export const ABOUT_HERO = {
 export const ABOUT_BIO = {
   headline: "Who I am",
   paragraphs: [
-    "14+ years designing products. 3x founding designer. Currently building ventures and consulting for B2B SaaS companies.",
+    "13+ years designing products. 3x founding designer. Currently building ventures and consulting for B2B SaaS companies.",
     "I've led design at Default.com, Apollo.io, and P2P.org. Built design systems from scratch, shipped features that moved revenue metrics, and mentored designers across multiple teams.",
     "Now I split my time between consulting and building my own products — Pinnboards, Fliq, The First, mndfrnd, and Organicaaa.",
     "Based in Barcelona. Originally from Ukraine. I've worked remotely with teams across the US, Europe, and beyond.",
