@@ -60,7 +60,20 @@ function dropNullItems(value) {
   return value;
 }
 
+async function keepExisting(reason) {
+  if (existsSync(OUT_FILE)) {
+    console.warn(`[cms] ${reason}; keeping the committed snapshot.`);
+    JSON.parse(await readFile(OUT_FILE, "utf8"));
+    return true;
+  }
+  return false;
+}
+
 async function main() {
+  // Without a token a private dataset answers 200 with empty results, which
+  // would silently ship a site without CMS content. Use the committed snapshot.
+  if (!TOKEN && (await keepExisting("No SANITY_API_READ_TOKEN in this environment"))) return;
+
   let payload;
   try {
     const [siteSettings, homePage, worksPage, caseStudies, feedPosts, playgroundPage] = await Promise.all([
@@ -79,16 +92,15 @@ async function main() {
       feedPosts: feedPosts ?? [],
       playgroundPage,
     });
+    if (payload.caseStudies.length === 0 || !payload.siteSettings) {
+      throw new Error("Sanity returned no case studies or site settings (token without read access?)");
+    }
     console.log(
       `[cms] Snapshot: ${payload.caseStudies.length} case studies, ${payload.feedPosts.length} feed posts.`,
     );
   } catch (error) {
     // Keep the last good snapshot rather than shipping an empty site.
-    if (existsSync(OUT_FILE)) {
-      console.warn(`[cms] Fetch failed (${error.message}); keeping existing snapshot.`);
-      JSON.parse(await readFile(OUT_FILE, "utf8"));
-      return;
-    }
+    if (await keepExisting(`Fetch failed (${error.message})`)) return;
     console.warn(`[cms] Fetch failed (${error.message}); writing empty snapshot (local fallbacks).`);
     payload = EMPTY;
   }
