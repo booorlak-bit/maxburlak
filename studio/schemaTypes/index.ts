@@ -12,6 +12,7 @@ import { worksPage } from "./documents/worksPage";
 import { playgroundPage } from "./documents/playgroundPage";
 import { caseStudyFeature } from "./objects/caseStudyFeature";
 import { caseStudyImage } from "./objects/caseStudyImage";
+import { caseStudyGallery } from "./objects/caseStudyGallery";
 import { caseStudyVideo } from "./objects/caseStudyVideo";
 import { caseStudyNavItem } from "./objects/caseStudyNavItem";
 import { caseStudyPhase } from "./objects/caseStudyPhase";
@@ -48,6 +49,7 @@ export const schemaTypes = [
   caseStudyFeature,
   caseStudyResultMetric,
   caseStudyImage,
+  caseStudyGallery,
   caseStudyVideo,
   caseStudySection,
   homeSectionSlot,

@@ -1,19 +1,9 @@
-import { createClient, type SanityClient } from "@sanity/client";
+/**
+ * Sanity is read at build time only (scripts/fetch-cms.mjs). The browser never
+ * talks to the Sanity API and never receives a token; it only needs the
+ * project id + dataset to build CDN image URLs.
+ */
+export const sanityProjectId = import.meta.env.VITE_SANITY_PROJECT_ID ?? "1r0eu2jx";
+export const sanityDataset = import.meta.env.VITE_SANITY_DATASET ?? "production";
 
-const projectId = import.meta.env.VITE_SANITY_PROJECT_ID;
-const dataset = import.meta.env.VITE_SANITY_DATASET ?? "production";
-const apiVersion = import.meta.env.VITE_SANITY_API_VERSION ?? "2024-01-01";
-const token = import.meta.env.VITE_SANITY_API_READ_TOKEN;
-
-export const isSanityConfigured = Boolean(projectId);
-
-export const sanityClient: SanityClient | null = isSanityConfigured
-  ? createClient({
-      projectId: projectId!,
-      dataset,
-      apiVersion,
-      token: token || undefined,
-      useCdn: import.meta.env.PROD && Boolean(token),
-      perspective: "published",
-    })
-  : null;
+export const isSanityConfigured = Boolean(sanityProjectId);

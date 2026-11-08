@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { usePostHog } from "@posthog/react";
+import { usePostHog } from "../../analytics/posthog";
 import type { WorksProject } from "../../content/worksPage";
 import { SitePrimaryButton } from "../../components/site/SiteButtons";
 import { getSiteTheme } from "../../components/site/siteTheme";

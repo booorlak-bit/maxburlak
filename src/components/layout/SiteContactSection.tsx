@@ -1,4 +1,4 @@
-import { usePostHog } from "@posthog/react";
+import { usePostHog } from "../../analytics/posthog";
 import { ContactForm } from "../ContactForm";
 import { PortfolioImage } from "../PortfolioImage";
 import svgPaths from "../../imports/svg-j4zqqnzmwo";
@@ -73,7 +73,7 @@ export function SiteContactSection({
               <p
                 className={`w-full max-w-full font-['Switzer_Variable:Regular',sans-serif] text-[15px] font-light leading-[22px] md:text-[13px] md:leading-[18px] ${isDark ? "text-[rgba(255,255,255,0.88)]" : "text-[#5b616d]"} transition-colors duration-700`}
               >
-                {`Max works best with founders who value speed, clarity, and outcomes over pixel-perfect decks. If you're building something real, let's figure out how he can help.`}
+                {`I work best with founders who value speed, clarity, and outcomes over pixel-perfect decks. If you're building something real, let's figure out how I can help.`}
               </p>
             </div>
             <div className="flex flex-wrap gap-[16px] items-start">
@@ -153,7 +153,7 @@ export function SiteContactSection({
                       <p
                         className={`font-['Switzer_Variable:Regular',sans-serif] font-medium leading-[18px] relative shrink-0 text-[13px] whitespace-nowrap ${isDark ? "text-white" : "text-[#0a0c11]"} transition-colors duration-700`}
                       >
-                        Grab 15 mins
+                        Book a call
                       </p>
                     </div>
                     <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="Right_md">

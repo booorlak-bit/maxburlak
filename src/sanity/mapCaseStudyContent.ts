@@ -1,4 +1,9 @@
-import type { CaseStudyMediaItem, CaseStudyPageContent, CaseStudySection } from "../content/caseStudyContent";
+import type {
+  CaseStudyGalleryImage,
+  CaseStudyMediaItem,
+  CaseStudyPageContent,
+  CaseStudySection,
+} from "../content/caseStudyContent";
 import type { WorksProject } from "../content/worksPage";
 import { urlForSrc } from "./image";
 import { blocksToPlainParagraphs, type SanityBlock } from "./portableText";
@@ -65,6 +70,21 @@ function mapSections(caseStudy: CaseStudy): CaseStudySection[] {
                   caption: item.caption?.trim() || undefined,
                 };
               }
+              if (item._type === "caseStudyGallery") {
+                const images = (item.images ?? [])
+                  .map((galleryImage): CaseStudyGalleryImage | null => {
+                    const src = urlForSrc(galleryImage.image, 1400);
+                    if (!src) return null;
+                    return {
+                      src,
+                      alt: galleryImage.alt?.trim() || undefined,
+                      caption: galleryImage.caption?.trim() || undefined,
+                    };
+                  })
+                  .filter((galleryImage): galleryImage is CaseStudyGalleryImage => galleryImage !== null);
+                if (images.length === 0) return null;
+                return { type: "gallery", images, allowFullscreen: item.allowFullscreen !== false };
+              }
               const src = urlForSrc(item.image, 1400);
               if (!src) return null;
               return {
@@ -72,6 +92,7 @@ function mapSections(caseStudy: CaseStudy): CaseStudySection[] {
                 src,
                 alt: item.alt?.trim() || undefined,
                 caption: item.caption?.trim() || undefined,
+                allowFullscreen: item.allowFullscreen !== false,
               };
             })
             .filter((item): item is CaseStudyMediaItem => item !== null),

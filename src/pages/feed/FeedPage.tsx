@@ -30,7 +30,7 @@ export function FeedPage({ isDark }: FeedPageProps) {
           <p className={`${SITE_FONT} ${t.muted} mx-auto mt-16 w-full max-w-[520px] text-[15px] font-light leading-[20px]`}>
             {isConfigured
               ? "No posts yet. Publish feed posts in Sanity Studio to see them here."
-              : "CMS not configured. Set VITE_SANITY_PROJECT_ID and VITE_SANITY_API_READ_TOKEN in .env."}
+              : "CMS not configured."}
           </p>
         ) : (
           <div className="mx-auto mt-16 flex w-full max-w-[520px] flex-col gap-16">

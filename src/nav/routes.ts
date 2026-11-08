@@ -33,8 +33,12 @@ export function parseFeedPostSlug(pathname: string): string | null {
   return match?.[1] ?? null;
 }
 
+/** Routes outside the main navigation (footer links). */
+export const EXTRA_ROUTES = ["/privacy", "/faq"] as const;
+
 export function isAllowedPath(pathname: string): boolean {
   if (isNavPath(pathname)) return true;
+  if ((EXTRA_ROUTES as readonly string[]).includes(pathname)) return true;
   if (parseWorksCaseStudySlug(pathname) !== null) return true;
   return parseFeedPostSlug(pathname) !== null;
 }

@@ -1,8 +1,10 @@
-import imageUrlBuilder from "@sanity/image-url";
+import { createImageUrlBuilder } from "@sanity/image-url";
 import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
-import { sanityClient } from "./client";
+import { sanityDataset, sanityProjectId } from "./client";
 
-const builder = sanityClient ? imageUrlBuilder(sanityClient) : null;
+const builder = sanityProjectId
+  ? createImageUrlBuilder({ projectId: sanityProjectId, dataset: sanityDataset })
+  : null;
 
 export function urlFor(source: SanityImageSource | undefined) {
   if (!builder || !source) return null;

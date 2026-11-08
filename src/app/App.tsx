@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { BrowserRouter } from "react-router";
 import { Analytics } from "@vercel/analytics/react";
 import { SeoManager } from "../components/SeoManager";
@@ -5,12 +6,17 @@ import MainV from "../imports/MainV2";
 import { CmsProvider } from "../sanity/CmsProvider";
 import { useTheme } from "./useTheme";
 
+/** Client entry: browser router. The prerender uses <AppShell> with a StaticRouter. */
 export default function App() {
+  return <AppShell router={(children) => <BrowserRouter>{children}</BrowserRouter>} />;
+}
+
+export function AppShell({ router }: { router: (children: ReactNode) => ReactNode }) {
   const { isDark, toggleTheme } = useTheme();
 
   return (
     <div className={`min-h-[100dvh] min-h-screen overflow-x-clip transition-colors duration-700 ${isDark ? "bg-[#0a0a0a]" : "bg-white"}`}>
-      <BrowserRouter>
+      {router(
         <CmsProvider>
           <SeoManager />
           <a
@@ -20,8 +26,8 @@ export default function App() {
             Skip to main content
           </a>
           <MainV isDark={isDark} onThemeToggle={toggleTheme} />
-        </CmsProvider>
-      </BrowserRouter>
+        </CmsProvider>,
+      )}
       <Analytics />
       <style>{`
         /* Full-width page shell */

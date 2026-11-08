@@ -104,7 +104,7 @@ export function CareerPath({ isDark = false }: { isDark?: boolean }) {
                   <p
                     className={`min-w-0 font-['Switzer_Variable:Regular',sans-serif] text-[15px] font-light leading-[22px] md:text-[15px] md:leading-[20px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}
                   >
-                    6 More positions since 2012
+                    6 more positions since 2013
                   </p>
                   <CvViewerButton isDark={isDark} />
                 </div>
