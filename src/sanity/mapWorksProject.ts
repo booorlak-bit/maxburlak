@@ -56,7 +56,9 @@ export function mapCaseStudyToWorksProject(caseStudy: CaseStudy): WorksProject |
 
 export function mapCaseStudiesToWorksProjects(caseStudies: CaseStudy[] | undefined): WorksProject[] {
   if (!caseStudies?.length) return [];
+  // Dereferenced links to unpublished/deleted case studies come back as null.
   return caseStudies
+    .filter((caseStudy): caseStudy is CaseStudy => Boolean(caseStudy))
     .map(mapCaseStudyToWorksProject)
     .filter((project): project is WorksProject => project !== null);
 }

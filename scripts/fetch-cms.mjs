@@ -50,6 +50,16 @@ async function query(groq) {
   return json.result ?? null;
 }
 
+// GROQ returns null for references to unpublished or deleted documents
+// (e.g. `featuredProjects[]->`). Drop those so the renderer never sees them.
+function dropNullItems(value) {
+  if (Array.isArray(value)) return value.filter((item) => item != null).map(dropNullItems);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, dropNullItems(item)]));
+  }
+  return value;
+}
+
 async function main() {
   let payload;
   try {
@@ -61,14 +71,14 @@ async function main() {
       query(feedPostsQuery),
       query(playgroundPageQuery),
     ]);
-    payload = {
+    payload = dropNullItems({
       siteSettings,
       homePage,
       worksPage,
       caseStudies: caseStudies ?? [],
       feedPosts: feedPosts ?? [],
       playgroundPage,
-    };
+    });
     console.log(
       `[cms] Snapshot: ${payload.caseStudies.length} case studies, ${payload.feedPosts.length} feed posts.`,
     );
