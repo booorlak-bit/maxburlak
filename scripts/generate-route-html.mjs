@@ -2,163 +2,489 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const SITE_URL = "https://maxburlak.com";
+const SITE_NAME = "Max Burlak";
 const DIST_DIR = "dist";
-const SITEMAP_PATH = "public/sitemap.xml";
 
-const fallbackTitle = "Max Burlak - AI-Driven Product Designer for B2B SaaS Founders";
-const fallbackDescription =
-  "Founding product designer helping B2B SaaS founders ship faster: activation, conversion, design systems, and AI-native workflows.";
+const PROJECT_ID = process.env.VITE_SANITY_PROJECT_ID || "1r0eu2jx";
+const DATASET = process.env.VITE_SANITY_DATASET || "production";
+const API_VERSION = process.env.VITE_SANITY_API_VERSION || "2024-01-01";
+const READ_TOKEN = process.env.VITE_SANITY_API_READ_TOKEN || "";
 
-const routeMeta = {
-  "/": {
-    title: fallbackTitle,
-    description: fallbackDescription,
+const DEFAULT_TITLE = "Max Burlak — AI-Driven Product Designer for B2B SaaS Founders";
+const DEFAULT_DESCRIPTION =
+  "Founding product designer (3×) helping B2B SaaS founders ship faster: activation, conversion, design systems, and AI-native workflows. 13+ years; Default, Apollo.io, and startups from 0 to $2.5M+ ARR.";
+const OG_IMAGE_URL = `${SITE_URL}/og-image.jpg`;
+
+const NAV_LINKS = [
+  { href: "/", label: "Home" },
+  { href: "/works", label: "Works" },
+  { href: "/approach", label: "Approach" },
+  { href: "/ventures", label: "Ventures" },
+  { href: "/feed", label: "Feed" },
+  { href: "/about", label: "About" },
+];
+
+const EXTERNAL_LINKS = [
+  { href: "https://www.linkedin.com/in/maxburlak/", label: "LinkedIn" },
+  { href: "https://dribbble.com/maxburlak", label: "Dribbble" },
+  { href: "https://medium.com/@booorlak", label: "Medium" },
+  { href: "https://www.youtube.com/@heyhimaxo", label: "YouTube" },
+  { href: "https://www.instagram.com/multimaxo", label: "Instagram" },
+  { href: "https://cal.com/maxburlak/oppchat", label: "Book a call" },
+  { href: `${SITE_URL}/max-burlak-resume.pdf`, label: "Download CV" },
+];
+
+/** Static (non-CMS) routes. `index: false` keeps a route out of the sitemap. */
+const staticRoutes = [
+  {
+    route: "/",
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    changefreq: "weekly",
+    priority: "1.0",
+    home: true,
   },
-  "/works": {
-    title: "Selected works - B2B SaaS case studies - Max Burlak",
+  {
+    route: "/works",
+    title: "Selected works — B2B SaaS case studies — Max Burlak",
     description:
-      "Selected product design projects from Default.com, Apollo.io, P2P.org, and earlier engagements with measurable outcomes.",
+      "Selected product design projects from Default.com, Apollo.io, P2P.org, and earlier engagements — with measurable outcomes in conversion, velocity, and revenue.",
+    changefreq: "monthly",
+    priority: "0.9",
   },
-  "/works/default": {
-    title: "Revenue operations platform for GTM teams - Max Burlak",
+  {
+    route: "/approach",
+    title: "Approach — AI-native product design — Max Burlak",
     description:
-      "Default.com case study: design system foundations, enterprise workflows, and UX improvements for revenue teams.",
+      "How Max Burlak works: Multiplier and Loop models for AI-native design — from ambiguity to shipped impact in days, not weeks. Engagement models for founders and product teams.",
+    changefreq: "monthly",
+    priority: "0.8",
   },
-  "/works/apollo": {
-    title: "Design system unification - Max Burlak",
+  {
+    route: "/ventures",
+    title: "Ventures — side projects & products — Max Burlak",
     description:
-      "Apollo.io case study: unifying product design patterns and improving delivery velocity across B2B SaaS workflows.",
+      "Side projects and products Max Burlak is building — The First, Pinnboards, Fliq, mndfrnd, Organicaaa, and why he builds outside client work.",
+    changefreq: "monthly",
+    priority: "0.8",
   },
-  "/works/p2p": {
-    title: "Crypto banking launch - Max Burlak",
+  {
+    route: "/feed",
+    title: "Feed — Max Burlak",
     description:
-      "P2P.org case study: product design for crypto banking, onboarding, and operational product workflows.",
+      "Notes on AI-native product design, process, and what’s changing in design work — from Max Burlak.",
+    changefreq: "weekly",
+    priority: "0.8",
   },
-  "/works/kinescope": {
-    title: "Video hosting platform redesign - Max Burlak",
+  {
+    route: "/about",
+    title: "About — Max Burlak",
     description:
-      "Kinescope case study: product redesign work for video hosting, media workflows, and scalable user experience.",
+      "Max Burlak — product design lead and builder in Barcelona. 14+ years in B2B SaaS, 3x founding designer, ventures, consulting, and how he works.",
+    changefreq: "monthly",
+    priority: "0.8",
   },
-  "/works/round-2": {
-    title: "Sneaker marketplace mobile app - Max Burlak",
+  {
+    route: "/playground",
+    title: "Playground — Max Burlak",
     description:
-      "Round 2 case study: mobile marketplace design for sneaker discovery, buying, and selling flows.",
+      "Experimental concepts and unreleased design explorations by Max Burlak. Not indexed for search.",
+    index: false,
+    noindex: true,
   },
-  "/works/mid-tv": {
-    title: "Streaming and media product design - Max Burlak",
-    description:
-      "MID TV case study: product design for streaming, media discovery, and content platform experience.",
-  },
-  "/works/rentor": {
-    title: "Rental product design - Max Burlak",
-    description:
-      "Rentor case study: product design for rental marketplace flows, trust, and conversion.",
-  },
-  "/approach": {
-    title: "Approach - AI-native product design - Max Burlak",
-    description:
-      "How Max Burlak works with founders and product teams: fast product design, systems thinking, and AI-native workflows.",
-  },
-  "/ventures": {
-    title: "Ventures - side projects and products - Max Burlak",
-    description:
-      "Side projects and products Max Burlak is building, including design tools, social products, and writing.",
-  },
-  "/about": {
-    title: "About - Max Burlak",
-    description:
-      "Max Burlak is a product design lead and builder in Barcelona with 14+ years in B2B SaaS and founding designer roles.",
-  },
-  "/feed": {
-    title: "Feed - Max Burlak",
-    description:
-      "Notes on AI-native product design, process, and what is changing in design work from Max Burlak.",
-  },
-  "/feed/design-process-you-learned-is-dead": {
-    title: "Design process you learned is dead - Max Burlak",
-    description:
-      "A note on how AI-native work changes product design process, speed, decision-making, and delivery.",
-  },
-  "/feed/chilling-in-big-apple": {
-    title: "Chilling in Big Apple - Max Burlak",
-    description:
-      "A personal feed note from Max Burlak about travel, cities, and product design life.",
-  },
-  "/feed/10-books-product-designer-2026": {
-    title: "10 books for product designers in 2026 - Max Burlak",
-    description:
-      "A reading list for product designers working with AI, strategy, systems, and better product decisions.",
-  },
-};
+];
+
+/** Used only when CMS is unreachable so the build never produces an empty sitemap. */
+const fallbackCaseStudies = [
+  { slug: "default", title: "Revenue operations platform for GTM teams" },
+  { slug: "apollo", title: "Design system unification" },
+  { slug: "p2p", title: "Crypto banking launch" },
+  { slug: "kinescope", title: "Video hosting platform redesign" },
+  { slug: "round-2", title: "Sneaker marketplace mobile app" },
+  { slug: "mid-tv", title: "Streaming and media product design" },
+  { slug: "rentor", title: "Rental product design" },
+];
+const fallbackFeedPosts = [
+  { slug: "design-process-you-learned-is-dead", title: "Design process you learned is dead" },
+  { slug: "chilling-in-big-apple", title: "Chilling in Big Apple" },
+  { slug: "10-books-product-designer-2026", title: "10 books for product designers in 2026" },
+];
 
 function escapeHtml(value) {
-  return value
+  return String(value ?? "")
     .replace(/&/g, "&amp;")
     .replace(/"/g, "&quot;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
 }
 
-function getSitemapRoutes(sitemapXml) {
-  return [...sitemapXml.matchAll(/<loc>(https:\/\/maxburlak\.com[^<]*)<\/loc>/g)]
-    .map(([, url]) => {
-      const parsed = new URL(url);
-      return parsed.pathname.replace(/\/+$/, "") || "/";
-    })
-    .filter((route, index, routes) => routes.indexOf(route) === index);
+async function sanityFetch(query) {
+  if (!READ_TOKEN) return null;
+  const url = `https://${PROJECT_ID}.api.sanity.io/v${API_VERSION}/data/query/${DATASET}?perspective=published&query=${encodeURIComponent(
+    query,
+  )}`;
+  try {
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${READ_TOKEN}` } });
+    if (!res.ok) throw new Error(`Sanity ${res.status}`);
+    const json = await res.json();
+    return json.result ?? null;
+  } catch (error) {
+    console.warn(`[seo] Sanity fetch failed, using fallback: ${error.message}`);
+    return null;
+  }
 }
 
-function replaceTag(html, pattern, replacement) {
+async function loadCaseStudies() {
+  const result = await sanityFetch(
+    `*[_type=="caseStudy" && status!="draft" && showCaseStudyPage!=false]{
+      "slug": slug.current,
+      "title": coalesce(pageTitle, title),
+      "description": coalesce(lede, summary),
+      "ogImage": coalesce(coverImage.asset->url, heroImage.asset->url),
+      "headings": sections[].title,
+      "updated": _updatedAt
+    } | order(sortOrder asc)`,
+  );
+  const rows = (result ?? []).filter((row) => row?.slug);
+  if (rows.length > 0) return rows;
+  return fallbackCaseStudies;
+}
+
+async function loadFeedPosts() {
+  const result = await sanityFetch(
+    `*[_type=="feedPost" && status=="published"]{
+      "slug": slug.current,
+      "title": coalesce(seo.title, title),
+      "description": coalesce(seo.description, ""),
+      "ogImage": coalesce(seo.ogImage.asset->url, content[_type=="feedImageBlock"][0].image.asset->url, content[_type=="feedGalleryBlock"][0].images[0].image.asset->url),
+      "updated": coalesce(publishedAt, _updatedAt)
+    } | order(coalesce(publishedAt, _updatedAt) desc)`,
+  );
+  const rows = (result ?? []).filter((row) => row?.slug);
+  if (rows.length > 0) return rows;
+  return fallbackFeedPosts;
+}
+
+function canonicalFor(route) {
+  return route === "/" ? `${SITE_URL}/` : `${SITE_URL}${route}`;
+}
+
+function breadcrumbJsonLd(items) {
+  return {
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  };
+}
+
+function caseStudyJsonLd(page) {
+  const url = canonicalFor(page.route);
+  return JSON.stringify(
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "CreativeWork",
+          "@id": `${url}#case-study`,
+          name: page.rawTitle,
+          headline: page.rawTitle,
+          description: page.rawDescription,
+          url,
+          ...(page.ogImage ? { image: page.ogImage } : {}),
+          author: { "@type": "Person", name: SITE_NAME, url: `${SITE_URL}/` },
+          creator: { "@type": "Person", name: SITE_NAME, url: `${SITE_URL}/` },
+          isPartOf: { "@id": `${SITE_URL}/#website` },
+        },
+        breadcrumbJsonLd([
+          { name: "Home", url: `${SITE_URL}/` },
+          { name: "Works", url: `${SITE_URL}/works` },
+          { name: page.rawTitle, url },
+        ]),
+      ],
+    },
+    null,
+    2,
+  );
+}
+
+function feedPostJsonLd(page) {
+  const url = canonicalFor(page.route);
+  return JSON.stringify(
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "BlogPosting",
+          "@id": `${url}#post`,
+          headline: page.rawTitle,
+          description: page.rawDescription,
+          url,
+          ...(page.ogImage ? { image: page.ogImage } : {}),
+          ...(page.updated ? { datePublished: page.updated, dateModified: page.updated } : {}),
+          author: { "@type": "Person", name: SITE_NAME, url: `${SITE_URL}/` },
+          publisher: { "@id": `${SITE_URL}/#person` },
+          isPartOf: { "@id": `${SITE_URL}/#website` },
+          mainEntityOfPage: url,
+        },
+        breadcrumbJsonLd([
+          { name: "Home", url: `${SITE_URL}/` },
+          { name: "Feed", url: `${SITE_URL}/feed` },
+          { name: page.rawTitle, url },
+        ]),
+      ],
+    },
+    null,
+    2,
+  );
+}
+
+function sectionJsonLd(page) {
+  const url = canonicalFor(page.route);
+  return JSON.stringify(
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebPage",
+          "@id": `${url}#webpage`,
+          url,
+          name: page.rawTitle,
+          description: page.rawDescription,
+          isPartOf: { "@id": `${SITE_URL}/#website` },
+          about: { "@id": `${SITE_URL}/#person` },
+        },
+        breadcrumbJsonLd([
+          { name: "Home", url: `${SITE_URL}/` },
+          { name: page.rawTitle.replace(` — ${SITE_NAME}`, ""), url },
+        ]),
+      ],
+    },
+    null,
+    2,
+  );
+}
+
+function cleanHeading(title) {
+  return String(title ?? "").replace(new RegExp(`\\s*—\\s*${SITE_NAME}\\s*$`), "").trim();
+}
+
+function linkList(links) {
+  return links
+    .map((link) => `<li><a href="${escapeHtml(link.href)}">${escapeHtml(link.label)}</a></li>`)
+    .join("");
+}
+
+/**
+ * Visually-hidden, crawler-readable fallback so non-JS bots (and SEO auditors)
+ * see a real H1, headings, and an internal/external link graph. Removed by the
+ * app on mount (see main.tsx) so it never duplicates the rendered DOM.
+ */
+function buildSeoBlock(page, contentLinks) {
+  const h1 = escapeHtml(cleanHeading(page.rawTitle) || SITE_NAME);
+  const description = escapeHtml(page.rawDescription || DEFAULT_DESCRIPTION);
+  const headings = (page.headings ?? [])
+    .filter(Boolean)
+    .map((heading) => `<h2>${escapeHtml(heading)}</h2>`)
+    .join("");
+
+  return [
+    `<div id="seo-prerender" aria-hidden="true" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">`,
+    `<h1>${h1}</h1>`,
+    `<p>${description}</p>`,
+    headings,
+    `<nav aria-label="Site"><h2>Explore</h2><ul>${linkList(NAV_LINKS)}${linkList(contentLinks)}</ul></nav>`,
+    `<nav aria-label="Elsewhere"><h2>Elsewhere</h2><ul>${linkList(EXTERNAL_LINKS)}</ul></nav>`,
+    `</div>`,
+  ].join("");
+}
+
+function replaceTag(html, pattern, replacement, { required = true } = {}) {
   if (!pattern.test(html)) {
-    throw new Error(`Could not find tag matching ${pattern}`);
+    if (required) throw new Error(`Could not find tag matching ${pattern}`);
+    return html;
   }
   return html.replace(pattern, replacement);
 }
 
-function withRouteMeta(html, route) {
-  const meta = routeMeta[route] ?? {
-    title: `${route.split("/").filter(Boolean).join(" / ")} - Max Burlak`,
-    description: fallbackDescription,
-  };
-  const canonical = route === "/" ? `${SITE_URL}/` : `${SITE_URL}${route}`;
-  const title = escapeHtml(meta.title);
-  const description = escapeHtml(meta.description);
+function applyMeta(html, page) {
+  const canonical = canonicalFor(page.route);
+  const title = escapeHtml(page.rawTitle);
+  const description = escapeHtml(page.rawDescription);
+  const ogImage = page.ogImage ? escapeHtml(page.ogImage) : OG_IMAGE_URL;
+  const robots = page.noindex
+    ? "noindex, follow"
+    : "index, follow, max-image-preview:large";
 
   let next = html;
   next = replaceTag(next, /<title>[\s\S]*?<\/title>/, `<title>${title}</title>`);
   next = replaceTag(next, /<link rel="canonical" href="[^"]*" \/>/, `<link rel="canonical" href="${canonical}" />`);
   next = replaceTag(next, /<meta name="description" content="[^"]*" \/>/, `<meta name="description" content="${description}" />`);
+  next = replaceTag(next, /<meta name="robots" content="[^"]*" \/>/, `<meta name="robots" content="${robots}" />`);
   next = replaceTag(next, /<meta property="og:title" content="[^"]*" \/>/, `<meta property="og:title" content="${title}" />`);
   next = replaceTag(next, /<meta property="og:description" content="[^"]*" \/>/, `<meta property="og:description" content="${description}" />`);
   next = replaceTag(next, /<meta property="og:url" content="[^"]*" \/>/, `<meta property="og:url" content="${canonical}" />`);
+  next = replaceTag(next, /<meta property="og:image" content="[^"]*" \/>/, `<meta property="og:image" content="${ogImage}" />`);
   next = replaceTag(next, /<meta name="twitter:title" content="[^"]*" \/>/, `<meta name="twitter:title" content="${title}" />`);
   next = replaceTag(next, /<meta name="twitter:description" content="[^"]*" \/>/, `<meta name="twitter:description" content="${description}" />`);
+  next = replaceTag(next, /<meta name="twitter:image" content="[^"]*" \/>/, `<meta name="twitter:image" content="${ogImage}" />`);
+
+  if (page.type === "feed") {
+    next = replaceTag(next, /<meta property="og:type" content="[^"]*" \/>/, `<meta property="og:type" content="article" />`, { required: false });
+  }
+
+  if (page.jsonLd) {
+    next = replaceTag(
+      next,
+      /<script type="application\/ld\+json">[\s\S]*?<\/script>/,
+      `<script type="application/ld+json">\n${page.jsonLd}\n      </script>`,
+      { required: false },
+    );
+  }
+
+  if (page.seoBlock) {
+    next = replaceTag(
+      next,
+      /<div id="root"><\/div>/,
+      `${page.seoBlock}\n      <div id="root"></div>`,
+    );
+  }
+
   return next;
 }
 
+async function writeRouteHtml(template, page) {
+  const html = applyMeta(template, page);
+  if (page.route === "/") {
+    await writeFile(path.join(DIST_DIR, "index.html"), html);
+    return;
+  }
+  const routeDir = path.join(DIST_DIR, ...page.route.split("/").filter(Boolean));
+  await mkdir(routeDir, { recursive: true });
+  await writeFile(path.join(routeDir, "index.html"), html);
+}
+
+function buildSitemap(pages) {
+  const urls = pages
+    .filter((page) => page.index !== false)
+    .map((page) => {
+      const lastmod = page.updated ? new Date(page.updated).toISOString().slice(0, 10) : null;
+      return [
+        "  <url>",
+        `    <loc>${canonicalFor(page.route)}</loc>`,
+        lastmod ? `    <lastmod>${lastmod}</lastmod>` : null,
+        page.changefreq ? `    <changefreq>${page.changefreq}</changefreq>` : null,
+        page.priority ? `    <priority>${page.priority}</priority>` : null,
+        "  </url>",
+      ]
+        .filter(Boolean)
+        .join("\n");
+    })
+    .join("\n");
+
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+}
+
 async function main() {
-  const [indexHtml, sitemapXml] = await Promise.all([
-    readFile(path.join(DIST_DIR, "index.html"), "utf8"),
-    readFile(SITEMAP_PATH, "utf8"),
-  ]);
+  const template = await readFile(path.join(DIST_DIR, "index.html"), "utf8");
 
-  const routes = getSitemapRoutes(sitemapXml);
+  const [caseStudies, feedPosts] = await Promise.all([loadCaseStudies(), loadFeedPosts()]);
 
-  await Promise.all(
-    routes.map(async (route) => {
-      const html = withRouteMeta(indexHtml, route);
-      if (route === "/") {
-        await writeFile(path.join(DIST_DIR, "index.html"), html);
-        return;
-      }
+  const pages = [];
 
-      const routeDir = path.join(DIST_DIR, ...route.split("/").filter(Boolean));
-      await mkdir(routeDir, { recursive: true });
-      await writeFile(path.join(routeDir, "index.html"), html);
-    }),
+  for (const item of staticRoutes) {
+    const page = {
+      route: item.route,
+      rawTitle: item.title,
+      rawDescription: item.description,
+      changefreq: item.changefreq,
+      priority: item.priority,
+      index: item.index,
+      noindex: item.noindex,
+      home: item.home,
+    };
+    // Keep the rich home graph as-is; add WebPage+breadcrumb schema to other sections.
+    if (!item.home) page.jsonLd = sectionJsonLd(page);
+    pages.push(page);
+  }
+
+  for (const cs of caseStudies) {
+    const page = {
+      route: `/works/${cs.slug}`,
+      type: "caseStudy",
+      rawTitle: `${cs.title || "Case study"} — ${SITE_NAME}`,
+      rawDescription: cs.description || DEFAULT_DESCRIPTION,
+      ogImage: cs.ogImage || null,
+      headings: Array.isArray(cs.headings) ? cs.headings : [],
+      updated: cs.updated || null,
+      changefreq: "monthly",
+      priority: "0.8",
+    };
+    page.jsonLd = caseStudyJsonLd(page);
+    pages.push(page);
+  }
+
+  for (const post of feedPosts) {
+    const page = {
+      route: `/feed/${post.slug}`,
+      type: "feed",
+      rawTitle: `${post.title || "Feed post"} — ${SITE_NAME}`,
+      rawDescription: post.description || "Notes, process, and updates from Max Burlak.",
+      ogImage: post.ogImage || null,
+      updated: post.updated || null,
+      changefreq: "monthly",
+      priority: "0.7",
+    };
+    page.jsonLd = feedPostJsonLd(page);
+    pages.push(page);
+  }
+
+  // Internal link graph (case study + feed routes) added to every page's SEO block.
+  const contentLinks = pages
+    .filter((page) => page.type === "caseStudy" || page.type === "feed")
+    .map((page) => ({
+      href: page.route,
+      label: cleanHeading(page.rawTitle) || page.route,
+    }));
+
+  for (const page of pages) {
+    page.seoBlock = buildSeoBlock(page, contentLinks);
+  }
+
+  await Promise.all(pages.map((page) => writeRouteHtml(template, page)));
+
+  // noindex SPA fallback shell for any non-prerendered / unknown path.
+  const appShell = applyMeta(template, {
+    route: "/app",
+    rawTitle: DEFAULT_TITLE,
+    rawDescription: DEFAULT_DESCRIPTION,
+    noindex: true,
+    seoBlock: buildSeoBlock({ rawTitle: DEFAULT_TITLE, rawDescription: DEFAULT_DESCRIPTION }, contentLinks),
+  }).replace(
+    /<link rel="canonical" href="[^"]*" \/>\s*/,
+    "",
   );
+  await writeFile(path.join(DIST_DIR, "app.html"), appShell);
 
-  console.log(`Generated route HTML for ${routes.length} sitemap route(s).`);
+  // Native 404 page (Vercel serves this with a 404 status for unmatched paths).
+  const notFound = applyMeta(template, {
+    route: "/404",
+    rawTitle: `Page not found — ${SITE_NAME}`,
+    rawDescription: "This page could not be found.",
+    noindex: true,
+    seoBlock: buildSeoBlock({ rawTitle: `Page not found — ${SITE_NAME}`, rawDescription: "This page could not be found." }, contentLinks),
+  }).replace(/<link rel="canonical" href="[^"]*" \/>\s*/, "");
+  await writeFile(path.join(DIST_DIR, "404.html"), notFound);
+
+  await writeFile(path.join(DIST_DIR, "sitemap.xml"), buildSitemap(pages));
+
+  const indexable = pages.filter((p) => p.index !== false).length;
+  console.log(
+    `[seo] Generated ${pages.length} route(s) (${indexable} in sitemap), app.html, 404.html. CMS: ${caseStudies.length} case studies, ${feedPosts.length} feed posts.`,
+  );
 }
 
 main().catch((error) => {

@@ -28,6 +28,8 @@ if (phToken && phHost) {
   }
 }
 
+document.getElementById("seo-prerender")?.remove();
+
 createRoot(document.getElementById("root")!).render(
   <PostHogProvider client={posthog}>
     <PostHogErrorBoundary>

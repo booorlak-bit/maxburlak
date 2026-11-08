@@ -21,10 +21,52 @@ export const caseStudySection = defineType({
     defineField({
       name: "paragraphs",
       type: "array",
-      title: "Intro paragraphs",
-      description: "Rich text. Use the image button in the toolbar to embed images inline.",
+      title: "Body",
+      description: "Rich text. Headings, quote, lists, links and inline images are supported.",
       of: [
-        defineArrayMember({ type: "block" }),
+        defineArrayMember({
+          type: "block",
+          styles: [
+            { title: "Normal", value: "normal" },
+            { title: "Heading", value: "h2" },
+            { title: "Subheading", value: "h3" },
+            { title: "Quote", value: "blockquote" },
+          ],
+          lists: [
+            { title: "Bullet", value: "bullet" },
+            { title: "Numbered", value: "number" },
+          ],
+          marks: {
+            decorators: [
+              { title: "Bold", value: "strong" },
+              { title: "Italic", value: "em" },
+              { title: "Underline", value: "underline" },
+              { title: "Code", value: "code" },
+            ],
+            annotations: [
+              {
+                name: "link",
+                type: "object",
+                title: "Link",
+                fields: [
+                  defineField({
+                    name: "href",
+                    type: "url",
+                    title: "URL",
+                    validation: (r) =>
+                      r.required().uri({ scheme: ["http", "https", "mailto", "tel"] }),
+                  }),
+                  defineField({
+                    name: "blank",
+                    type: "boolean",
+                    title: "Open in new tab",
+                    initialValue: true,
+                  }),
+                ],
+              },
+            ],
+          },
+        }),
         defineArrayMember({
           type: "image",
           title: "Image",
@@ -73,6 +115,7 @@ export const caseStudySection = defineType({
       description: "Add images or videos shown at the end of this section.",
       of: [
         defineArrayMember({ type: "caseStudyImage" }),
+        defineArrayMember({ type: "caseStudyGallery" }),
         defineArrayMember({ type: "caseStudyVideo" }),
       ],
     }),

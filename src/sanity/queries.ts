@@ -163,9 +163,16 @@ export const caseStudyFields = `
       _type,
       alt,
       caption,
+      allowFullscreen,
       image,
       videoUrl,
-      poster
+      poster,
+      images[]{
+        _key,
+        alt,
+        caption,
+        image
+      }
     }
   }
 `;
