@@ -88,13 +88,13 @@ export function homeJsonLd() {
     {
       "@type": "ProfessionalService",
       "@id": `${SITE_URL}/#service`,
-      name: `${SITE_NAME} — founding product design for AI and B2B SaaS startups`,
+      name: `${SITE_NAME} — product building and design engineering for AI and B2B SaaS startups`,
       url: `${SITE_URL}/`,
       description: DEFAULT_DESCRIPTION,
       provider: { "@id": PERSON_ID },
       areaServed: "Worldwide",
       address: { "@type": "PostalAddress", addressLocality: LOCATION.city, addressCountry: LOCATION.countryCode },
-      serviceType: ["Founding product designer", "Fractional design leadership", "Product design", "Design systems", "AI product design"],
+      serviceType: ["Product building", "Design engineering", "Founding designer engagements", "Fractional design leadership", "Design systems", "AI product design"],
       availableChannel: [
         { "@type": "ServiceChannel", serviceUrl: BOOK_CALL_URL, availableLanguage: "en" },
         { "@type": "ServiceChannel", serviceUrl: `mailto:${CONTACT_EMAIL}`, availableLanguage: "en" },

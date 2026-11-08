@@ -9,19 +9,19 @@ export const SITE_URL = "https://maxburlak.com";
 
 export const SITE_NAME = "Max Burlak";
 
-export const SITE_TAGLINE = "AI-driven product designer for founders";
+export const SITE_TAGLINE = "Product builder & design engineer for AI and B2B SaaS";
 
 /** The one-line description. Reuse it verbatim on LinkedIn, Dribbble, Contra, etc. */
 export const ONE_LINER =
-  "Max Burlak is a founding product designer for AI and B2B SaaS startups, based in Barcelona.";
+  "Max Burlak is a product builder and design engineer for AI and B2B SaaS startups, based in Barcelona.";
 
-export const JOB_TITLE = "Founding Product Designer";
+export const JOB_TITLE = "Product Builder & Design Engineer";
 
 export const DEFAULT_TITLE =
-  "Max Burlak — AI-Driven Product Designer for B2B SaaS Founders";
+  "Max Burlak — Product Builder & Design Engineer for AI and B2B SaaS";
 
 export const DEFAULT_DESCRIPTION =
-  "Founding product designer (3×) helping B2B SaaS founders ship faster: activation, conversion, design systems, and AI-native workflows. 13+ years; Default, Apollo.io, and startups from 0 to $2.5M+ ARR.";
+  "Product builder and design engineer for AI and B2B SaaS startups. 3× founding designer, 13+ years: I design, build and ship products end to end. Default.com, Apollo.io, and startups from 0 to $2.5M+ ARR.";
 
 export const OG_IMAGE_URL = `${SITE_URL}/og-image.jpg`;
 
@@ -45,6 +45,11 @@ export const SAME_AS = [
 ] as const;
 
 export const KNOWS_ABOUT = [
+  "Product building",
+  "Design engineering",
+  "Prototyping in code",
+  "React and Tailwind CSS",
+  "AI-assisted development",
   "Product design",
   "Founding designer",
   "B2B SaaS",

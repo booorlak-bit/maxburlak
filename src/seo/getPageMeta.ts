@@ -131,7 +131,7 @@ export function getPageMeta(
       return {
         title: `About — ${SITE_NAME}`,
         description:
-          "Max Burlak — product design lead and builder in Barcelona. 13+ years in B2B SaaS, 3x founding designer, ventures, consulting, and how he works.",
+          "Max Burlak — product builder and design engineer in Barcelona. 13+ years in B2B SaaS, 3× founding designer, ventures, consulting, and how he works.",
         canonicalPath: "/about",
         robots: "index, follow",
       };

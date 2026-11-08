@@ -80,7 +80,7 @@ const staticRoutes = [
     route: "/about",
     title: "About — Max Burlak",
     description:
-      "Max Burlak — product design lead and builder in Barcelona. 13+ years in B2B SaaS, 3x founding designer, ventures, consulting, and how he works.",
+      "Max Burlak — product builder and design engineer in Barcelona. 13+ years in B2B SaaS, 3× founding designer, ventures, consulting, and how he works.",
     changefreq: "monthly",
     priority: "0.8",
   },

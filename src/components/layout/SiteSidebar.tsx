@@ -24,12 +24,12 @@ export function SiteSidebar({ isDark, bookCallUrl, contactEmailUrl }: SiteSideba
             <div className={`${isDark ? 'bg-[#2a2a2a]' : 'bg-[#ececf0]'} transition-colors duration-700 content-stretch flex gap-[8px] items-center justify-center overflow-clip px-[12px] py-[4px] relative rounded-[16px] shrink-0`}>
               <div className="bg-[#54cfa4] rounded-[12px] shrink-0 size-[8px]" />
               <div className={`flex flex-col font-['Switzer_Variable:Regular',sans-serif] font-normal justify-center leading-[0] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[clamp(14px,1.15vw,15px)] whitespace-nowrap`}>
-                <p className="font-normal leading-[18px] text-[13px]">3x times Founding Designer</p>
+                <p className="font-normal leading-[18px] text-[13px]">3× Founding Designer</p>
               </div>
             </div>
             <div className="content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] gap-[22px] items-start relative shrink-0 w-full">
-              <h1 className={`font-medium leading-[1.14] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[clamp(26px,7vw,32px)] tracking-[-0.4px] w-full`}>Max, AI-driven product designer who helps founders to design experience, build systems and foundations.</h1>
-              <p className={`font-normal leading-[1.4] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[clamp(14px,1.2vw,15px)] w-full max-w-[92%]`}>Helped to gain ARR from 0 to 2,5M+ in less then a year for various startups and to prepare for multiple funding rounds for different companies with total amount around $ 150M</p>
+              <h1 className={`font-medium leading-[1.14] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[clamp(26px,7vw,32px)] tracking-[-0.4px] w-full`}>I’m Max, a product builder and design engineer. I help founders design, build and ship AI and B2B SaaS products.</h1>
+              <p className={`font-normal leading-[1.4] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[clamp(14px,1.2vw,15px)] w-full max-w-[92%]`}>Helped startups grow ARR from 0 to $2.5M+ in under a year and prepare for funding rounds totaling around $150M.</p>
             </div>
             <div className="content-stretch flex flex-wrap gap-[10px] items-start mt-[10px] relative shrink-0">
               <a href={bookCallUrl} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[28px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg no-underline" data-name="Button">

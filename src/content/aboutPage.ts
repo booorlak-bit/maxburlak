@@ -8,7 +8,7 @@ export type AboutContactLink = {
 export const ABOUT_HERO = {
   label: "About",
   title: "Max Burlak",
-  subtitle: "Product Design Lead. Builder. Based in Barcelona.",
+  subtitle: "Product builder & design engineer. Based in Barcelona.",
 };
 
 export const ABOUT_BIO = {

@@ -9,6 +9,7 @@ import {
   KEY_RESULTS,
   KNOWS_ABOUT,
   LOCATION,
+  JOB_TITLE,
   ONE_LINER,
   RESUME_URL,
   SAME_AS,
@@ -53,7 +54,7 @@ export function profileMarkdown() {
     ``,
     ONE_LINER,
     ``,
-    `- Role: Founding product designer, 3× founding designer, ${YEARS_OF_EXPERIENCE} years in product design`,
+    `- Role: ${JOB_TITLE}; 3× founding designer, ${YEARS_OF_EXPERIENCE} years in product design`,
     `- Location: ${LOCATION.city}, ${LOCATION.country} (remote with US and European teams)`,
     `- Focus: ${KNOWS_ABOUT.join(", ")}`,
     `- Contact: ${CONTACT_EMAIL} · Book a call: ${BOOK_CALL_URL}`,
@@ -72,7 +73,7 @@ export function profileMarkdown() {
 
 export function homeMarkdown(caseStudies) {
   return [
-    `# ${SITE_NAME} — founding product designer for AI and B2B SaaS startups`,
+    `# ${SITE_NAME} — product builder and design engineer for AI and B2B SaaS startups`,
     ``,
     sourceLine("/"),
     ``,

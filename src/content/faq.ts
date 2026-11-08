@@ -6,10 +6,10 @@
  */
 export type FaqItem = { question: string; answer: string };
 
-export const FAQ_TITLE = "FAQ — hiring a founding product designer — Max Burlak";
+export const FAQ_TITLE = "FAQ — working with a product builder & design engineer — Max Burlak";
 
 export const FAQ_DESCRIPTION =
-  "Who Max Burlak is, what a founding product designer does, results at Default.com and Apollo.io, how he uses AI, engagement models, pricing, and how to start.";
+  "Who Max Burlak is, what a product builder and design engineer does, results at Default.com and Apollo.io, how he uses AI, engagement models, pricing, and how to start.";
 
 export const FAQ_INTRO = {
   title: "FAQ",
@@ -20,15 +20,15 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: "Who is Max Burlak?",
     answer:
-      "Max Burlak is a founding product designer for AI and B2B SaaS startups, based in Barcelona, Spain. He has 13+ years of product design experience, has been the founding designer at three companies, and led design at Default.com (2023–2026) and Apollo.io (2021–2023).",
+      "Max Burlak is a product builder and design engineer for AI and B2B SaaS startups, based in Barcelona, Spain. He has 13+ years of product design experience, has been the founding designer at three companies, and led design at Default.com (2023–2026) and Apollo.io (2021–2023).",
   },
   {
-    question: "What does a founding product designer do?",
+    question: "What does a product builder and design engineer do?",
     answer:
-      "A founding product designer is the first designer at a startup and owns the whole product experience: research, UX, UI, the design system, and the decisions about what to cut so the team ships. At Default.com I took the product through 3 major scope changes, built the design system, and shipped a platform that raised trial-to-paid conversion by 34%.",
+      "A design engineer works across design and code: shapes the product, then builds it — prototypes, production UI in React and Tailwind, and the design system as code — so ideas reach users without a lossy handoff. As a product builder I own the whole path from problem to shipped product, including what to cut. I combine this with experience as a 3× founding designer: at Default.com I took the product through 3 major scope changes, built the design system, and shipped a platform that raised trial-to-paid conversion by 34%.",
   },
   {
-    question: "When should a startup hire a founding designer?",
+    question: "When should a startup hire a product builder or founding designer?",
     answer:
       "Usually between pre-seed and Series B: when you have a product that needs to convert and retain users, engineers are building faster than decisions are being made, or the UI has grown inconsistent across teams. Earlier is cheaper — a design system started in week 1 costs far less than one retrofitted after a year.",
   },
