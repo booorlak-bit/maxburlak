@@ -9,19 +9,20 @@ export const SITE_URL = "https://maxburlak.com";
 
 export const SITE_NAME = "Max Burlak";
 
-export const SITE_TAGLINE = "Product builder & design engineer for AI and B2B SaaS";
+export const SITE_TAGLINE =
+  "Product Designer & Design Engineer for B2B SaaS and AI Products | Activation, Monetization & Design Systems";
 
 /** The one-line description. Reuse it verbatim on LinkedIn, Dribbble, Contra, etc. */
 export const ONE_LINER =
-  "Max Burlak is a product builder and design engineer for AI and B2B SaaS startups, based in Barcelona.";
+  "I take products from 0→1→A, combining product strategy, design, systems, and hands-on building.";
 
-export const JOB_TITLE = "Product Builder & Design Engineer";
+export const JOB_TITLE = "Product Designer & Design Engineer";
 
 export const DEFAULT_TITLE =
-  "Max Burlak — Product Builder & Design Engineer for AI and B2B SaaS";
+  "Max Burlak | Product Designer & Design Engineer for B2B SaaS and AI Products";
 
 export const DEFAULT_DESCRIPTION =
-  "Product builder and design engineer for AI and B2B SaaS startups. 3× founding designer, 13+ years: I design, build and ship products end to end. Default.com, Apollo.io, and startups from 0 to $2.5M+ ARR.";
+  "Product Designer & Design Engineer for B2B SaaS and AI Products. I take products from 0→1→A, combining product strategy, design, systems, and hands-on building. Based in Barcelona, Spain.";
 
 export const OG_IMAGE_URL = `${SITE_URL}/og-image.jpg`;
 
@@ -38,6 +39,7 @@ export const YEARS_OF_EXPERIENCE = "13+";
 export const SAME_AS = [
   "https://www.linkedin.com/in/maxburlak/",
   "https://dribbble.com/maxburlak",
+  "https://contra.com/maxburlak",
   "https://medium.com/@booorlak",
   "https://www.youtube.com/@heyhimaxo",
   "https://www.instagram.com/multimaxo",
@@ -72,7 +74,7 @@ export const CAREER = [
     start: "2023-01",
     end: "2026-01",
     summary:
-      "Revenue operations platform for GTM teams. Trial-to-paid conversion +34%, 1.8× dev velocity, $2.5M ARR attributed to UX work.",
+      "Revenue operations platform for GTM teams. The team reported trial-to-paid conversion moving from 18% to 24% over 90 days after work Max led. Other figures are company-reported and lack published measurement details.",
   },
   {
     company: "Apollo.io",
@@ -95,9 +97,8 @@ export const CAREER = [
 
 /** Headline results LLMs can quote. Each one is backed by a case study. */
 export const KEY_RESULTS = [
-  "Helped startups grow ARR from 0 to $2.5M+ in under a year.",
-  "Helped companies prepare for funding rounds totaling around $150M.",
-  "+34% trial-to-paid conversion and 1.8× dev velocity at Default.com.",
-  "−35% time-to-value and 85% design system adoption across 5 squads at Apollo.io.",
+  "At Default.com, the team reported trial-to-paid conversion moving from 18% to 24% over 90 days (+6 percentage points; published as +34% relative). Max led product design; no control group is documented.",
+  "The Default.com case also reports 1.8× developer velocity, $2.5M ARR impact, and 40% fewer support tickets. The published source does not specify their baselines, measurement windows, or attribution methods.",
+  "At Apollo.io, the team reported 35% lower median time-to-value and 85% component adoption across five squads. The published source does not specify measurement windows.",
   "Launched a crypto bank in 4 months with $1M+ TVL in month one at P2P.org.",
 ] as const;

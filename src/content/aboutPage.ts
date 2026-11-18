@@ -8,13 +8,13 @@ export type AboutContactLink = {
 export const ABOUT_HERO = {
   label: "About",
   title: "Max Burlak",
-  subtitle: "Product builder & design engineer. Based in Barcelona.",
+  subtitle: "Product Designer & Design Engineer for B2B SaaS and AI Products. Based in Barcelona.",
 };
 
 export const ABOUT_BIO = {
   headline: "Who I am",
   paragraphs: [
-    "13+ years designing products. 3x founding designer. Currently building ventures and consulting for B2B SaaS companies.",
+    "13+ years designing products. Founding designer at three companies. Currently building ventures and consulting for B2B SaaS companies.",
     "I've led design at Default.com, Apollo.io, and P2P.org. Built design systems from scratch, shipped features that moved revenue metrics, and mentored designers across multiple teams.",
     "Now I split my time between consulting and building my own products — Pinnboards, Fliq, The First, mndfrnd, and Organicaaa.",
     "Based in Barcelona. Originally from Ukraine. I've worked remotely with teams across the US, Europe, and beyond.",

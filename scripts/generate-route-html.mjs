@@ -10,6 +10,7 @@ import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, OG_IMAGE_URL, SITE_NAME, SITE_URL } from "../src/seo/site.ts";
+import { DEFAULT_CASE_STUDY_LEDE } from "../src/content/caseStudyMetrics.ts";
 import { FAQ_DESCRIPTION, FAQ_TITLE } from "../src/content/faq.ts";
 import {
   aboutMarkdown,
@@ -80,7 +81,7 @@ const staticRoutes = [
     route: "/about",
     title: "About — Max Burlak",
     description:
-      "Max Burlak — product builder and design engineer in Barcelona. 13+ years in B2B SaaS, 3× founding designer, ventures, consulting, and how he works.",
+      "Max Burlak is a Product Designer and Design Engineer for B2B SaaS and AI products in Barcelona, with 13+ years of experience across Default.com, Apollo.io, and early-stage products.",
     changefreq: "monthly",
     priority: "0.8",
   },
@@ -305,7 +306,8 @@ async function main() {
     const page = {
       route,
       rawTitle: `${cs.client}: ${cs.pageTitle || cs.headline || "Case study"} — ${SITE_NAME}`,
-      rawDescription: cs.lede || cs.summary || DEFAULT_DESCRIPTION,
+      rawDescription:
+        cs.slug === "default" ? DEFAULT_CASE_STUDY_LEDE : cs.lede || cs.summary || DEFAULT_DESCRIPTION,
       ogImage: sanityImageUrl(cs.coverImage) || sanityImageUrl(cs.heroImage),
       updated: cs._updatedAt || null,
       changefreq: "monthly",

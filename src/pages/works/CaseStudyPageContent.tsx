@@ -359,6 +359,7 @@ function CaseStudySectionBlock({
       <h2 className={`${SITE_FONT} ${t.text} text-[22px] font-medium leading-[30px] tracking-[-0.2px]`}>
         {section.title}
       </h2>
+      {section.preface ? <p className={bodyClass}>{section.preface}</p> : null}
       {section.paragraphBlocks && section.paragraphBlocks.length > 0 ? (
         <PortableTextBody
           blocks={section.paragraphBlocks}

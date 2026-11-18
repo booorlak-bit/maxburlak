@@ -16,6 +16,7 @@ import {
   SITE_URL,
 } from "../../src/seo/site.ts";
 import { FAQ_ITEMS } from "../../src/content/faq.ts";
+import { caseStudyMetricDetail, DEFAULT_RESULTS_CONTEXT } from "../../src/content/caseStudyMetrics.ts";
 import { url } from "./markdown.mjs";
 
 export const PERSON_ID = `${SITE_URL}/#person`;
@@ -88,13 +89,13 @@ export function homeJsonLd() {
     {
       "@type": "ProfessionalService",
       "@id": `${SITE_URL}/#service`,
-      name: `${SITE_NAME} — product building and design engineering for AI and B2B SaaS startups`,
+      name: `${SITE_NAME} — product design and engineering for B2B SaaS and AI products`,
       url: `${SITE_URL}/`,
       description: DEFAULT_DESCRIPTION,
       provider: { "@id": PERSON_ID },
       areaServed: "Worldwide",
       address: { "@type": "PostalAddress", addressLocality: LOCATION.city, addressCountry: LOCATION.countryCode },
-      serviceType: ["Product building", "Design engineering", "Founding designer engagements", "Fractional design leadership", "Design systems", "AI product design"],
+      serviceType: ["Product design", "Design engineering", "Fractional design leadership", "Activation and onboarding", "Monetization", "Design systems", "AI product design"],
       availableChannel: [
         { "@type": "ServiceChannel", serviceUrl: BOOK_CALL_URL, availableLanguage: "en" },
         { "@type": "ServiceChannel", serviceUrl: `mailto:${CONTACT_EMAIL}`, availableLanguage: "en" },
@@ -156,7 +157,12 @@ export function faqJsonLd(page) {
 
 export function caseStudyJsonLd(page, cs) {
   const pageUrl = url(page.route);
-  const metrics = (cs.metrics ?? []).map((m) => `${m.value} ${m.label}`);
+  const resultSection = (cs.sections ?? []).find((section) => section.id === "results");
+  const sourceMetrics = resultSection?.metrics?.length ? resultSection.metrics : cs.metrics ?? [];
+  const metrics = sourceMetrics.map((metric) => {
+    const detail = caseStudyMetricDetail(cs.slug, resultSection?.id ?? "", metric);
+    return `${metric.value} ${metric.label}${detail ? `: ${detail}` : ""}`;
+  });
   return graph([
     {
       "@type": "Article",
@@ -164,11 +170,22 @@ export function caseStudyJsonLd(page, cs) {
       headline: `${cs.client}: ${cs.pageTitle || cs.headline}`,
       name: page.rawTitle,
       description: page.rawDescription,
-      abstract: [cs.lede, metrics.length ? `Results: ${metrics.join("; ")}.` : ""].filter(Boolean).join(" "),
+      abstract: [
+        page.rawDescription,
+        metrics.length ? `Reported results: ${metrics.join("; ")}.` : "",
+        cs.slug === "default" ? DEFAULT_RESULTS_CONTEXT : "",
+      ].filter(Boolean).join(" "),
       url: pageUrl,
       ...(page.ogImage ? { image: page.ogImage } : {}),
       ...(cs._updatedAt ? { dateModified: cs._updatedAt } : {}),
-      ...(cs.years ? { temporalCoverage: cs.years.replace(/\s*\(.*\)$/, "") } : {}),
+      ...(cs.years
+        ? {
+            temporalCoverage:
+              cs.slug === "default"
+                ? "January 2023 to January 2026"
+                : cs.years.replace(/\s*\(.*\)$/, ""),
+          }
+        : {}),
       ...(cs.tags?.length ? { keywords: cs.tags.join(", ") } : {}),
       genre: "Product design case study",
       author: { "@id": PERSON_ID },

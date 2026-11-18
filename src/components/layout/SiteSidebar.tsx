@@ -28,8 +28,8 @@ export function SiteSidebar({ isDark, bookCallUrl, contactEmailUrl }: SiteSideba
               </div>
             </div>
             <div className="content-stretch flex flex-col font-['Switzer_Variable:Regular',sans-serif] gap-[22px] items-start relative shrink-0 w-full">
-              <h1 className={`font-medium leading-[1.14] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[clamp(26px,7vw,32px)] tracking-[-0.4px] w-full`}>I’m Max, a product builder and design engineer. I help founders design, build and ship AI and B2B SaaS products.</h1>
-              <p className={`font-normal leading-[1.4] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[clamp(14px,1.2vw,15px)] w-full max-w-[92%]`}>Helped startups grow ARR from 0 to $2.5M+ in under a year and prepare for funding rounds totaling around $150M.</p>
+              <h1 className={`font-medium leading-[1.14] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[clamp(26px,7vw,32px)] tracking-[-0.4px] w-full`}>Product Designer &amp; Design Engineer for B2B SaaS and AI Products | Activation, Monetization &amp; Design Systems</h1>
+              <p className={`font-normal leading-[1.4] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[clamp(14px,1.2vw,15px)] w-full max-w-[92%]`}>I take products from 0→1→A, combining product strategy, design, systems, and hands-on building.</p>
             </div>
             <div className="content-stretch flex flex-wrap gap-[10px] items-start mt-[10px] relative shrink-0">
               <a href={bookCallUrl} target="_blank" rel="noopener noreferrer" className="content-stretch flex gap-[8px] h-[44px] min-h-[44px] items-center justify-center px-[12px] py-[4px] relative rounded-[28px] shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg no-underline" data-name="Button">

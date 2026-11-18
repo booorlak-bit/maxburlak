@@ -131,7 +131,7 @@ export function getPageMeta(
       return {
         title: `About — ${SITE_NAME}`,
         description:
-          "Max Burlak — product builder and design engineer in Barcelona. 13+ years in B2B SaaS, 3× founding designer, ventures, consulting, and how he works.",
+          "Max Burlak is a Product Designer and Design Engineer for B2B SaaS and AI products in Barcelona, with 13+ years of experience across Default.com, Apollo.io, and early-stage products.",
         canonicalPath: "/about",
         robots: "index, follow",
       };

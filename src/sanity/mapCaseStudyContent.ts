@@ -8,12 +8,19 @@ import type { WorksProject } from "../content/worksPage";
 import { urlForSrc } from "./image";
 import { blocksToPlainParagraphs, type SanityBlock } from "./portableText";
 import type { CaseStudy } from "./types";
+import {
+  caseStudyMetricDetail,
+  DEFAULT_CASE_STUDY_LEDE,
+  DEFAULT_CASE_STUDY_PERIOD,
+  DEFAULT_RESULTS_CONTEXT,
+} from "../content/caseStudyMetrics";
 
 function slugKey(value: string, index: number): string {
   return value.trim().toLowerCase().replace(/\s+/g, "-") || `item-${index}`;
 }
 
 function mapSections(caseStudy: CaseStudy): CaseStudySection[] {
+  const slug = caseStudy.slug?.current?.trim() ?? "";
   return (
     caseStudy.sections
       ?.map((section, index) => {
@@ -27,6 +34,7 @@ function mapSections(caseStudy: CaseStudy): CaseStudySection[] {
         return {
           id,
           title,
+          preface: slug === "default" && id === "results" ? DEFAULT_RESULTS_CONTEXT : undefined,
           paragraphs: plainParagraphs.length > 0 ? plainParagraphs : undefined,
           paragraphBlocks: paragraphBlocks?.length ? paragraphBlocks : undefined,
           table: section.table
@@ -53,7 +61,10 @@ function mapSections(caseStudy: CaseStudy): CaseStudySection[] {
             ?.map((metric) => ({
               value: metric.value?.trim() ?? "",
               label: metric.label?.trim() ?? "",
-              detail: metric.detail?.trim() ?? "",
+              detail: caseStudyMetricDetail(slug, id, {
+                label: metric.label?.trim(),
+                detail: metric.detail?.trim(),
+              }) ?? "",
             }))
             .filter((metric) => metric.value && metric.label),
           numberedList: section.numberedList?.map((item) => item?.trim()).filter(Boolean) as string[] | undefined,
@@ -124,13 +135,16 @@ export function mapCaseStudyToPageContent(
   return {
     slug,
     pageTitle: caseStudy.pageTitle?.trim() || project.title,
-    lede: caseStudy.lede?.trim() || project.showcaseSummary,
-    published: caseStudy.publishedLabel?.trim() || project.years,
+    lede: slug === "default" ? DEFAULT_CASE_STUDY_LEDE : caseStudy.lede?.trim() || project.showcaseSummary,
+    published: slug === "default" ? DEFAULT_CASE_STUDY_PERIOD : caseStudy.publishedLabel?.trim() || project.years,
     visitUrl: caseStudy.visitUrl?.trim() || undefined,
     visitLabel: caseStudy.visitLabel?.trim() || undefined,
     meta: {
       role: caseStudy.role?.trim() || project.role,
-      timeline: caseStudy.years?.trim() || project.years,
+      timeline:
+        slug === "default"
+          ? `${DEFAULT_CASE_STUDY_PERIOD} (3 years)`
+          : caseStudy.years?.trim() || project.years,
       team: caseStudy.teamMeta?.trim() || project.tags.join(", "),
       stage: caseStudy.stageMeta?.trim() || project.tags[0] || "—",
     },

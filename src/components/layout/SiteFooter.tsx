@@ -38,7 +38,7 @@ export function SiteFooter({ isDark }: SiteFooterProps) {
             <p
               className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700 text-[13px] w-full`}
             >
-              Product builder &amp; design engineer for AI and B2B SaaS startups.
+              Product Designer &amp; Design Engineer for B2B SaaS and AI Products. Focused on activation, monetization, and design systems.
             </p>
             <SocialIconButtons isDark={isDark} />
           </div>

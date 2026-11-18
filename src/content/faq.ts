@@ -6,10 +6,10 @@
  */
 export type FaqItem = { question: string; answer: string };
 
-export const FAQ_TITLE = "FAQ — working with a product builder & design engineer — Max Burlak";
+export const FAQ_TITLE = "FAQ — product design and engineering for B2B SaaS and AI — Max Burlak";
 
 export const FAQ_DESCRIPTION =
-  "Who Max Burlak is, what a product builder and design engineer does, results at Default.com and Apollo.io, how he uses AI, engagement models, pricing, and how to start.";
+  "Who Max Burlak is, product design and engineering for B2B SaaS and AI products, results at Default.com and Apollo.io, engagement models, pricing, and how to start.";
 
 export const FAQ_INTRO = {
   title: "FAQ",
@@ -20,15 +20,15 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: "Who is Max Burlak?",
     answer:
-      "Max Burlak is a product builder and design engineer for AI and B2B SaaS startups, based in Barcelona, Spain. He has 13+ years of product design experience, has been the founding designer at three companies, and led design at Default.com (2023–2026) and Apollo.io (2021–2023).",
+      "Max Burlak is a product designer and design engineer for B2B SaaS and AI products, based in Barcelona, Spain. He has 13+ years of product design experience, has been a founding designer at three companies, and led design at Default.com (January 2023 to January 2026) and Apollo.io (2021 to 2023).",
   },
   {
-    question: "What does a product builder and design engineer do?",
+    question: "What does a founding product designer do?",
     answer:
-      "A design engineer works across design and code: shapes the product, then builds it — prototypes, production UI in React and Tailwind, and the design system as code — so ideas reach users without a lossy handoff. As a product builder I own the whole path from problem to shipped product, including what to cut. I combine this with experience as a 3× founding designer: at Default.com I took the product through 3 major scope changes, built the design system, and shipped a platform that raised trial-to-paid conversion by 34%.",
+      "A founding product designer connects customer problems to product strategy, workflows, and a system the team can ship consistently. At Default.com, Max led design through three scope changes and worked on the workflow builder, pricing, guided setup, and design-system foundations. The team reported trial-to-paid conversion moving from 18% to 24% over 90 days; the published case does not identify a control group.",
   },
   {
-    question: "When should a startup hire a product builder or founding designer?",
+    question: "When should a startup hire a founding product designer?",
     answer:
       "Usually between pre-seed and Series B: when you have a product that needs to convert and retain users, engineers are building faster than decisions are being made, or the UI has grown inconsistent across teams. Earlier is cheaper — a design system started in week 1 costs far less than one retrofitted after a year.",
   },
@@ -40,7 +40,7 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: "What results have you delivered?",
     answer:
-      "At Default.com: +34% trial-to-paid conversion, 1.8× dev velocity, and $2.5M ARR attributed to UX improvements. At Apollo.io: one design system for 5 squads, −35% time-to-value, 85% component adoption. At P2P.org: a crypto bank launched in 4 months with $1M+ TVL in the first month. Overall I have helped startups grow from 0 to $2.5M+ ARR and prepare for funding rounds totaling around $150M.",
+      "At Default.com, the team reported trial-to-paid conversion moving from 18% to 24% over 90 days (+6 percentage points, published as +34% relative). Max led product design; the case does not identify a control group. The same case reports 1.8× developer velocity, $2.5M ARR impact, and 40% fewer support tickets, but does not publish baselines, measurement windows, or attribution methods for those figures. At Apollo.io, the team reported 35% lower median time-to-value and 85% component adoption across five squads; measurement windows are not stated. At P2P.org, the crypto bank launched in four months and reached $1M+ TVL in its first month.",
   },
   {
     question: "How do you use AI in product design?",

@@ -435,29 +435,29 @@ export default function MainV({
                             <div className="flex min-w-0 flex-col gap-4 items-start justify-start py-10 sm:py-0">
                               <p className={`font-medium leading-[36px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[32px] tracking-[-0.2px] w-full`}>+34%</p>
                               <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
-                                <p className={`font-medium leading-[24px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[18px] w-full`}>Trial→Paid Conversion</p>
-                                <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Lift after pricing/compare + guided setup (60–90 days)</p>
+                                <p className={`font-medium leading-[24px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[18px] w-full`}>Default.com trial-to-paid conversion</p>
+                                <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>18% to 24% over 90 days (+6 percentage points; +34% as reported). No control group is documented.</p>
                               </div>
                             </div>
                             <div className="flex min-w-0 flex-col gap-4 items-start py-10 sm:py-0">
                               <p className={`font-medium leading-[36px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[32px] tracking-[-0.2px] w-full`}>−35%</p>
                               <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
-                                <p className={`font-medium leading-[24px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[18px] w-full`}>Time-to-Value (median)</p>
-                                <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Faster first success via role-aware onboarding</p>
+                                <p className={`font-medium leading-[24px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[18px] w-full`}>Apollo.io median time-to-value</p>
+                                <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Team-reported reduction. Baseline and measurement window are not stated.</p>
                               </div>
                             </div>
                             <div className="flex min-w-0 flex-col gap-4 items-start py-10 sm:py-0">
                               <p className={`font-medium leading-[36px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[32px] tracking-[-0.2px] w-full`}>1.8×</p>
                               <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
-                                <p className={`font-medium leading-[24px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[18px] w-full`}>Dev Velocity</p>
-                                <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Design-system adoption (tokens + kits) increased throughput</p>
+                                <p className={`font-medium leading-[24px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[18px] w-full`}>Default.com developer velocity</p>
+                                <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Company-reported after system work. Baseline, window, and calculation method are not stated.</p>
                               </div>
                             </div>
                             <div className="flex min-w-0 flex-col gap-4 items-start py-10 last:pb-6 sm:py-0">
-                              <p className={`font-medium leading-[36px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[32px] tracking-[-0.2px] w-full`}>92%</p>
+                              <p className={`font-medium leading-[36px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[32px] tracking-[-0.2px] w-full`}>85%</p>
                               <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
-                                <p className={`font-medium leading-[24px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[18px] w-full`}>Stakeholder Alignment</p>
-                                <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>{`Decision memos & monthly outcome reviews (PM/CS/RevOps)`}</p>
+                                <p className={`font-medium leading-[24px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[18px] w-full`}>Apollo.io component adoption</p>
+                                <p className={`font-light leading-[18px] relative shrink-0 ${isDark ? 'text-[#b8bcc4]' : 'text-[#5b616d]'} transition-colors duration-700 text-[13px] w-full`}>Reported across five squads. Measurement window is not stated.</p>
                               </div>
                             </div>
                           </div>
@@ -558,23 +558,15 @@ export default function MainV({
                                   <div className="relative shrink-0">
                                     <div className="bg-clip-padding border-0 border-[transparent] border-solid flex flex-wrap font-['Switzer_Variable:Regular',sans-serif] gap-4 sm:gap-6 md:gap-[24px] items-center justify-center relative w-full text-center">
                                       <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
-                                        <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>+30%</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Functionality</p>
-                                      </div>
-                                      <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
-                                        <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>+21%</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Satisfaction</p>
-                                      </div>
-                                      <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0" data-name="Container">
                                         <p className={`font-medium leading-[30px] relative shrink-0 ${isDark ? 'text-white' : 'text-[#0a0c11]'} transition-colors duration-700 text-[22px] tracking-[-0.2px]`}>3</p>
-                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Iterations</p>
+                                        <p className={`font-light leading-[16px] relative shrink-0 text-[12px] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Workflow builder iterations</p>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[16px] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Trade-offs: Custom nodes, AI co-pilot functionality, on-platform actions through the workflow builder, recipes / templates.</p>
+                            <p className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[16px] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>Designed and refined Default's workflow builder for revenue teams across three user-informed iterations.</p>
                             <SiteGhostLink isDark={isDark} to={homeSelectedWorkPaths[0]} size="xs" icon="arrow">
                               View case study
                             </SiteGhostLink>
@@ -683,6 +675,7 @@ export default function MainV({
                             <div className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[0] min-w-full relative shrink-0 text-[12px] text-center w-[min-content] whitespace-pre-wrap ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700`}>
                               <p className="font-light leading-[16px] mb-0">{`Trade-offs: Kanban view, calendar view, opportunities. `}</p>
                               <p className="font-light leading-[16px]">Shipped core value first.</p>
+                              <p className="mt-2 font-light leading-[16px]">The team reported conversion moving from 18% to 24% over 90 days. The velocity and ARR figures are company-level reports without published baselines, windows, or methods. Max led design; the figures are not isolated causal design estimates.</p>
                             </div>
                             <SiteGhostLink isDark={isDark} to={homeSelectedWorkPaths[1]} size="xs" icon="arrow">
                               View case study

@@ -14,6 +14,7 @@ import {
   RESUME_URL,
   SAME_AS,
   SITE_NAME,
+  SITE_TAGLINE,
   SITE_URL,
   YEARS_OF_EXPERIENCE,
 } from "../../src/seo/site.ts";
@@ -21,11 +22,19 @@ import { FAQ_ITEMS } from "../../src/content/faq.ts";
 import { ABOUT_BIO, ABOUT_HOW_I_WORK, ABOUT_NOW, ABOUT_OUTSIDE_WORK } from "../../src/content/aboutPage.ts";
 import { APPROACH_HERO, ENGAGEMENT_MODELS, MODEL_OVERVIEW, MULTIPLIER_PHASES } from "../../src/content/approachPage.ts";
 import { ACTIVE_VENTURES, VENTURES_HERO } from "../../src/content/venturesPage.ts";
+import {
+  caseStudyMetricDetail,
+  DEFAULT_CASE_STUDY_LEDE,
+  DEFAULT_CASE_STUDY_PERIOD,
+  DEFAULT_RESULTS_CONTEXT,
+} from "../../src/content/caseStudyMetrics.ts";
 
 export const url = (route) => (route === "/" ? `${SITE_URL}/` : `${SITE_URL}${route}`);
 export const mdPath = (route) => (route === "/" ? "/index.md" : `${route}.md`);
 
 const clean = (text) => String(text ?? "").replace(/\s+/g, " ").trim();
+const caseStudyLede = (cs) =>
+  cs.slug === "default" ? DEFAULT_CASE_STUDY_LEDE : clean(cs.lede || cs.summary);
 const fmtMonth = (ym) => {
   const [y, m] = ym.split("-");
   return `${new Date(Date.UTC(+y, +m - 1)).toLocaleString("en", { month: "short", timeZone: "UTC" })} ${y}`;
@@ -54,7 +63,7 @@ export function profileMarkdown() {
     ``,
     ONE_LINER,
     ``,
-    `- Role: ${JOB_TITLE}; 3× founding designer, ${YEARS_OF_EXPERIENCE} years in product design`,
+    `- Role: ${JOB_TITLE}; ${YEARS_OF_EXPERIENCE} years in product design; 3× founding designer`,
     `- Location: ${LOCATION.city}, ${LOCATION.country} (remote with US and European teams)`,
     `- Focus: ${KNOWS_ABOUT.join(", ")}`,
     `- Contact: ${CONTACT_EMAIL} · Book a call: ${BOOK_CALL_URL}`,
@@ -73,7 +82,7 @@ export function profileMarkdown() {
 
 export function homeMarkdown(caseStudies) {
   return [
-    `# ${SITE_NAME} — product builder and design engineer for AI and B2B SaaS startups`,
+    `# ${SITE_NAME} — ${SITE_TAGLINE}`,
     ``,
     sourceLine("/"),
     ``,
@@ -81,7 +90,7 @@ export function homeMarkdown(caseStudies) {
     ``,
     `## Case studies`,
     ``,
-    ...caseStudies.map((cs) => `- [${cs.client}: ${cs.pageTitle || cs.headline}](${url(`/works/${cs.slug}`)}) — ${clean(cs.lede || cs.summary)}`),
+    ...caseStudies.map((cs) => `- [${cs.client}: ${cs.pageTitle || cs.headline}](${url(`/works/${cs.slug}`)}) — ${caseStudyLede(cs)}`),
     ``,
     `## More`,
     ``,
@@ -94,18 +103,19 @@ export function homeMarkdown(caseStudies) {
 export function caseStudyMarkdown(cs) {
   const route = `/works/${cs.slug}`;
   const metrics = cs.metrics ?? [];
+  const isDefault = cs.slug === "default";
   const lines = [
     `# ${cs.client}: ${cs.pageTitle || cs.headline} — case study by ${SITE_NAME}`,
     ``,
     sourceLine(route),
     ``,
-    `> ${clean(cs.lede || cs.summary)}`,
+    `> ${caseStudyLede(cs)}`,
     ``,
     `## Key facts`,
     ``,
     `- Designer: ${SITE_NAME}, ${cs.role}`,
     `- Company: ${cs.client}${cs.visitUrl ? ` (${cs.visitUrl})` : ""}`,
-    cs.years ? `- Period: ${cs.years}` : null,
+    cs.slug === "default" ? `- Period: ${DEFAULT_CASE_STUDY_PERIOD}` : cs.years ? `- Period: ${cs.years}` : null,
     cs.stageMeta ? `- Stage: ${cs.stageMeta}` : null,
     cs.teamMeta ? `- Team: ${cs.teamMeta}` : null,
     cs.tags?.length ? `- Domain: ${cs.tags.join(", ")}` : null,
@@ -114,12 +124,16 @@ export function caseStudyMarkdown(cs) {
 
   for (const section of cs.sections ?? []) {
     lines.push("", `## ${clean(section.title)}`, "");
+    if (isDefault && section.id === "results") lines.push(DEFAULT_RESULTS_CONTEXT, "");
     const body = portableText(section.paragraphs);
     if (body) lines.push(body, "");
     for (const row of section.table ?? []) lines.push(`- **${clean(row.title)}**: ${clean(row.description)}`);
     for (const p of section.phases ?? []) lines.push(`- **${clean(p.phase)} — ${clean(p.title)}**: ${clean(p.description)}`);
     for (const f of section.features ?? []) lines.push(`- **${clean(f.title)}**: ${clean(f.body)}`);
-    for (const m of section.metrics ?? []) lines.push(`- **${clean(m.value)} ${clean(m.label)}**${m.detail ? ` — ${clean(m.detail)}` : ""}`);
+    for (const m of section.metrics ?? []) {
+      const detail = caseStudyMetricDetail(cs.slug, section.id, m);
+      lines.push(`- **${clean(m.value)} ${clean(m.label)}**${detail ? ` — ${clean(detail)}` : ""}`);
+    }
     (section.numberedList ?? []).forEach((item, i) => lines.push(`${i + 1}. ${clean(item)}`));
   }
   return lines.join("\n").replace(/\n{3,}/g, "\n\n").trim();
@@ -145,7 +159,7 @@ export function worksMarkdown(caseStudies) {
     ``,
     ...caseStudies.map((cs) => {
       const metrics = (cs.metrics ?? []).map((m) => `${m.value} ${m.label}`).join("; ");
-      return `- **${cs.client}** (${cs.role}, ${cs.years}) — ${clean(cs.lede || cs.summary)}${metrics ? ` Results: ${metrics}.` : ""} ${url(`/works/${cs.slug}`)}`;
+      return `- **${cs.client}** (${cs.role}, ${cs.slug === "default" ? DEFAULT_CASE_STUDY_PERIOD : cs.years}) — ${caseStudyLede(cs)}${metrics ? ` Results: ${metrics}.` : ""} ${url(`/works/${cs.slug}`)}`;
     }),
   ].join("\n");
 }
@@ -227,7 +241,7 @@ export function llmsTxt({ caseStudies, feedPosts, updated }) {
   return [
     `# ${SITE_NAME}`,
     ``,
-    `> ${ONE_LINER} 3× founding designer, ${YEARS_OF_EXPERIENCE} years; led design at Default.com and Apollo.io; helped startups grow from 0 to $2.5M+ ARR.`,
+    `> ${SITE_TAGLINE}. ${ONE_LINER} 3× founding designer, ${YEARS_OF_EXPERIENCE} years; career includes Default.com and Apollo.io.`,
     ``,
     profileMarkdown(),
     ``,
@@ -240,9 +254,15 @@ export function llmsTxt({ caseStudies, feedPosts, updated }) {
     `- [About](${url("/about")}): bio and current focus ([markdown](${SITE_URL}${mdPath("/about")}))`,
     `- [Ventures](${url("/ventures")}): products Max is building ([markdown](${SITE_URL}${mdPath("/ventures")}))`,
     ``,
+    `## Ventures`,
+    ``,
+    ...ACTIVE_VENTURES.map((v) =>
+      `- **${v.name}** (${v.status}; ${v.role})${v.url ? ` — ${v.url}` : ""}: ${clean(v.oneLiner)}`
+    ),
+    ``,
     `## Case studies`,
     ``,
-    ...caseStudies.map((cs) => `- [${cs.client}: ${cs.pageTitle || cs.headline}](${SITE_URL}${mdPath(`/works/${cs.slug}`)}): ${clean(cs.lede || cs.summary)}`),
+    ...caseStudies.map((cs) => `- [${cs.client}: ${cs.pageTitle || cs.headline}](${SITE_URL}${mdPath(`/works/${cs.slug}`)}): ${caseStudyLede(cs)}`),
     ``,
     `## Notes`,
     ``,
