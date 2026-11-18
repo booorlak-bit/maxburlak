@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { usePostHog } from "@posthog/react";
+import { usePostHog } from "../../analytics/posthog";
 import { SITE_FONT, type SiteTheme } from "../../components/site/siteTheme";
 import { getFeedPostPath } from "../../sanity/feedUtils";
 import type { FeedPost } from "../../sanity/types";

@@ -2,6 +2,11 @@ import type { WorksProject } from "./worksPage";
 import type { CaseStudy } from "../sanity/types";
 import { hasCmsCaseStudyContent, mapCaseStudyToPageContent } from "../sanity/mapCaseStudyContent";
 import type { SanityBlock } from "../sanity/portableText";
+import {
+  DEFAULT_CASE_STUDY_LEDE,
+  DEFAULT_CASE_STUDY_PERIOD,
+  DEFAULT_RESULTS_CONTEXT,
+} from "./caseStudyMetrics";
 
 export type CaseStudyNavItem = {
   id: string;
@@ -31,13 +36,17 @@ export type CaseStudyMetric = {
   detail: string;
 };
 
+export type CaseStudyGalleryImage = { src: string; alt?: string; caption?: string };
+
 export type CaseStudyMediaItem =
-  | { type: "image"; src: string; alt?: string; caption?: string }
+  | { type: "image"; src: string; alt?: string; caption?: string; allowFullscreen?: boolean }
+  | { type: "gallery"; images: CaseStudyGalleryImage[]; allowFullscreen?: boolean }
   | { type: "video"; src: string; poster?: string; alt?: string; caption?: string };
 
 export type CaseStudySection = {
   id: string;
   title: string;
+  preface?: string;
   paragraphs?: string[];
   paragraphBlocks?: SanityBlock[];
   table?: CaseStudyTableRow[];
@@ -70,13 +79,13 @@ const CASE_STUDY_PAGES: Record<string, CaseStudyPageContent> = {
   default: {
     slug: "default",
     pageTitle: "Revenue operations platform for GTM teams",
-    lede: "Led design through 3 major scope changes, shipping a platform that increased trial-to-paid conversion by 34% — without dedicated research.",
-    published: "2023–2026",
+    lede: DEFAULT_CASE_STUDY_LEDE,
+    published: DEFAULT_CASE_STUDY_PERIOD,
     visitUrl: "https://default.com",
     visitLabel: "Visit site",
     meta: {
       role: "Design Lead",
-      timeline: "2023–2026 (3 years)",
+      timeline: `${DEFAULT_CASE_STUDY_PERIOD} (3 years)`,
       team: "2 designers, 8 engineers",
       stage: "Series A → Series B",
     },
@@ -185,11 +194,12 @@ const CASE_STUDY_PAGES: Record<string, CaseStudyPageContent> = {
       {
         id: "results",
         title: "What changed",
+        preface: DEFAULT_RESULTS_CONTEXT,
         metrics: [
-          { value: "+34%", label: "Trial→Paid Conversion", detail: "Up from 18% to 24% in 90 days" },
-          { value: "1.8×", label: "Dev Velocity", detail: "Design system reduced build time" },
-          { value: "$2.5M", label: "ARR Impact", detail: "Attributed to UX improvements" },
-          { value: "−40%", label: "Support Tickets", detail: "Clearer UI = fewer questions" },
+          { value: "+34%", label: "Trial→Paid Conversion", detail: "Trial-to-paid moved from 18% to 24% over 90 days (+6 percentage points; reported as +34% relative). No control group is documented." },
+          { value: "1.8×", label: "Dev Velocity", detail: "Company-reported engineering throughput after design-system work. Baseline, observation window, calculation method, and design-specific attribution are not documented." },
+          { value: "$2.5M", label: "ARR Impact", detail: "Company-reported ARR impact attributed to UX improvements. The measurement window and attribution method are not documented." },
+          { value: "−40%", label: "Support Tickets", detail: "Reported support-ticket volume reduction. Baseline count, observation window, and measurement method are not documented." },
         ],
       },
       {

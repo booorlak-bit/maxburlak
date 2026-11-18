@@ -7,6 +7,8 @@ function prefersDark(): boolean {
 }
 
 function readIsDark(): boolean {
+  // Prerender (no DOM): render the light theme; the client re-renders with the real one.
+  if (typeof window === "undefined") return false;
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved === "dark") return true;
   if (saved === "light") return false;
@@ -27,6 +29,8 @@ function applyDocumentTheme(isDark: boolean) {
   const appRoot = document.getElementById("root");
   if (appRoot) {
     appRoot.style.backgroundColor = bg;
+    // Client render has committed: reveal the root for dark-mode visitors.
+    appRoot.removeAttribute("data-prerender-theme");
   }
 
   let meta = document.querySelector('meta[name="theme-color"]');

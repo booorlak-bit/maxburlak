@@ -1,4 +1,4 @@
-import { usePostHog } from "@posthog/react";
+import { usePostHog } from "../../analytics/posthog";
 import { SiteBookCallButton, SiteGhostLink } from "../../components/site/SiteButtons";
 import {
   FliqMarkIcon,

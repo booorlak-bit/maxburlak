@@ -13,6 +13,12 @@ export const caseStudyImage = defineType({
     }),
     defineField({ name: "alt", type: "string", title: "Alt text" }),
     defineField({ name: "caption", type: "string", title: "Caption" }),
+    defineField({
+      name: "allowFullscreen",
+      type: "boolean",
+      title: "Open in fullscreen on click",
+      initialValue: true,
+    }),
   ],
   preview: {
     select: { media: "image", title: "alt", subtitle: "caption" },

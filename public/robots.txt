@@ -1,24 +1,34 @@
 # https://maxburlak.com
 User-agent: *
 Allow: /
+Disallow: /playground?embed=1
 
-# AI / LLM crawlers (explicit allow for discovery)
+# AI search & assistant crawlers (explicit allow for discovery and citation)
 User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
 Allow: /
 
 User-agent: ChatGPT-User
 Allow: /
 
-User-agent: Google-Extended
+User-agent: ClaudeBot
 Allow: /
 
-User-agent: anthropic-ai
+User-agent: Claude-User
 Allow: /
 
-User-agent: Claude-Web
+User-agent: Claude-SearchBot
 Allow: /
 
 User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
 Allow: /
 
 User-agent: Applebot-Extended

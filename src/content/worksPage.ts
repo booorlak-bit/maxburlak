@@ -57,8 +57,6 @@ export const FEATURED_PROJECTS: WorksProject[] = [
       "Led design through multiple platform iterations, built foundations for scalable design systems, and shaped product workflows used by revenue teams. Navigated 3 major scope changes and shipped without dedicated research.",
     metrics: [
       { label: "Trial→Paid", value: "+34%" },
-      { label: "Dev Velocity", value: "1.8×" },
-      { label: "ARR Impact", value: "$2.5M" },
     ],
     caseStudySlug: "default",
     categories: ["full-time", "case-studies"],

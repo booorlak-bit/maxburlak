@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { usePostHog } from "@posthog/react";
+import { usePostHog } from "../analytics/posthog";
 
 export const CV_HREF = "/max-burlak-resume.pdf";
 export const CV_FILENAME = "max-burlak-resume.pdf";

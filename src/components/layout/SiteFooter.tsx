@@ -38,7 +38,7 @@ export function SiteFooter({ isDark }: SiteFooterProps) {
             <p
               className={`font-['Switzer_Variable:Regular',sans-serif] font-light leading-[18px] relative shrink-0 ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"} transition-colors duration-700 text-[13px] w-full`}
             >
-              AI-driven product designer helping founders design experience, build systems and foundations.
+              Product Designer &amp; Design Engineer for B2B SaaS and AI Products. Focused on activation, monetization, and design systems.
             </p>
             <SocialIconButtons isDark={isDark} />
           </div>
@@ -103,7 +103,24 @@ export function SiteFooter({ isDark }: SiteFooterProps) {
                 >
                   About
                 </Link>
-                <p className="relative shrink-0 w-full">Contact</p>
+                <Link
+                  className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"}`}
+                  to="/faq"
+                >
+                  FAQ
+                </Link>
+                <a
+                  className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"}`}
+                  href="mailto:hey@maxburlak.com"
+                >
+                  Contact
+                </a>
+                <Link
+                  className={`relative shrink-0 w-full no-underline hover:underline ${isDark ? "text-[#b8bcc4]" : "text-[#5b616d]"}`}
+                  to="/privacy"
+                >
+                  Privacy
+                </Link>
               </div>
             </div>
           </div>

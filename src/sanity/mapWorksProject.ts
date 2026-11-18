@@ -1,4 +1,5 @@
 import type { WorksProject, WorkScreenshot } from "../content/worksPage";
+import { DEFAULT_CASE_STUDY_LEDE, DEFAULT_CASE_STUDY_PERIOD } from "../content/caseStudyMetrics";
 import { urlForSrc } from "./image";
 import type { CaseStudy } from "./types";
 
@@ -14,7 +15,8 @@ export function mapCaseStudyToWorksProject(caseStudy: CaseStudy): WorksProject |
 
   const company = caseStudy.client?.trim() || caseStudy.title?.trim() || slug;
   const showcaseTitle = caseStudy.headline?.trim() || caseStudy.title?.trim() || company;
-  const showcaseSummary = caseStudy.summary?.trim() || "";
+  const showcaseSummary =
+    slug === "default" ? DEFAULT_CASE_STUDY_LEDE : caseStudy.summary?.trim() || "";
   const title = caseStudy.pageTitle?.trim() || showcaseTitle;
   const description =
     caseStudy.description?.trim() || caseStudy.tradeoffs?.trim() || showcaseSummary;
@@ -28,13 +30,17 @@ export function mapCaseStudyToWorksProject(caseStudy: CaseStudy): WorksProject |
       }
     : undefined;
 
-  const metrics =
+  const allMetrics =
     caseStudy.metrics
       ?.map((metric) => ({
         label: metric.label?.trim() ?? "",
         value: metric.value?.trim() ?? "",
       }))
       .filter((metric) => metric.label && metric.value) ?? [];
+  const metrics =
+    slug === "default"
+      ? allMetrics.filter((metric) => /trial.*paid/i.test(metric.label))
+      : allMetrics;
 
   return {
     id: slug,
@@ -43,7 +49,7 @@ export function mapCaseStudyToWorksProject(caseStudy: CaseStudy): WorksProject |
     showcaseTitle,
     showcaseSummary,
     role: caseStudy.role?.trim() || "",
-    years: caseStudy.years?.trim() || "",
+    years: slug === "default" ? DEFAULT_CASE_STUDY_PERIOD : caseStudy.years?.trim() || "",
     tags: caseStudy.tags?.filter(Boolean) ?? [],
     categories: caseStudy.engagementCategories?.filter(Boolean),
     description,
@@ -56,7 +62,9 @@ export function mapCaseStudyToWorksProject(caseStudy: CaseStudy): WorksProject |
 
 export function mapCaseStudiesToWorksProjects(caseStudies: CaseStudy[] | undefined): WorksProject[] {
   if (!caseStudies?.length) return [];
+  // Dereferenced links to unpublished/deleted case studies come back as null.
   return caseStudies
+    .filter((caseStudy): caseStudy is CaseStudy => Boolean(caseStudy))
     .map(mapCaseStudyToWorksProject)
     .filter((project): project is WorksProject => project !== null);
 }

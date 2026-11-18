@@ -5,6 +5,7 @@ import {
   SITE_URL,
 } from "./site";
 import type { CaseStudy } from "../sanity/types";
+import { FAQ_DESCRIPTION, FAQ_TITLE } from "../content/faq";
 import { getCaseStudyPageContent } from "../content/caseStudyContent";
 import { ALL_WORKS_PROJECTS } from "../content/worksPage";
 import { parseFeedPostSlug, parseWorksCaseStudySlug } from "../nav/routes";
@@ -77,7 +78,7 @@ export function getPageMeta(
       const cmsCaseStudy = getCaseStudyDocumentBySlug(worksMeta?.caseStudies ?? [], caseStudySlug);
       const caseStudy = getCaseStudyPageContent(project, cmsCaseStudy);
       return {
-        title: `${caseStudy.pageTitle} — ${SITE_NAME}`,
+        title: `${project.company}: ${caseStudy.pageTitle} — ${SITE_NAME}`,
         description: caseStudy.lede,
         canonicalPath: path,
         robots: "index, follow",
@@ -130,8 +131,22 @@ export function getPageMeta(
       return {
         title: `About — ${SITE_NAME}`,
         description:
-          "Max Burlak — product design lead and builder in Barcelona. 14+ years in B2B SaaS, 3x founding designer, ventures, consulting, and how he works.",
+          "Max Burlak is a Product Designer and Design Engineer for B2B SaaS and AI products in Barcelona, with 13+ years of experience across Default.com, Apollo.io, and early-stage products.",
         canonicalPath: "/about",
+        robots: "index, follow",
+      };
+    case "/privacy":
+      return {
+        title: `Privacy policy — ${SITE_NAME}`,
+        description: "What data maxburlak.com collects, why, which services process it, and how to exercise your rights.",
+        canonicalPath: "/privacy",
+        robots: "index, follow",
+      };
+    case "/faq":
+      return {
+        title: FAQ_TITLE,
+        description: FAQ_DESCRIPTION,
+        canonicalPath: "/faq",
         robots: "index, follow",
       };
     case "/playground":

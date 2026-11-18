@@ -1,4 +1,4 @@
-import { usePostHog } from "@posthog/react";
+import { usePostHog } from "../../analytics/posthog";
 import {
   WORKS_PROJECT_FILTERS,
   type WorksProjectFilterId,

@@ -1,13 +1,6 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, type ReactNode } from "react";
+import snapshot from "../generated/cms-snapshot.json";
 import { isSanityConfigured } from "./client";
-import { fetchCms } from "./fetch";
 import type { CmsPayload, CaseStudy, FeedPost, HomePage, SiteSettings, WorksPageCms } from "./types";
 
 type CmsContextValue = CmsPayload & {
@@ -15,60 +8,17 @@ type CmsContextValue = CmsPayload & {
   isConfigured: boolean;
 };
 
-const CmsContext = createContext<CmsContextValue>({
-  siteSettings: null,
-  homePage: null,
-  worksPage: null,
-  caseStudies: [],
-  feedPosts: [],
-  playgroundPage: null,
+/** CMS content is fetched once at build time (scripts/fetch-cms.mjs). */
+const cmsValue: CmsContextValue = {
+  ...(snapshot as unknown as CmsPayload),
   isLoading: false,
-  isConfigured: false,
-});
+  isConfigured: isSanityConfigured,
+};
+
+const CmsContext = createContext<CmsContextValue>(cmsValue);
 
 export function CmsProvider({ children }: { children: ReactNode }) {
-  const [data, setData] = useState<CmsPayload>({
-    siteSettings: null,
-    homePage: null,
-    worksPage: null,
-    caseStudies: [],
-    feedPosts: [],
-    playgroundPage: null,
-  });
-  const [isLoading, setIsLoading] = useState(isSanityConfigured);
-
-  useEffect(() => {
-    if (!isSanityConfigured) return;
-
-    let cancelled = false;
-    setIsLoading(true);
-
-    fetchCms()
-      .then((payload) => {
-        if (!cancelled) setData(payload);
-      })
-      .catch((err) => {
-        console.error("[cms] Failed to load Sanity content", err);
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const value = useMemo(
-    () => ({
-      ...data,
-      isLoading,
-      isConfigured: isSanityConfigured,
-    }),
-    [data, isLoading],
-  );
-
-  return <CmsContext.Provider value={value}>{children}</CmsContext.Provider>;
+  return <CmsContext.Provider value={cmsValue}>{children}</CmsContext.Provider>;
 }
 
 export function useCms() {

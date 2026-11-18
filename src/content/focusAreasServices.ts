@@ -1,7 +1,7 @@
 export const FOCUS_AREAS_CONTENT = {
   title: "Focus areas",
   description:
-    "Domains where product innovation meets execution. Max specializes in high-impact industries, driving solutions from zero to one across complex, data-driven ecosystems.",
+    "Domains where product innovation meets execution. I specialize in high-impact industries, driving solutions from zero to one across complex, data-driven ecosystems.",
   chips: [
     "SaaS, B2B",
     "GTM, Data, Sales",
@@ -18,9 +18,9 @@ export const FOCUS_AREAS_CONTENT = {
 };
 
 export const SERVICES_CONTENT = {
-  title: "Max's services",
+  title: "Services",
   description:
-    "As a product-focused designer, Max offers a comprehensive suite of services to help you take your ideas from concept to launch and beyond.",
+    "As a product-focused designer, I offer a full range of services to help you take your ideas from concept to launch and beyond.",
   items: [
     "Product Strategy & Definition",
     "Product Design",

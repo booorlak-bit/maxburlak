@@ -97,12 +97,14 @@ export type CaseStudy = {
     numberedList?: string[];
     media?: {
       _key?: string;
-      _type?: "caseStudyImage" | "caseStudyVideo";
+      _type?: "caseStudyImage" | "caseStudyGallery" | "caseStudyVideo";
       alt?: string;
       caption?: string;
+      allowFullscreen?: boolean;
       image?: SanityImage;
       videoUrl?: string;
       poster?: SanityImage;
+      images?: { _key?: string; alt?: string; caption?: string; image?: SanityImage }[];
     }[];
   }[];
 };
