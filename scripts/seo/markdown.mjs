@@ -42,17 +42,32 @@ const fmtMonth = (ym) => {
 
 function portableText(blocks = []) {
   const out = [];
+  let previousList = null;
+  let number = 0;
+
   for (const block of blocks ?? []) {
     if (block?._type !== "block") continue;
     const text = clean((block.children ?? []).map((child) => child.text ?? "").join(""));
     if (!text) continue;
-    if (block.listItem === "number") out.push(`1. ${text}`);
-    else if (block.listItem) out.push(`- ${text}`);
-    else if (/^h[1-6]$/.test(block.style ?? "")) out.push(`### ${text}`);
+
+    if (block.listItem) {
+      const listKey = `${block.listItem}:${block.level ?? 1}`;
+      if (previousList !== listKey && out.length && out.at(-1) !== "") out.push("");
+      number = block.listItem === "number" ? (previousList === listKey ? number + 1 : 1) : 0;
+      out.push(block.listItem === "number" ? `${number}. ${text}` : `- ${text}`);
+      previousList = listKey;
+      continue;
+    }
+
+    if (out.length && out.at(-1) !== "") out.push("");
+    if (/^h[1-6]$/.test(block.style ?? "")) out.push(`### ${text}`);
     else if (block.style === "blockquote") out.push(`> ${text}`);
     else out.push(text);
+    previousList = null;
+    number = 0;
   }
-  return out.join("\n\n");
+
+  return out.join("\n");
 }
 
 const sourceLine = (route) => `Source: ${url(route)} · Author: ${SITE_NAME} (${SITE_URL}/)`;

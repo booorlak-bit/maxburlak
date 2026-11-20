@@ -29,6 +29,20 @@ export type SanityBlock = {
   caption?: string;
 };
 
+export function getPortableTextListRun(blocks: SanityBlock[], startIndex: number): SanityBlock[] {
+  const first = blocks[startIndex];
+  if (first?._type !== "block" || !first.listItem) return [];
+
+  const run = [first];
+  for (let index = startIndex + 1; index < blocks.length; index += 1) {
+    const block = blocks[index];
+    if (block?._type !== "block" || block.listItem !== first.listItem || block.level !== first.level) break;
+    run.push(block);
+  }
+
+  return run;
+}
+
 export function blocksToPlainParagraphs(blocks: SanityBlock[] | undefined): string[] {
   if (!blocks?.length) return [];
 
@@ -87,104 +101,126 @@ export function PortableTextBody({
   if (!blocks?.length) return null;
 
   const bodyClass = `${SITE_FONT} ${t.muted} text-[15px] font-normal leading-[22px]`;
+  const renderedBlocks: ReactNode[] = [];
 
-  return (
-    <div className="flex flex-col gap-4">
-      {blocks.map((block, index) => {
-        if (block._type === "image") {
-          const src = block.asset ? urlForSrc({ asset: block.asset }, 1400) : undefined;
-          if (!src) return null;
-          const imageEl = (
-            <img
-              alt={block.alt ?? ""}
-              className="h-auto w-full rounded-[12px] object-cover"
-              loading="lazy"
-              src={src}
-            />
-          );
-          return (
-            <figure key={block._key ?? index} className="w-full max-w-[1400px]">
-              {onImageClick ? (
-                <button
-                  type="button"
-                  className="block w-full cursor-zoom-in overflow-hidden rounded-[12px] border-0 bg-transparent p-0"
-                  onClick={() => onImageClick(src, block.alt)}
-                >
-                  {imageEl}
-                </button>
-              ) : (
-                imageEl
-              )}
-              {block.caption ? (
-                <figcaption className={`${SITE_FONT} ${t.muted} mt-2 text-[12px] font-light leading-[16px]`}>
-                  {block.caption}
-                </figcaption>
-              ) : null}
-            </figure>
-          );
-        }
+  for (let index = 0; index < blocks.length; index += 1) {
+    const block = blocks[index];
 
-        if (block._type !== "block") return null;
+    if (block._type === "image") {
+      const src = block.asset ? urlForSrc({ asset: block.asset }, 1400) : undefined;
+      if (!src) continue;
+      const imageEl = (
+        <img
+          alt={block.alt ?? ""}
+          className="h-auto w-full rounded-[12px] object-cover"
+          loading="lazy"
+          src={src}
+        />
+      );
+      renderedBlocks.push(
+        <figure key={block._key ?? index} className="w-full max-w-[1400px]">
+          {onImageClick ? (
+            <button
+              type="button"
+              className="block w-full cursor-zoom-in overflow-hidden rounded-[12px] border-0 bg-transparent p-0"
+              onClick={() => onImageClick(src, block.alt)}
+            >
+              {imageEl}
+            </button>
+          ) : (
+            imageEl
+          )}
+          {block.caption ? (
+            <figcaption className={`${SITE_FONT} ${t.muted} mt-2 text-[12px] font-light leading-[16px]`}>
+              {block.caption}
+            </figcaption>
+          ) : null}
+        </figure>,
+      );
+      continue;
+    }
 
-        const children = block.children?.map((child, childIndex) =>
-          renderInline(child, `${block._key ?? index}-${childIndex}`, t, block.markDefs),
+    if (block._type !== "block") continue;
+
+    if (block.listItem) {
+      const listRun = getPortableTextListRun(blocks, index);
+      const items = listRun.map((listBlock, listIndex) => {
+        const blockIndex = index + listIndex;
+        const children = listBlock.children?.map((child, childIndex) =>
+          renderInline(child, `${listBlock._key ?? blockIndex}-${childIndex}`, t, listBlock.markDefs),
         );
-
-        if (block.listItem === "bullet") {
-          return (
-            <ul key={block._key ?? index} className={`${bodyClass} max-w-[640px] list-disc pl-5`}>
-              <li className="font-normal">{children}</li>
-            </ul>
-          );
-        }
-
-        if (block.listItem === "number") {
-          return (
-            <ol key={block._key ?? index} className={`${bodyClass} max-w-[640px] list-decimal pl-5`}>
-              <li className="font-normal">{children}</li>
-            </ol>
-          );
-        }
-
-        if (block.style === "h2") {
-          return (
-            <h3
-              key={block._key ?? index}
-              className={`${SITE_FONT} ${t.text} mt-2 max-w-[640px] text-[18px] font-medium leading-[24px]`}
-            >
-              {children}
-            </h3>
-          );
-        }
-
-        if (block.style === "h3") {
-          return (
-            <h4
-              key={block._key ?? index}
-              className={`${SITE_FONT} ${t.text} mt-1 max-w-[640px] text-[15px] font-medium leading-[20px]`}
-            >
-              {children}
-            </h4>
-          );
-        }
-
-        if (block.style === "blockquote") {
-          return (
-            <blockquote
-              key={block._key ?? index}
-              className={`${SITE_FONT} ${t.muted} max-w-[640px] border-l-2 border-black/15 pl-4 text-[15px] font-normal italic leading-[22px] dark:border-white/15`}
-            >
-              {children}
-            </blockquote>
-          );
-        }
 
         return (
-          <p key={block._key ?? index} className={`${bodyClass} max-w-[640px]`}>
+          <li key={listBlock._key ?? blockIndex} className="font-normal">
             {children}
-          </p>
+          </li>
         );
-      })}
-    </div>
-  );
+      });
+
+      if (block.listItem === "bullet") {
+        renderedBlocks.push(
+          <ul key={block._key ?? index} className={`${bodyClass} max-w-[640px] list-disc pl-5 space-y-4`}>
+            {items}
+          </ul>,
+        );
+      } else {
+        renderedBlocks.push(
+          <ol key={block._key ?? index} className={`${bodyClass} max-w-[640px] list-decimal pl-5 space-y-4`}>
+            {items}
+          </ol>,
+        );
+      }
+
+      index += listRun.length - 1;
+      continue;
+    }
+
+    const children = block.children?.map((child, childIndex) =>
+      renderInline(child, `${block._key ?? index}-${childIndex}`, t, block.markDefs),
+    );
+
+    if (block.style === "h2") {
+      renderedBlocks.push(
+        <h3
+          key={block._key ?? index}
+          className={`${SITE_FONT} ${t.text} mt-2 max-w-[640px] text-[18px] font-medium leading-[24px]`}
+        >
+          {children}
+        </h3>,
+      );
+      continue;
+    }
+
+    if (block.style === "h3") {
+      renderedBlocks.push(
+        <h4
+          key={block._key ?? index}
+          className={`${SITE_FONT} ${t.text} mt-1 max-w-[640px] text-[15px] font-medium leading-[20px]`}
+        >
+          {children}
+        </h4>,
+      );
+      continue;
+    }
+
+    if (block.style === "blockquote") {
+      renderedBlocks.push(
+        <blockquote
+          key={block._key ?? index}
+          className={`${SITE_FONT} ${t.muted} max-w-[640px] border-l-2 border-black/15 pl-4 text-[15px] font-normal italic leading-[22px] dark:border-white/15`}
+        >
+          {children}
+        </blockquote>,
+      );
+      continue;
+    }
+
+    renderedBlocks.push(
+      <p key={block._key ?? index} className={`${bodyClass} max-w-[640px]`}>
+        {children}
+      </p>,
+    );
+  }
+
+  return <div className="flex flex-col gap-4">{renderedBlocks}</div>;
 }

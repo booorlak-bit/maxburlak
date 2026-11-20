@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { SITE_FONT, type SiteTheme } from "../../components/site/siteTheme";
-import type { SanityBlock, SanityBlockChild } from "../../sanity/portableText";
+import { getPortableTextListRun, type SanityBlock, type SanityBlockChild } from "../../sanity/portableText";
 
 type MarkDef = {
   _key?: string;
@@ -53,66 +53,85 @@ export function FeedPortableText({
   if (!blocks?.length) return null;
 
   const bodyClass = `${SITE_FONT} ${t.text} text-[15px] leading-[20px] font-normal`;
+  const renderedBlocks: ReactNode[] = [];
 
-  return (
-    <div className="flex flex-col gap-4">
-      {blocks.map((block, index) => {
-        if (block._type !== "block") return null;
+  for (let index = 0; index < blocks.length; index += 1) {
+    const block = blocks[index];
+    if (block._type !== "block") continue;
 
-        const markDefs = (block as SanityBlock & { markDefs?: MarkDef[] }).markDefs;
-        const children = block.children?.map((child, childIndex) =>
-          renderInline(child, `${block._key ?? index}-${childIndex}`, t, markDefs),
+    if (block.listItem) {
+      const listRun = getPortableTextListRun(blocks, index);
+      const items = listRun.map((listBlock, listIndex) => {
+        const blockIndex = index + listIndex;
+        const children = listBlock.children?.map((child, childIndex) =>
+          renderInline(child, `${listBlock._key ?? blockIndex}-${childIndex}`, t, listBlock.markDefs),
         );
-
-        if (block.listItem === "bullet") {
-          return (
-            <ul key={block._key ?? index} className={`${bodyClass} list-disc pl-5`}>
-              <li className="font-normal">{children}</li>
-            </ul>
-          );
-        }
-
-        if (block.listItem === "number") {
-          return (
-            <ol key={block._key ?? index} className={`${bodyClass} list-decimal pl-5`}>
-              <li className="font-normal">{children}</li>
-            </ol>
-          );
-        }
-
-        if (block.style === "h2") {
-          return (
-            <h2 key={block._key ?? index} className={`${SITE_FONT} ${t.text} ${t.bodyMedium}`}>
-              {children}
-            </h2>
-          );
-        }
-
-        if (block.style === "h3") {
-          return (
-            <h3 key={block._key ?? index} className={`${SITE_FONT} ${t.text} ${t.bodyMedium}`}>
-              {children}
-            </h3>
-          );
-        }
-
-        if (block.style === "blockquote") {
-          return (
-            <blockquote
-              key={block._key ?? index}
-              className={`${bodyClass} ${t.muted} border-l-2 border-solid pl-4 ${t.borderHairline}`}
-            >
-              {children}
-            </blockquote>
-          );
-        }
 
         return (
-          <p key={block._key ?? index} className={bodyClass}>
+          <li key={listBlock._key ?? blockIndex} className="font-normal">
             {children}
-          </p>
+          </li>
         );
-      })}
-    </div>
-  );
+      });
+
+      if (block.listItem === "bullet") {
+        renderedBlocks.push(
+          <ul key={block._key ?? index} className={`${bodyClass} list-disc pl-5 space-y-4`}>
+            {items}
+          </ul>,
+        );
+      } else {
+        renderedBlocks.push(
+          <ol key={block._key ?? index} className={`${bodyClass} list-decimal pl-5 space-y-4`}>
+            {items}
+          </ol>,
+        );
+      }
+
+      index += listRun.length - 1;
+      continue;
+    }
+
+    const children = block.children?.map((child, childIndex) =>
+      renderInline(child, `${block._key ?? index}-${childIndex}`, t, block.markDefs),
+    );
+
+    if (block.style === "h2") {
+      renderedBlocks.push(
+        <h2 key={block._key ?? index} className={`${SITE_FONT} ${t.text} ${t.bodyMedium}`}>
+          {children}
+        </h2>,
+      );
+      continue;
+    }
+
+    if (block.style === "h3") {
+      renderedBlocks.push(
+        <h3 key={block._key ?? index} className={`${SITE_FONT} ${t.text} ${t.bodyMedium}`}>
+          {children}
+        </h3>,
+      );
+      continue;
+    }
+
+    if (block.style === "blockquote") {
+      renderedBlocks.push(
+        <blockquote
+          key={block._key ?? index}
+          className={`${bodyClass} ${t.muted} border-l-2 border-solid pl-4 ${t.borderHairline}`}
+        >
+          {children}
+        </blockquote>,
+      );
+      continue;
+    }
+
+    renderedBlocks.push(
+      <p key={block._key ?? index} className={bodyClass}>
+        {children}
+      </p>,
+    );
+  }
+
+  return <div className="flex flex-col gap-5">{renderedBlocks}</div>;
 }
