@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 import { PortfolioImage } from "../../components/PortfolioImage";
 import { SITE_FONT, type SiteTheme } from "../../components/site/siteTheme";
 import { urlForSrc } from "../../sanity/image";
@@ -173,39 +173,46 @@ export function FeedContent({
   };
 
   const blocks = content ?? [];
+  const renderedBlocks: ReactNode[] = [];
+
+  for (let index = 0; index < blocks.length; index += 1) {
+    const block = blocks[index];
+    const key = block._key ?? `${block._type}-${index}`;
+
+    if (isTextBlock(block)) {
+      if (!includeText || (mode === "preview" && textBlockIndex >= previewBlockCount)) continue;
+
+      const textBlocks: SanityBlock[] = [block];
+      while (index + 1 < blocks.length && isTextBlock(blocks[index + 1])) {
+        index += 1;
+        textBlocks.push(blocks[index]);
+      }
+
+      const visibleTextBlocks =
+        mode === "preview" ? textBlocks.slice(0, previewBlockCount - textBlockIndex) : textBlocks;
+      textBlockIndex += visibleTextBlocks.length;
+      if (visibleTextBlocks.length) {
+        renderedBlocks.push(<FeedPortableText key={key} blocks={visibleTextBlocks} theme={t} />);
+      }
+      continue;
+    }
+
+    if (!includeMedia) continue;
+
+    if (block._type === "feedImageBlock") {
+      renderedBlocks.push(<FeedImage key={key} block={block} onOpenLightbox={openLightbox} />);
+    } else if (block._type === "feedVideoBlock") {
+      renderedBlocks.push(<FeedVideo key={key} block={block} />);
+    } else if (block._type === "feedGalleryBlock") {
+      renderedBlocks.push(<FeedGallery key={key} block={block} onOpenLightbox={openLightbox} />);
+    } else if (block._type === "feedLinkCard") {
+      renderedBlocks.push(<FeedLinkCard key={key} block={block} theme={t} />);
+    }
+  }
 
   return (
     <>
-      <div className="flex w-full flex-col gap-5">
-        {blocks.map((block, index) => {
-          const key = block._key ?? `${block._type}-${index}`;
-
-          if (isTextBlock(block)) {
-            if (!includeText) return null;
-            if (mode === "preview") {
-              if (textBlockIndex >= previewBlockCount) return null;
-              textBlockIndex += 1;
-            }
-            return <FeedPortableText key={key} blocks={[block as SanityBlock]} theme={t} />;
-          }
-
-          if (!includeMedia) return null;
-
-          if (block._type === "feedImageBlock") {
-            return <FeedImage key={key} block={block} onOpenLightbox={openLightbox} />;
-          }
-          if (block._type === "feedVideoBlock") {
-            return <FeedVideo key={key} block={block} />;
-          }
-          if (block._type === "feedGalleryBlock") {
-            return <FeedGallery key={key} block={block} onOpenLightbox={openLightbox} />;
-          }
-          if (block._type === "feedLinkCard") {
-            return <FeedLinkCard key={key} block={block} theme={t} />;
-          }
-          return null;
-        })}
-      </div>
+      <div className="flex w-full flex-col gap-5">{renderedBlocks}</div>
       {lightbox ? (
         <FeedLightbox
           slides={lightbox.slides}
